@@ -39,7 +39,7 @@ export const DEFAULT_PARAMS = {
     ]
   ],
   activePaletteIndex: 0,
-  colorTransitionDuration: 180,
+  colorTransitionDuration: 3,
   stateTransitionDuration: 180, // Transition time for geometry, behavior, camera, modulations
   colorSlotZOffset: 100, // Z-offset multiplier per color slot (prevents z-fighting)
   

@@ -80,6 +80,7 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
       // Create or reuse emitter
       if (!ZM.emitterInstance) {
         // First canvas: create new emitter
+        console.log('  ✨ Creating NEW emitter');
         emitter = new Emitter({
           p: p,
           x: ZM.W / 2,
@@ -93,9 +94,25 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
         });
         ZM.emitterInstance = emitter;
       } else {
-        // Second canvas (stereo): reuse existing emitter
+        // Reuse existing emitter (dimensions already updated in initializeSketches)
+        console.log('  ♻️ REUSING existing emitter with', ZM.emitterInstance.lines.length, 'lines');
+        console.log('     Canvas:', canvasId, '| isPrimary:', isPrimary);
         emitter = ZM.emitterInstance;
-        emitter.p = p; // Update p5 instance reference
+        
+        // CRITICAL: Only update p5 reference on PRIMARY canvas
+        // Primary canvas handles emitter.update() which uses this.p.noise()
+        // Secondary (right) canvas only draws, doesn't update emitter state
+        if (isPrimary) {
+          console.log('     Updating p5 references for primary canvas');
+          emitter.p = p;
+          
+          // Update p5 reference for all existing lines (for consistency)
+          for (const line of emitter.lines) {
+            line.p = p;
+          }
+        } else {
+          console.log('     Skipping p5 update for secondary canvas (uses primary refs)');
+        }
       }
     };
     
@@ -270,8 +287,16 @@ export function initializeSketches(ZM) {
   console.log('🎬 initializeSketches called');
   console.log('  - stereoscopicMode:', ZM.params.stereoscopicMode);
   console.log('  - framebufferMode:', ZM.params.framebufferMode);
+  console.log('  - Current dimensions:', ZM.W, 'x', ZM.H);
+  console.log('  - noiseOffset:', ZM.noiseOffset.toFixed(3));
   
-  // Remove existing sketches
+  // Preserve existing emitter (don't restart animation)
+  if (ZM.emitterInstance && ZM.emitterInstance.lines) {
+    console.log('  - Preserving emitter with', ZM.emitterInstance.lines.length, 'existing lines');
+  }
+  
+  // CRITICAL: Remove p5 instances FIRST, before touching DOM
+  // This ensures graceful cleanup and prevents stale references
   if (ZM.p5Instance) {
     ZM.p5Instance.remove();
     ZM.p5Instance = null;
@@ -281,23 +306,9 @@ export function initializeSketches(ZM) {
     ZM.p5InstanceRight = null;
   }
   
-  // Clear emitter instance so it gets recreated
-  ZM.emitterInstance = null;
+  // DO NOT clear emitter instance - we want to preserve existing lines
+  // ZM.emitterInstance = null; // ❌ Never clear - preserves animation across mode changes
   
-  // Remove existing sketches
-  if (ZM.p5Instance) {
-    ZM.p5Instance.remove();
-    ZM.p5Instance = null;
-  }
-  if (ZM.p5InstanceRight) {
-    ZM.p5InstanceRight.remove();
-    ZM.p5InstanceRight = null;
-  }
-  
-  // Clear emitter instance so it gets recreated
-  ZM.emitterInstance = null;
-  
-  // Clear canvas wrapper
   const wrapper = document.getElementById('canvas-wrapper');
   if (!wrapper) {
     console.error('❌ canvas-wrapper element not found!');
@@ -305,7 +316,39 @@ export function initializeSketches(ZM) {
   }
   
   if (ZM.params.stereoscopicMode) {
-    // Stereo mode: create proper HTML structure
+    // Store old dimensions for proportional scaling
+    const prevW = ZM.W;
+    const prevH = ZM.H;
+    
+    // Update dimensions for stereo mode (unless in framebuffer mode)
+    if (!ZM.params.framebufferMode) {
+      ZM.W = Math.floor(window.innerWidth / 2);
+      ZM.H = window.innerHeight;
+    }
+    
+    // Scale existing emitter and lines proportionally to new dimensions
+    if (ZM.emitterInstance && prevW && prevH) {
+      const scaleX = ZM.W / prevW;
+      const scaleY = ZM.H / prevH;
+      console.log('  - Scaling emitter geometry:', scaleX.toFixed(3), 'x', scaleY.toFixed(3));
+      
+      // Scale emitter position
+      ZM.emitterInstance.x *= scaleX;
+      ZM.emitterInstance.y *= scaleY;
+      ZM.emitterInstance.canvasWidth = ZM.W;
+      ZM.emitterInstance.canvasHeight = ZM.H;
+      
+      // Scale all existing lines
+      for (const line of ZM.emitterInstance.lines) {
+        line.x *= scaleX;
+        line.y *= scaleY;
+        line.canvasWidth = ZM.W;
+        line.canvasHeight = ZM.H;
+      }
+    }
+    
+    // NOW clear DOM and rebuild structure
+    wrapper.innerHTML = '';
     wrapper.classList.add('stereoscopic');
     
     const container = document.createElement('div');
@@ -327,30 +370,63 @@ export function initializeSketches(ZM) {
     ZM.p5Instance = new p5(createSketch(ZM, -eyeSep / 100, 'left-canvas'));
     ZM.p5InstanceRight = new p5(createSketch(ZM, eyeSep / 100, 'right-canvas'));
     
+    console.log('✓ Canvases created in stereo mode');
+    console.log('  - Canvas dimensions:', ZM.W, 'x', ZM.H);
+    console.log('  - Emitter preserved:', ZM.emitterInstance ? 'YES' : 'NO');
+    if (ZM.emitterInstance) {
+      console.log('  - Lines count:', ZM.emitterInstance.lines.length);
+      console.log('  - Emitter position:', ZM.emitterInstance.x.toFixed(1), ',', ZM.emitterInstance.y.toFixed(1));
+    }
+    
     if (ZM.params.framebufferMode) {
       setTimeout(() => updateCanvasSize(ZM), 50);
     }
   } else {
-    // Single canvas mode
+    // Store old dimensions for proportional scaling
+    const prevW = ZM.W;
+    const prevH = ZM.H;
+    
+    // Update dimensions for mono mode (unless in framebuffer mode)
+    if (!ZM.params.framebufferMode) {
+      ZM.W = window.innerWidth;
+      ZM.H = window.innerHeight;
+    }
+    
+    // Scale existing emitter and lines proportionally to new dimensions
+    if (ZM.emitterInstance && prevW && prevH) {
+      const scaleX = ZM.W / prevW;
+      const scaleY = ZM.H / prevH;
+      console.log('  - Scaling emitter geometry:', scaleX.toFixed(3), 'x', scaleY.toFixed(3));
+      
+      // Scale emitter position
+      ZM.emitterInstance.x *= scaleX;
+      ZM.emitterInstance.y *= scaleY;
+      ZM.emitterInstance.canvasWidth = ZM.W;
+      ZM.emitterInstance.canvasHeight = ZM.H;
+      
+      // Scale all existing lines
+      for (const line of ZM.emitterInstance.lines) {
+        line.x *= scaleX;
+        line.y *= scaleY;
+        line.canvasWidth = ZM.W;
+        line.canvasHeight = ZM.H;
+      }
+    }
+    
+    // NOW clear DOM and rebuild structure
     wrapper.innerHTML = '<div id="mono-canvas"></div>';
+    wrapper.classList.remove('stereoscopic');
+    
     ZM.p5Instance = new p5(createSketch(ZM, 0, 'mono-canvas'));
     ZM.p5InstanceRight = null;
     
     console.log('✓ Canvas created in mono mode');
-    console.log('  - Wrapper:', wrapper);
-    console.log('  - p5Instance:', ZM.p5Instance);
-    
-    // Check canvas after a brief delay
-    setTimeout(() => {
-      const canvas = document.querySelector('#mono-canvas canvas');
-      console.log('  - Canvas element:', canvas);
-      if (canvas) {
-        console.log('    - Canvas dimensions:', canvas.width, 'x', canvas.height);
-        console.log('    - Canvas style:', canvas.style.cssText);
-      } else {
-        console.error('    ❌ Canvas element not found!');
-      }
-    }, 100);
+    console.log('  - Canvas dimensions:', ZM.W, 'x', ZM.H);
+    console.log('  - Emitter preserved:', ZM.emitterInstance ? 'YES' : 'NO');
+    if (ZM.emitterInstance) {
+      console.log('  - Lines count:', ZM.emitterInstance.lines.length);
+      console.log('  - Emitter position:', ZM.emitterInstance.x.toFixed(1), ',', ZM.emitterInstance.y.toFixed(1));
+    }
     
     if (ZM.params.framebufferMode) {
       setTimeout(() => updateCanvasSize(ZM), 50);

@@ -65,7 +65,7 @@ export function loadFromLocalStorage(defaultParams) {
     }
     if (loaded.activePaletteIndex === undefined) loaded.activePaletteIndex = 0;
     if (loaded.colorTransitionDuration === undefined) loaded.colorTransitionDuration = 3.0;
-    if (loaded.stateTransitionDuration === undefined) loaded.stateTransitionDuration = 4.5;
+    if (loaded.stateTransitionDuration === undefined) loaded.stateTransitionDuration = 180;
     if (loaded.autoTriggerStates === undefined) loaded.autoTriggerStates = false;
     if (loaded.autoTriggerFrequency === undefined) loaded.autoTriggerFrequency = 30;
     if (loaded.colorSlotZOffset === undefined) loaded.colorSlotZOffset = 100;
