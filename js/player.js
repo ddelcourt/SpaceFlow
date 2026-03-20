@@ -22,6 +22,10 @@ import { attachToZM } from './rendering/SketchFactory.js';
 // Import input handlers
 import { setupMouseHandlers } from './input/MouseHandler.js';
 
+// Import export functions
+import { exportPNG } from './export/PNGExporter.js';
+import { exportSVG } from './export/SVGExporter.js';
+
 // Import keyboard handler (for play/pause controls)
 // Note: Using custom keyboard handler for player-specific overlay controls
 
@@ -60,6 +64,10 @@ window.ZigMap26 = {
   
   // Player mode flag
   isPlayerMode: true,
+  
+  // Export functions (enabled in player mode)
+  exportPNG: () => exportPNG(window.ZigMap26),
+  exportSVG: () => exportSVG(window.ZigMap26),
   
   // Placeholder functions for player mode
   saveToLocalStorage: () => {}, // No saving in player mode
@@ -253,8 +261,29 @@ function loadPreset(jsonData) {
   const ZM = window.ZigMap26;
   
   try {
-    // Update params
-    Object.assign(ZM.params, jsonData.params);
+    // Check if preset has states
+    if (jsonData.states && Array.isArray(jsonData.states) && jsonData.states.length > 0) {
+      // Load top-level params first (contains project-wide settings)
+      if (jsonData.params) {
+        Object.assign(ZM.params, jsonData.params);
+      }
+      
+      // Then load the first state's params (overrides state-specific settings)
+      const firstState = jsonData.states[0];
+      Object.assign(ZM.params, firstState.params);
+      
+      // Apply camera from first state if present
+      if (firstState.camera) {
+        ZM.params.cameraRotationX = firstState.camera.rotationX;
+        ZM.params.cameraRotationY = firstState.camera.rotationY;
+        ZM.params.cameraDistance = firstState.camera.distance;
+        ZM.params.cameraOffsetX = firstState.camera.offsetX;
+        ZM.params.cameraOffsetY = firstState.camera.offsetY;
+      }
+    } else {
+      // No states - use top-level params
+      Object.assign(ZM.params, jsonData.params);
+    }
     
     // Force fullscreen mode in player (disable framebuffer mode)
     ZM.params.framebufferMode = false;
@@ -501,6 +530,25 @@ function setupKeyboardHandlers(ZM) {
         console.log(`🖼️  Loading overlay ${index + 1}: ${filename}`);
       } else {
         console.log(`No overlay preset at index ${index + 1}`);
+      }
+    }
+    
+    // Export shortcuts:
+    // P: Export PNG
+    if (e.key === 'p' || e.key === 'P') {
+      e.preventDefault();
+      if (ZM.exportPNG) {
+        console.log('📸 Exporting PNG...');
+        ZM.exportPNG();
+      }
+    }
+    
+    // S: Export SVG
+    if (e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      if (ZM.exportSVG) {
+        console.log('📐 Exporting SVG...');
+        ZM.exportSVG();
       }
     }
   });

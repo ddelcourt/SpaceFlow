@@ -8,145 +8,33 @@
     "fadeDuration": 1,
     "palettes": [
       [
-        {
-          "rgb": [
-            0,
-            249,
-            0
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            212,
-            251,
-            120
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            41,
-            75,
-            0
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            0,
-            0,
-            0
-          ],
-          "role": "background"
-        }
+        { "rgb": [0, 249, 0], "role": "line" },
+        { "rgb": [212, 251, 120], "role": "line" },
+        { "rgb": [41, 75, 0], "role": "line" },
+        { "rgb": [0, 0, 0], "role": "background" }
       ],
       [
-        {
-          "rgb": [
-            255,
-            140,
-            60
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            20,
-            10,
-            5
-          ],
-          "role": "background"
-        },
-        {
-          "rgb": [
-            255,
-            90,
-            120
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            200,
-            180,
-            50
-          ],
-          "role": "line"
-        }
+        { "rgb": [255, 140, 60], "role": "line" },
+        { "rgb": [20, 10, 5], "role": "background" },
+        { "rgb": [255, 90, 120], "role": "line" },
+        { "rgb": [200, 180, 50], "role": "line" }
       ],
       [
-        {
-          "rgb": [
-            120,
-            200,
-            255
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            5,
-            10,
-            20
-          ],
-          "role": "background"
-        },
-        {
-          "rgb": [
-            80,
-            255,
-            180
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            160,
-            120,
-            255
-          ],
-          "role": "line"
-        }
+        { "rgb": [120, 200, 255], "role": "line" },
+        { "rgb": [5, 10, 20], "role": "background" },
+        { "rgb": [80, 255, 180], "role": "line" },
+        { "rgb": [160, 120, 255], "role": "line" }
       ],
       [
-        {
-          "rgb": [
-            255,
-            60,
-            200
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            10,
-            20,
-            10
-          ],
-          "role": "background"
-        },
-        {
-          "rgb": [
-            60,
-            255,
-            100
-          ],
-          "role": "line"
-        },
-        {
-          "rgb": [
-            255,
-            220,
-            60
-          ],
-          "role": "line"
-        }
+        { "rgb": [255, 60, 200], "role": "line" },
+        { "rgb": [10, 20, 10], "role": "background" },
+        { "rgb": [60, 255, 100], "role": "line" },
+        { "rgb": [255, 220, 60], "role": "line" }
       ]
     ],
     "activePaletteIndex": 2,
-    "colorTransitionDuration": 7,
-    "stateTransitionDuration": 16,
+    "colorTransitionDuration": 3,
+    "stateTransitionDuration": 15,
     "colorSlotZOffset": 100,
     "autoTriggerStates": true,
     "autoTriggerFrequency": 30,
@@ -161,26 +49,26 @@
     "speedRangeMax": 150,
     "fov": 88.01,
     "near": 0.01,
-    "far": 20000,
-    "cameraRotationX": -8.068185307179771,
-    "cameraRotationY": 25.137741228718312,
+    "far": 5000,
+    "cameraRotationX": -1.7850000000001849,
+    "cameraRotationY": 37.704111843077484,
     "cameraDistance": 50,
     "cameraOffsetX": 57,
     "cameraOffsetY": -207,
     "stereoscopicMode": false,
     "eyeSeparation": 30,
-    "framebufferMode": true,
+    "framebufferMode": false,
     "framebufferPreset": "1920x1080",
     "framebufferWidth": 1920,
     "framebufferHeight": 1080,
-    "videoDuration": 1,
-    "videoFPS": 24,
+    "videoDuration": 10,
+    "videoFPS": 30,
     "videoFormat": "webm",
     "depthInvert": false,
     "overlayPresetFile": "Mapping2026_Horizontal-White_O_Shadow.json",
-    "overlayVisible": true,
+    "overlayVisible": false,
     "overlayAutoFit": false,
-    "overlayScale": 153,
+    "overlayScale": 100,
     "overlayOpacity": 100,
     "overlayX": 50,
     "overlayY": 50,
@@ -213,140 +101,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "none"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -401,140 +177,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 1,
@@ -582,140 +246,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                4,
-                50,
-                255
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [4, 50, 255], "role": "line" }
           ]
         ],
         "activePaletteIndex": 3,
@@ -763,140 +315,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "none"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -944,140 +384,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "none"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                117,
-                213,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                101,
-                37,
-                174
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                147,
-                0
-              ],
-              "role": "line"
-            }
+            { "rgb": [117, 213, 255], "role": "line" },
+            { "rgb": [101, 37, 174], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [255, 147, 0], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 2,
@@ -1125,140 +453,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                225,
-                196
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                0,
-                190
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                25,
-                43
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 225, 196], "role": "line" },
+            { "rgb": [255, 0, 190], "role": "line" },
+            { "rgb": [0, 25, 43], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -1306,140 +522,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                41,
-                75,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -1487,140 +591,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                224,
-                211,
-                188
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                33,
-                33,
-                33
-              ],
-              "role": "background"
-            }
+            { "rgb": [224, 211, 188], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [33, 33, 33], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -1668,140 +660,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                41,
-                75,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                4,
-                50,
-                255
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "none"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [4, 50, 255], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "none" },
+            { "rgb": [255, 220, 60], "role": "none" }
           ]
         ],
         "activePaletteIndex": 3,
@@ -1849,140 +729,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                41,
-                75,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                3,
-                3,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                0,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                255,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [3, 3, 255], "role": "line" },
+            { "rgb": [255, 0, 0], "role": "line" },
+            { "rgb": [0, 255, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ]
         ],
         "activePaletteIndex": 3,
@@ -2030,140 +798,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "none"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -2226,140 +882,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                41,
-                75,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                6,
-                41
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "line"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [0, 6, 41], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                4,
-                50,
-                255
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "none"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [4, 50, 255], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "none" },
+            { "rgb": [255, 220, 60], "role": "none" }
           ]
         ],
         "activePaletteIndex": 2,
@@ -2422,140 +966,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                255,
-                255,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                180,
-                180,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                60,
-                60,
-                60
-              ],
-              "role": "none"
-            }
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [60, 60, 60], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                0,
-                83,
-                146
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                83,
-                146
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                84,
-                218,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                50,
-                158,
-                213
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 83, 146], "role": "line" },
+            { "rgb": [0, 83, 146], "role": "line" },
+            { "rgb": [84, 218, 255], "role": "line" },
+            { "rgb": [50, 158, 213], "role": "background" }
           ]
         ],
         "activePaletteIndex": 3,
@@ -2619,140 +1051,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                41,
-                75,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "line"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 2,
@@ -2816,140 +1136,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                126,
-                14,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                179,
-                181,
-                175
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                38,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [126, 14, 0], "role": "line" },
+            { "rgb": [179, 181, 175], "role": "line" },
+            { "rgb": [255, 38, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                140,
-                60
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                20,
-                10,
-                5
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                200,
-                180,
-                50
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "line"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "line" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 0,
@@ -3013,140 +1221,28 @@
         "fadeDuration": 1,
         "palettes": [
           [
-            {
-              "rgb": [
-                0,
-                249,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                212,
-                251,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                41,
-                75,
-                0
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                0,
-                0,
-                0
-              ],
-              "role": "background"
-            }
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                195
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                188,
-                0,
-                196
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                90,
-                120
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                132,
-                33,
-                49
-              ],
-              "role": "background"
-            }
+            { "rgb": [255, 60, 195], "role": "line" },
+            { "rgb": [188, 0, 196], "role": "line" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [132, 33, 49], "role": "background" }
           ],
           [
-            {
-              "rgb": [
-                120,
-                200,
-                255
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                5,
-                10,
-                20
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                80,
-                255,
-                180
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                160,
-                120,
-                255
-              ],
-              "role": "none"
-            }
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
           ],
           [
-            {
-              "rgb": [
-                255,
-                60,
-                200
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                10,
-                20,
-                10
-              ],
-              "role": "background"
-            },
-            {
-              "rgb": [
-                60,
-                255,
-                100
-              ],
-              "role": "line"
-            },
-            {
-              "rgb": [
-                255,
-                220,
-                60
-              ],
-              "role": "line"
-            }
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
           ]
         ],
         "activePaletteIndex": 1,
@@ -3207,5 +1303,5 @@
     "Mapping2026_Vertical-White_Shadow.json",
     "Mapping2026_Vertical-White.json"
   ],
-  "saveDate": "2026-03-19T23:31:07.822Z"
+  "saveDate": "2026-03-20T02:35:46.053Z"
 }

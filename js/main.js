@@ -168,7 +168,12 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init') {
       ZM.stateManager.activeStateId = loadedData.activeStateId;
       ZM.stateManager.saveToStorage();
       
-      // Load the first state's params (not top-level params)
+      // Load top-level params first (contains project-wide settings)
+      if (loadedData.params) {
+        Object.assign(ZM.params, loadedData.params);
+      }
+      
+      // Then load the first state's params (overrides state-specific settings)
       if (loadedData.states.length > 0) {
         const firstState = loadedData.states[0];
         // Apply first state's params immediately
