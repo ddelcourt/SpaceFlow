@@ -464,6 +464,67 @@ html, body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   FULLSCREEN BUTTON
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.fullscreen-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: #0066ff;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s ease;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
+}
+
+.fullscreen-btn:hover {
+  background: #0052cc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+}
+
+.fullscreen-btn:active {
+  transform: translateY(0px);
+}
+
+.fullscreen-btn svg {
+  display: block;
+}
+
+/* Hide fullscreen button when in fullscreen mode */
+:fullscreen .fullscreen-btn,
+::backdrop .fullscreen-btn,
+html:fullscreen .fullscreen-btn,
+body:fullscreen .fullscreen-btn {
+  display: none;
+}
+
+/* Firefox */
+:-moz-full-screen .fullscreen-btn {
+  display: none;
+}
+
+/* Webkit */
+:-webkit-full-screen .fullscreen-btn {
+  display: none;
+}
+
+/* Hide cursor in fullscreen after inactivity */
+.hide-cursor,
+.hide-cursor * {
+  cursor: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════════════════ */
 

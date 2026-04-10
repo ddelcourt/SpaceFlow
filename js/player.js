@@ -462,6 +462,53 @@ function setupKeyboardHandlers(ZM) {
   // Setup overlay image element
   const overlayImg = document.getElementById('overlay-image');
   
+  // Setup fullscreen button
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.log('Fullscreen request failed:', err);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    });
+  }
+  
+  // Setup cursor auto-hide in fullscreen
+  let cursorTimeout = null;
+  const hideCursor = () => {
+    if (document.fullscreenElement) {
+      document.body.classList.add('hide-cursor');
+    }
+  };
+  
+  const showCursor = () => {
+    // In player mode, don't show cursor on interaction - keep it hidden in fullscreen
+    // The cursor should stay hidden throughout the fullscreen experience
+    return;
+  };
+  
+  // We don't need mouse event listeners in player since cursor stays hidden
+  // document.addEventListener('mousemove', showCursor);
+  // document.addEventListener('mousedown', showCursor);
+  
+  // Handle fullscreen change events
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      // Entered fullscreen - hide cursor immediately and keep it hidden
+      document.body.classList.add('hide-cursor');
+    } else {
+      // Exited fullscreen - show cursor
+      if (cursorTimeout) {
+        clearTimeout(cursorTimeout);
+        cursorTimeout = null;
+      }
+      document.body.classList.remove('hide-cursor');
+    }
+  });
+  
   window.addEventListener('keydown', (e) => {
     // Skip if typing in input
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {

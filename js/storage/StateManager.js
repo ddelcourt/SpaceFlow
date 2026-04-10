@@ -125,6 +125,12 @@ function captureCurrentState(ZM, name) {
     console.error('Warning: Palettes not properly captured', params.palettes);
   }
   
+  // Verify activePaletteIndex is captured
+  if (params.activePaletteIndex === undefined) {
+    console.error('Warning: activePaletteIndex not captured, using default 0');
+    params.activePaletteIndex = 0;
+  }
+  
   // Capture camera state
   const camera = {
     rotationX: ZM.camera.rotationX,
@@ -159,6 +165,11 @@ function captureCurrentState(ZM, name) {
 function restoreState(ZM, state, instant = false) {
   console.log('Restoring state:', state.name, 'Palettes:', state.params.palettes, instant ? '(instant)' : '(with transitions)');
   
+  // Cancel any pending auto-update to prevent overwriting the loaded state
+  if (ZM.cancelStateAutoUpdate) {
+    ZM.cancelStateAutoUpdate();
+  }
+  
   // Store old values for transition
   const oldParams = JSON.parse(JSON.stringify(ZM.params));
   const oldCamera = {
@@ -173,6 +184,7 @@ function restoreState(ZM, state, instant = false) {
   const restoredParams = JSON.parse(JSON.stringify(state.params));
   
   console.log('Restored params active palette:', restoredParams.activePaletteIndex);
+  console.log('Restored params palettes:', restoredParams.palettes?.length);
   
   // Note: We intentionally DO NOT clear the emitter when geometry changes
   // This allows smooth transitions where old lines fade out naturally
@@ -217,7 +229,15 @@ function restoreState(ZM, state, instant = false) {
   Object.assign(ZM.params, preservedSettings);
   
   console.log('ZM.params after assign, active palette:', ZM.params.activePaletteIndex);
-  console.log('ZM.params.palettes:', ZM.params.palettes);
+  console.log('ZM.params.palettes:', ZM.params.palettes?.length);
+  
+  // Verify activePaletteIndex was restored correctly
+  if (ZM.params.activePaletteIndex !== restoredParams.activePaletteIndex) {
+    console.error('ERROR: activePaletteIndex got overwritten!', {
+      expected: restoredParams.activePaletteIndex,
+      actual: ZM.params.activePaletteIndex
+    });
+  }
   
   // Trigger camera transition (or instant if specified)
   if (state.camera && ZM.camera) {
@@ -439,7 +459,12 @@ function syncUIWithoutRestart(ZM) {
   
   // Update active palette button
   document.querySelectorAll('.palette-btn').forEach(btn => {
-    btn.classList.toggle('active', parseInt(btn.dataset.palette) === ZM.params.activePaletteIndex);
+    const paletteIndex = parseInt(btn.dataset.palette);
+    const shouldBeActive = paletteIndex === ZM.params.activePaletteIndex;
+    btn.classList.toggle('active', shouldBeActive);
+    if (shouldBeActive) {
+      console.log(`✓ Palette button ${paletteIndex} set as active`);
+    }
   });
   
   // Update camera controls display
@@ -495,6 +520,9 @@ function saveState(ZM, name) {
   ZM.stateManager.states.push(state);
   ZM.stateManager.activeStateId = state.id;
   saveStatesToStorage(ZM);
+  
+  // Save current params to main localStorage (this state is now active)
+  ZM.saveToLocalStorage();
   
   // Update UI if state panel exists
   if (ZM.updateStatePanel) {
@@ -571,6 +599,11 @@ function updateState(ZM, id) {
   // Capture current state
   const updatedState = captureCurrentState(ZM, existingState.name);
   
+  console.log(`📝 Updating state "${existingState.name}":`, {
+    activePaletteIndex: updatedState.params.activePaletteIndex,
+    palettesCount: updatedState.params.palettes?.length
+  });
+  
   // Keep the original ID and creation timestamp
   updatedState.id = existingState.id;
   updatedState.timestamp = Date.now(); // Update timestamp to show it was modified
@@ -579,6 +612,12 @@ function updateState(ZM, id) {
   ZM.stateManager.states[stateIndex] = updatedState;
   
   saveStatesToStorage(ZM);
+  
+  // If this is the active state, also update main localStorage to keep params in sync
+  if (id === ZM.stateManager.activeStateId) {
+    console.log('Updated active state - syncing main localStorage');
+    ZM.saveToLocalStorage();
+  }
   
   // Update UI if state panel exists
   if (ZM.updateStatePanel) {

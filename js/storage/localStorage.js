@@ -115,6 +115,25 @@ export function loadFromLocalStorage(defaultParams) {
 export function downloadJSON(ZM, format = 'project') {
   console.log('[Export] Format selected:', format);
   
+  // Force-update active state before exporting to capture any recent changes
+  if (ZM.cancelStateAutoUpdate) {
+    ZM.cancelStateAutoUpdate(); // Cancel any pending debounced update
+  }
+  if (ZM.stateManager?.activeStateId) {
+    console.log('[Export] Force-updating active state before export');
+    ZM.stateManager.update(ZM.stateManager.activeStateId);
+  }
+  
+  console.log('[Export] States to export:', ZM.stateManager?.states?.length);
+  console.log('[Export] Active state ID:', ZM.stateManager?.activeStateId);
+  
+  // Log each state's activePaletteIndex
+  if (ZM.stateManager?.states) {
+    ZM.stateManager.states.forEach((state, idx) => {
+      console.log(`[Export] State ${idx}: ${state.name}, activePaletteIndex:`, state.params?.activePaletteIndex);
+    });
+  }
+  
   // Handle "states" format - export each state as individual file
   if (format === 'states') {
     exportAllStatesAsFiles(ZM);

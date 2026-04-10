@@ -100,3 +100,13 @@
 #canvas-wrapper canvas.dragging {
   cursor: none !important;
 }
+
+/* Override cursor in fullscreen when hiding */
+.hide-cursor #canvas-wrapper canvas,
+body.hide-cursor #canvas-wrapper canvas,
+html.hide-cursor #canvas-wrapper canvas,
+:fullscreen.hide-cursor #canvas-wrapper canvas,
+:-moz-full-screen.hide-cursor #canvas-wrapper canvas,
+:-webkit-full-screen.hide-cursor #canvas-wrapper canvas {
+  cursor: none !important;
+}

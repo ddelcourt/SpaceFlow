@@ -236,6 +236,17 @@ async function init() {
     // Load initial preset for first-time users
     if (!hadSavedSettings) {
       await loadInitialPreset(ZM);
+    } else if (ZM.stateManager.activeStateId) {
+      // If we loaded from localStorage and there's an active state,
+      // ensure params match the active state (not stale localStorage params)
+      console.log('🔄 Syncing params with active state:', ZM.stateManager.activeStateId);
+      const activeState = ZM.stateManager.getStateById(ZM.stateManager.activeStateId);
+      if (activeState) {
+        // Restore state params to ensure palettes are in sync
+        Object.assign(ZM.params, JSON.parse(JSON.stringify(activeState.params)));
+        // Save back to localStorage to update stale data
+        ZM.saveToLocalStorage();
+      }
     }
   }
   
@@ -278,6 +289,46 @@ async function init() {
   // Setup input handlers
   setupKeyboardHandlers(ZM);
   setupMouseHandlers(ZM);
+  
+  // Setup cursor auto-hide in fullscreen
+  let cursorTimeout = null;
+  const hideCursor = () => {
+    if (document.fullscreenElement) {
+      document.body.classList.add('hide-cursor');
+    }
+  };
+  
+  const showCursor = () => {
+    document.body.classList.remove('hide-cursor');
+    if (cursorTimeout) {
+      clearTimeout(cursorTimeout);
+    }
+    if (document.fullscreenElement) {
+      cursorTimeout = setTimeout(hideCursor, 1000);
+    }
+  };
+  
+  document.addEventListener('mousemove', showCursor);
+  document.addEventListener('mousedown', showCursor);
+  
+  // Handle fullscreen change events
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement) {
+      // Entered fullscreen - ensure cursor is visible first, then start hide timer
+      document.body.classList.remove('hide-cursor');
+      if (cursorTimeout) {
+        clearTimeout(cursorTimeout);
+      }
+      cursorTimeout = setTimeout(hideCursor, 1000);
+    } else {
+      // Exited fullscreen - clear timer and show cursor
+      if (cursorTimeout) {
+        clearTimeout(cursorTimeout);
+        cursorTimeout = null;
+      }
+      document.body.classList.remove('hide-cursor');
+    }
+  });
   
   // Handle window resize
   window.addEventListener('resize', () => {

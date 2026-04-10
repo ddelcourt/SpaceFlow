@@ -35,6 +35,12 @@ body.ui-hidden * {
   cursor: none !important;
 }
 
+/* Hide cursor in fullscreen after inactivity */
+body.hide-cursor,
+body.hide-cursor * {
+  cursor: none !important;
+}
+
 #canvas-container {
   position: fixed;
   top: 0;

@@ -5,6 +5,45 @@
 import { triggerPaletteChange, getBackgroundColor } from '../core/colorUtils.js';
 import { OVERLAY_FILES, OVERLAY_FOLDER } from '../../config/overlayPresets.js';
 
+// Debounce timer for auto-updating active state
+let stateAutoUpdateTimer = null;
+
+/**
+ * Cancel any pending state auto-update
+ */
+function cancelStateAutoUpdate() {
+  if (stateAutoUpdateTimer) {
+    clearTimeout(stateAutoUpdateTimer);
+    stateAutoUpdateTimer = null;
+    console.log('🚫 Cancelled pending state auto-update');
+  }
+}
+
+/**
+ * Auto-update active state after changes (debounced)
+ */
+function scheduleStateAutoUpdate(ZM) {
+  if (!ZM.stateManager?.activeStateId) {
+    console.log('⏭️  Skipping state auto-update: no active state');
+    return;
+  }
+  
+  // Clear existing timer
+  if (stateAutoUpdateTimer) {
+    clearTimeout(stateAutoUpdateTimer);
+  }
+  
+  console.log(`⏱️  Scheduled state auto-update for ${ZM.stateManager.activeStateId} in 500ms`);
+  
+  // Schedule update after 500ms of no changes
+  stateAutoUpdateTimer = setTimeout(() => {
+    console.log(`🔄 Auto-updating active state ${ZM.stateManager.activeStateId}`);
+    ZM.stateManager.update(ZM.stateManager.activeStateId);
+    console.log('✓ Auto-update complete');
+    stateAutoUpdateTimer = null;
+  }, 500);
+}
+
 export function initializeUI(ZM) {
   // Load JSON configs for UI presets
   loadUIConfigs().then(() => {
@@ -24,6 +63,7 @@ export function initializeUI(ZM) {
   ZM.updatePaletteUI = () => updatePaletteUI(ZM);
   ZM.updateStatePanel = () => updateStatePanel(ZM);
   ZM.showToast = (message, type) => showToast(message, type);
+  ZM.cancelStateAutoUpdate = cancelStateAutoUpdate; // Expose to other modules
 }
 
 /**
@@ -440,6 +480,9 @@ function setupPaletteUI(ZM) {
       updatePaletteUI(ZM);
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
+      
+      // Auto-update active state (debounced)
+      scheduleStateAutoUpdate(ZM);
     });
   });
   
@@ -453,6 +496,9 @@ function setupPaletteUI(ZM) {
       ZM.params.palettes[ZM.params.activePaletteIndex][slotIndex].rgb = rgb;
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
+      
+      // Auto-update active state (debounced)
+      scheduleStateAutoUpdate(ZM);
     });
   });
   
@@ -476,6 +522,9 @@ function setupPaletteUI(ZM) {
       activePalette[slotIndex].role = newRole;
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
+      
+      // Auto-update active state (debounced)
+      scheduleStateAutoUpdate(ZM);
     });
   });
 }
@@ -484,7 +533,10 @@ function setupPaletteUI(ZM) {
  * Update palette UI from current params
  */
 function updatePaletteUI(ZM) {
-  const activePalette = ZM.params.palettes[ZM.params.activePaletteIndex];
+  const activePaletteIndex = ZM.params.activePaletteIndex;
+  const activePalette = ZM.params.palettes[activePaletteIndex];
+  
+  console.log(`updatePaletteUI: Loading palette ${activePaletteIndex}`, activePalette);
   
   activePalette.forEach((color, idx) => {
     // Update color picker
