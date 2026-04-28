@@ -36,9 +36,7 @@ import { exportSVG } from './export/SVGExporter.js';
 window.ZigMap26 = {
   // Parameters
   params: { 
-    ...DEFAULT_PARAMS,
-    // Player always uses window resolution, never framebuffer mode
-    framebufferMode: false
+    ...DEFAULT_PARAMS
   },
   
   // Constants
@@ -284,9 +282,6 @@ function loadPreset(jsonData) {
       // No states - use top-level params
       Object.assign(ZM.params, jsonData.params);
     }
-    
-    // Force fullscreen mode in player (disable framebuffer mode)
-    ZM.params.framebufferMode = false;
     
     // Initialize visualization if not already initialized
     if (!ZM.p5Instance) {
@@ -669,21 +664,25 @@ function showError(message) {
 function setupResizeHandler(ZM) {
   window.addEventListener('resize', () => {
     if (ZM.p5Instance) {
-      // Update dimensions
-      if (ZM.params.stereoscopicMode) {
-        ZM.W = Math.floor(window.innerWidth / 2);
-        ZM.H = window.innerHeight;
+      if (ZM.params.framebufferMode) {
+        // In framebuffer mode, re-run updateCanvasSize to recalculate the fit scale
+        if (ZM.updateCanvasSize) ZM.updateCanvasSize();
       } else {
-        ZM.W = window.innerWidth;
-        ZM.H = window.innerHeight;
+        // Update dimensions to match new window size
+        if (ZM.params.stereoscopicMode) {
+          ZM.W = Math.floor(window.innerWidth / 2);
+          ZM.H = window.innerHeight;
+        } else {
+          ZM.W = window.innerWidth;
+          ZM.H = window.innerHeight;
+        }
+
+        ZM.p5Instance.resizeCanvas(ZM.W, ZM.H);
+        if (ZM.p5InstanceRight) {
+          ZM.p5InstanceRight.resizeCanvas(ZM.W, ZM.H);
+        }
       }
-      
-      // Resize canvas
-      ZM.p5Instance.resizeCanvas(ZM.W, ZM.H);
-      if (ZM.p5InstanceRight) {
-        ZM.p5InstanceRight.resizeCanvas(ZM.W, ZM.H);
-      }
-      
+
       // Update overlay if visible
       const overlayImg = document.getElementById('overlay-image');
       if (overlayImg && ZM.params.overlayVisible) {

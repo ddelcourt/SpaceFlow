@@ -493,28 +493,15 @@ export function updateCanvasSize(ZM) {
     
     ZM.p5Instance.resizeCanvas(W, H);
     if (ZM.p5InstanceRight) ZM.p5InstanceRight.resizeCanvas(W, H);
-    
-    if (scale < 1) {
-      // Apply CSS transform for smooth scaling
-      const cssScale = `scale(${scale})`;
-      ZM.p5Instance.canvas.style.transform = cssScale;
-      ZM.p5Instance.canvas.style.transformOrigin = 'center center';
-      if (ZM.p5InstanceRight) {
-        ZM.p5InstanceRight.canvas.style.transform = cssScale;
-        ZM.p5InstanceRight.canvas.style.transformOrigin = 'center center';
-      }
-      
-      // Set explicit wrapper dimensions
-      const wrapperW = ZM.params.stereoscopicMode ? W * scale * 2 : W * scale;
-      wrapper.style.width = `${wrapperW}px`;
-      wrapper.style.height = `${H * scale}px`;
-    } else {
-      ZM.p5Instance.canvas.style.transform = 'none';
-      if (ZM.p5InstanceRight) ZM.p5InstanceRight.canvas.style.transform = 'none';
-      
-      wrapper.style.width = `${ZM.params.stereoscopicMode ? W * 2 : W}px`;
-      wrapper.style.height = `${H}px`;
-    }
+
+    // Clear any previously applied transform — CSS width/height: 100% fills the wrapper
+    ZM.p5Instance.canvas.style.transform = 'none';
+    if (ZM.p5InstanceRight) ZM.p5InstanceRight.canvas.style.transform = 'none';
+
+    // Size the wrapper to the scaled visual dimensions; CSS makes the canvas fill it
+    const wrapperW = ZM.params.stereoscopicMode ? W * scale * 2 : W * scale;
+    wrapper.style.width = `${wrapperW}px`;
+    wrapper.style.height = `${H * scale}px`;
   } else {
     // Set pixel density to native display density for smooth retina rendering
     ZM.p5Instance.pixelDensity(ZM.p5Instance.displayDensity());

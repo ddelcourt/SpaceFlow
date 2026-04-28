@@ -6,8 +6,18 @@
       "type": "Init"
     },
     {
+      "filename": "zigmap_TranitionUniverse.json",
+      "name": "zigmap_TranitionUniverse",
+      "type": "Preset"
+    },
+    {
       "filename": "zigmap_horizon26.json",
       "name": "zigmap_horizon26",
+      "type": "Preset"
+    },
+    {
+      "filename": "zigmap_horizon26_Scope.json",
+      "name": "zigmap_horizon26_Scope",
       "type": "Preset"
     },
     {
