@@ -108,6 +108,12 @@
       "action": "autoTriggerPrevious",
       "description": "Auto-Trigger: Go to previous state",
       "preventDefault": true
+    },
+    {
+      "key": "i",
+      "action": "toggleShortcutsToast",
+      "description": "Toggle keyboard shortcuts info panel",
+      "preventDefault": true
     }
   ]
 }

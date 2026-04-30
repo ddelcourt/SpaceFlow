@@ -475,14 +475,49 @@ function setupKeyboardHandlers(ZM) {
   
   // Setup fullscreen button
   const fullscreenBtn = document.getElementById('fullscreen-btn');
-  if (fullscreenBtn) {
+
+  // Helper: is the Fullscreen API available on this device?
+  const canFullscreen = !!(
+    document.documentElement.requestFullscreen ||
+    document.documentElement.webkitRequestFullscreen
+  );
+
+  // Helper: enter fullscreen cross-browser
+  const enterFullscreen = () => {
+    const el = document.documentElement;
+    if (el.requestFullscreen) return el.requestFullscreen();
+    if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+    return Promise.reject(new Error('Fullscreen not supported'));
+  };
+
+  // Helper: exit fullscreen cross-browser
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) return document.exitFullscreen();
+    if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+  };
+
+  // Helper: current fullscreen element cross-browser
+  const getFullscreenElement = () =>
+    document.fullscreenElement || document.webkitFullscreenElement || null;
+
+  // Hide the button entirely on iOS (fullscreen API not supported; use PWA standalone instead)
+  if (!canFullscreen) {
+    if (fullscreenBtn) fullscreenBtn.style.display = 'none';
+  }
+
+  // Also hide if already running as PWA standalone (no browser chrome to escape)
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    if (fullscreenBtn) fullscreenBtn.style.display = 'none';
+  }
+
+  if (fullscreenBtn && canFullscreen) {
     fullscreenBtn.addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
+      if (!getFullscreenElement()) {
+        enterFullscreen().catch(err => {
           console.log('Fullscreen request failed:', err);
         });
       } else {
-        document.exitFullscreen();
+        exitFullscreen();
       }
     });
   }
@@ -505,20 +540,20 @@ function setupKeyboardHandlers(ZM) {
   // document.addEventListener('mousemove', showCursor);
   // document.addEventListener('mousedown', showCursor);
   
-  // Handle fullscreen change events
-  document.addEventListener('fullscreenchange', () => {
-    if (document.fullscreenElement) {
-      // Entered fullscreen - hide cursor immediately and keep it hidden
+  // Handle fullscreen change events (standard + webkit)
+  const onFullscreenChange = () => {
+    if (getFullscreenElement()) {
       document.body.classList.add('hide-cursor');
     } else {
-      // Exited fullscreen - show cursor
       if (cursorTimeout) {
         clearTimeout(cursorTimeout);
         cursorTimeout = null;
       }
       document.body.classList.remove('hide-cursor');
     }
-  });
+  };
+  document.addEventListener('fullscreenchange', onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
   
   window.addEventListener('keydown', (e) => {
     // Skip if typing in input
@@ -529,12 +564,12 @@ function setupKeyboardHandlers(ZM) {
     // Enter: Toggle fullscreen
     if (e.code === 'Enter') {
       e.preventDefault();
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
+      if (!getFullscreenElement()) {
+        enterFullscreen().catch(err => {
           console.log('Fullscreen request failed:', err);
         });
       } else {
-        document.exitFullscreen();
+        exitFullscreen();
       }
     }
     

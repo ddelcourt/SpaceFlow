@@ -555,6 +555,7 @@
             <button class="lang-filter-btn active" data-lang-filter="en">English</button>
             <button class="lang-filter-btn" data-lang-filter="fr">Français</button>
           </div>
+          <button id="doc-shortcuts-btn" class="about-btn">Shortcut Keys</button>
           <button id="doc-readme-en" class="about-btn" data-lang="en">Read me</button>
           <button id="doc-readme-fr" class="about-btn hidden" data-lang="fr">Lisez-moi</button>
           <button id="doc-manual-en" class="about-btn" data-lang="en">User Manual</button>
@@ -579,6 +580,34 @@
 
   <!-- Main Application Module -->
   <script type="module" src="js/main.js"></script>
+
+  <!-- Keyboard Shortcuts Toast -->
+  <div id="shortcuts-toast" class="shortcuts-toast">
+    <div class="shortcuts-toast-inner">
+      <h3 class="shortcuts-toast-title">Keyboard Shortcuts</h3>
+      <div class="shortcuts-toast-grid">
+        <div class="shortcuts-toast-item"><kbd>Tab</kbd><span>Toggle controls panel</span></div>
+        <div class="shortcuts-toast-item"><kbd>Enter</kbd><span>Toggle fullscreen</span></div>
+        <div class="shortcuts-toast-item"><kbd>Space</kbd><span>Play / Pause auto-trigger</span></div>
+        <div class="shortcuts-toast-item"><kbd>←</kbd><kbd>→</kbd><span>Navigate states</span></div>
+        <div class="shortcuts-toast-item"><kbd>P</kbd><span>Export PNG</span></div>
+        <div class="shortcuts-toast-item"><kbd>S</kbd><span>Export SVG</span></div>
+        <div class="shortcuts-toast-item"><kbd>D</kbd><span>Export depth map</span></div>
+        <div class="shortcuts-toast-item"><kbd>⌘/Ctrl</kbd><kbd>S</kbd><span>Save settings JSON</span></div>
+        <div class="shortcuts-toast-item"><kbd>R</kbd><span>Reset camera</span></div>
+        <div class="shortcuts-toast-item"><kbd>0</kbd><span>Reset zoom</span></div>
+        <div class="shortcuts-toast-item"><kbd>T</kbd><span>Toggle random thickness</span></div>
+        <div class="shortcuts-toast-item"><kbd>M</kbd><span>Toggle random speed</span></div>
+        <div class="shortcuts-toast-item"><kbd>Y</kbd><span>Toggle stereoscopic view</span></div>
+        <div class="shortcuts-toast-item"><kbd>1</kbd><kbd>–</kbd><kbd>4</kbd><span>Select color palette</span></div>
+        <div class="shortcuts-toast-item"><kbd>I</kbd><span style="color: #7dd3fc;">Toggle this info panel</span></div>
+      </div>
+      <div class="shortcuts-toast-footer">
+        <div class="shortcuts-toast-timer"><div class="shortcuts-toast-timer-bar"></div></div>
+        <button id="shortcuts-toast-ok" class="shortcuts-toast-ok">OK</button>
+      </div>
+    </div>
+  </div>
 
   <!-- PWA Service Worker -->
   <script>

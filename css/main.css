@@ -52,3 +52,129 @@ body.hide-cursor * {
   justify-content: center;
   align-items: center;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STARTUP KEYBOARD SHORTCUTS TOAST
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.shortcuts-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4000;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.shortcuts-toast.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.shortcuts-toast-inner {
+  background: rgba(12, 12, 16, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 28px 32px 24px;
+  max-width: 580px;
+  width: 90vw;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+}
+
+.shortcuts-toast-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+}
+
+.shortcuts-toast-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+  margin-bottom: 24px;
+}
+
+.shortcuts-toast-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #bbb;
+}
+
+.shortcuts-toast-item span {
+  margin-left: 2px;
+}
+
+.shortcuts-toast-item kbd {
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #444;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  min-width: 26px;
+  text-align: center;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.shortcuts-toast-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.shortcuts-toast-timer {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.shortcuts-toast-timer-bar {
+  height: 100%;
+  width: 100%;
+  background: #00ff00;
+  border-radius: 2px;
+  transform-origin: left;
+  animation: shortcuts-timer 25s linear forwards;
+}
+
+@keyframes shortcuts-timer {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+.shortcuts-toast-ok {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 36px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.shortcuts-toast-ok:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.shortcuts-toast-ok:active {
+  background: rgba(255, 255, 255, 0.05);
+}

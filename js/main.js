@@ -337,7 +337,66 @@ async function init() {
   });
   
   console.log('ZigMap26 initialized ✓');
+
+  // Show keyboard shortcuts toast on startup
+  showShortcutsToast(true);
+
+  // Shortcut Keys button in Documentation panel
+  const shortcutsBtn = document.getElementById('doc-shortcuts-btn');
+  if (shortcutsBtn) shortcutsBtn.addEventListener('click', toggleShortcutsToast);
 }
+
+/**
+ * Show the startup keyboard shortcuts toast.
+ * @param {boolean} [withCountdown=true] - If true, auto-dismisses after 25s.
+ */
+function showShortcutsToast(withCountdown = true) {
+  const toast = document.getElementById('shortcuts-toast');
+  if (!toast) return;
+
+  const okBtn = document.getElementById('shortcuts-toast-ok');
+  const timerBar = toast.querySelector('.shortcuts-toast-timer-bar');
+  let timer = null;
+
+  const dismiss = () => {
+    if (timer) clearTimeout(timer);
+    toast.classList.add('hidden');
+  };
+
+  // Replace OK button to clear any previous listener
+  if (okBtn) {
+    const fresh = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(fresh, okBtn);
+    fresh.addEventListener('click', dismiss);
+  }
+
+  toast.classList.remove('hidden');
+
+  if (withCountdown) {
+    if (timerBar) {
+      timerBar.style.display = 'block';
+      timerBar.style.animation = 'none';
+      timerBar.offsetWidth; // reflow
+      timerBar.style.animation = '';
+    }
+    timer = setTimeout(dismiss, 25000);
+  } else {
+    if (timerBar) timerBar.style.display = 'none';
+  }
+}
+
+function toggleShortcutsToast() {
+  const toast = document.getElementById('shortcuts-toast');
+  if (!toast) return;
+  if (toast.classList.contains('hidden')) {
+    showShortcutsToast(false);
+  } else {
+    toast.classList.add('hidden');
+  }
+}
+
+// Expose on ZM so KeyboardHandler can call it
+window.ZigMap26.toggleShortcutsToast = toggleShortcutsToast;
 
 // Start application when DOM is ready
 if (document.readyState === 'loading') {

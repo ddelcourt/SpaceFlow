@@ -243,6 +243,10 @@ function executeAction(action, ZM) {
       if (ZM.stateManager && ZM.stateManager.updateAutoTriggerStatus) {
         ZM.stateManager.updateAutoTriggerStatus();
       }
+    },
+
+    toggleShortcutsToast: () => {
+      if (ZM.toggleShortcutsToast) ZM.toggleShortcutsToast();
     }
   };
   
