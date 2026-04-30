@@ -150,6 +150,7 @@ export function exportPNG(ZM) {
     a.click();
     console.log('✅ PNG download triggered:', a.download);
     URL.revokeObjectURL(url);
+    if (ZM && ZM.showToast) ZM.showToast('✓ PNG exported', 'success');
   }, 'image/png');
 }
 

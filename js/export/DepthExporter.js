@@ -319,5 +319,6 @@ function renderDepthMap(ZM) {
     a.download = `zigmap26-depthmap-${ts}.png`;
     a.click();
     URL.revokeObjectURL(url);
+    if (ZM && ZM.showToast) ZM.showToast('✓ Depth map exported', 'success');
   }, 'image/png');
 }

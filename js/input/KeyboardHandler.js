@@ -45,6 +45,12 @@ export function setupKeyboardHandlers(ZM) {
             
             // Execute action
             executeAction(shortcut.action, ZM);
+            // Show mini feedback toast (skip info-panel toggle — it's self-evident)
+            if (shortcut.action !== 'toggleShortcutsToast' && ZM.showToast) {
+              const suffix = getToggleSuffix(shortcut.action, ZM);
+              const type = suffix.includes('ON') || suffix.includes('PLAYING') ? 'success' : 'info';
+              ZM.showToast(shortcut.description + suffix, type);
+            }
             break;
           }
         }
@@ -254,5 +260,31 @@ function executeAction(action, ZM) {
     actions[action]();
   } else {
     console.warn('Unknown keyboard action:', action);
+  }
+}
+
+/**
+ * Returns " — ON" / " — OFF" (or similar) for toggle actions, empty string for non-toggles.
+ */
+function getToggleSuffix(action, ZM) {
+  const on  = ' \u2014 ON';
+  const off = ' \u2014 OFF';
+  switch (action) {
+    case 'toggleRandomThickness':
+      return ZM.params.randomThickness ? on : off;
+    case 'toggleRandomSpeed':
+      return ZM.params.randomSpeed ? on : off;
+    case 'toggleStereoMode':
+      return ZM.params.stereoscopicMode ? on : off;
+    case 'toggleFramebuffer':
+      return ZM.params.framebufferMode ? on : off;
+    case 'toggleControls':
+      return document.querySelector('.controls')?.classList.contains('hidden') ? off : on;
+    case 'toggleFullscreen':
+      return (document.fullscreenElement || document.webkitFullscreenElement) ? on : off;
+    case 'autoTriggerPlayPause':
+      return ZM.autoTriggerTimer?.paused ? ' \u2014 PAUSED' : ' \u2014 PLAYING';
+    default:
+      return '';
   }
 }

@@ -255,7 +255,9 @@ async function init() {
   
   // Initialize UI
   initializeUI(ZM);
-  
+  // Re-assign after UIController overrides it — mini-toast is the canonical ZM.showToast
+  ZM.showToast = showMiniToast;
+
   // Initialize auto-trigger status display
   if (ZM.stateManager && ZM.stateManager.updateAutoTriggerStatus) {
     ZM.stateManager.updateAutoTriggerStatus();
@@ -397,6 +399,34 @@ function toggleShortcutsToast() {
 
 // Expose on ZM so KeyboardHandler can call it
 window.ZigMap26.toggleShortcutsToast = toggleShortcutsToast;
+
+/**
+ * Show a mini notification toast at the bottom of the screen.
+ * @param {string} message
+ * @param {'success'|'error'|'info'|''} [type='']
+ * @param {number} [duration=2200]
+ */
+function showMiniToast(message, type = '', duration = 2200) {
+  let container = document.getElementById('mini-toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'mini-toast-container';
+    document.body.appendChild(container);
+  }
+
+  const el = document.createElement('div');
+  el.className = 'mini-toast' + (type ? ' ' + type : '');
+  el.textContent = message;
+  container.appendChild(el);
+
+  setTimeout(() => {
+    el.classList.add('fade-out');
+    el.addEventListener('animationend', () => el.remove());
+  }, duration);
+}
+
+// Expose showToast on ZM
+window.ZigMap26.showToast = showMiniToast;
 
 // Start application when DOM is ready
 if (document.readyState === 'loading') {

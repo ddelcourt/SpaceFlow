@@ -178,3 +178,49 @@ body.hide-cursor * {
 .shortcuts-toast-ok:active {
   background: rgba(255, 255, 255, 0.05);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MINI NOTIFICATION TOAST
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#mini-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.mini-toast {
+  background: rgba(40, 40, 45, 0.95);
+  border: 1px solid rgba(100, 150, 255, 0.5);
+  border-radius: 6px;
+  padding: 12px 16px;
+  color: #e0e0e0;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: mini-toast-in 0.3s ease-out forwards;
+  pointer-events: none;
+}
+
+.mini-toast.fade-out {
+  animation: mini-toast-out 0.3s ease-out forwards;
+}
+
+@keyframes mini-toast-in {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes mini-toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(40px); }
+}
