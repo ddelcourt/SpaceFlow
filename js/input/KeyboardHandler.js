@@ -281,7 +281,8 @@ function getToggleSuffix(action, ZM) {
     case 'toggleControls':
       return document.querySelector('.controls')?.classList.contains('hidden') ? off : on;
     case 'toggleFullscreen':
-      return (document.fullscreenElement || document.webkitFullscreenElement) ? on : off;
+      // requestFullscreen is async — fullscreenElement still reflects the OLD state here, so invert
+      return (document.fullscreenElement || document.webkitFullscreenElement) ? off : on;
     case 'autoTriggerPlayPause':
       return ZM.autoTriggerTimer?.paused ? ' \u2014 PAUSED' : ' \u2014 PLAYING';
     default:
