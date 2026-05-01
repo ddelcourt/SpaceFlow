@@ -33,86 +33,86 @@
     {
       "key": "s",
       "action": "downloadJSON",
-      "description": "Save settings JSON (Cmd/Ctrl+S)",
+      "description": "Settings Saved as JSON",
       "preventDefault": true,
       "ctrl": true
     },
     {
       "key": "R",
       "action": "resetCamera",
-      "description": "Reset camera",
+      "description": "Reset Camera",
       "preventDefault": true
     },
     {
       "key": "0",
       "action": "resetZoom",
-      "description": "Reset zoom to default",
+      "description": "Reset Zoom",
       "preventDefault": true
     },
     {
       "key": "t",
       "action": "toggleRandomThickness",
-      "description": "Toggle random thickness",
+      "description": "Random thickness",
       "preventDefault": true
     },
     {
       "key": "m",
       "action": "toggleRandomSpeed",
-      "description": "Toggle random speed",
+      "description": "Random speed",
       "preventDefault": true
     },
     {
       "key": "1",
       "action": "selectPalette1",
-      "description": "Select Color Palette 1",
+      "description": "Color Palette 1",
       "preventDefault": true
     },
     {
       "key": "2",
       "action": "selectPalette2",
-      "description": "Select Color Palette 2",
+      "description": "Color Palette 2",
       "preventDefault": true
     },
     {
       "key": "3",
       "action": "selectPalette3",
-      "description": "Select Color Palette 3",
+      "description": "Color Palette 3",
       "preventDefault": true
     },
     {
       "key": "4",
       "action": "selectPalette4",
-      "description": "Select Color Palette 4",
+      "description": "Color Palette 4",
       "preventDefault": true
     },
     {
       "key": "y",
       "action": "toggleStereoMode",
-      "description": "Toggle stereoscopic view",
+      "description": "Stereoscopic view",
       "preventDefault": true
     },
     {
       "key": " ",
       "action": "autoTriggerPlayPause",
-      "description": "Auto-Trigger: Play/Pause",
+      "description": "States Player",
       "preventDefault": true
     },
     {
       "key": "ArrowRight",
       "action": "autoTriggerSkip",
-      "description": "Auto-Trigger: Skip to next state",
+      "description": "Next state",
       "preventDefault": true
     },
     {
       "key": "ArrowLeft",
       "action": "autoTriggerPrevious",
-      "description": "Auto-Trigger: Go to previous state",
+      "description": "Previous state",
       "preventDefault": true
     },
     {
       "key": "i",
       "action": "toggleShortcutsToast",
-      "description": "Toggle keyboard shortcuts info panel",
+      "description": "Shortcuts info",
       "preventDefault": true
     }
   ]
