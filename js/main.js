@@ -404,9 +404,10 @@ window.ZigMap26.toggleShortcutsToast = toggleShortcutsToast;
  * Show a mini notification toast at the bottom of the screen.
  * @param {string} message
  * @param {'success'|'error'|'info'|''} [type='']
- * @param {number} [duration=2200]
+ * @param {number} [duration=4400]
+ * @param {Node|null} [node=null] Optional DOM node appended after the message text
  */
-function showMiniToast(message, type = '', duration = 2200) {
+function showMiniToast(message, type = '', duration = 4400, node = null) {
   let container = document.getElementById('mini-toast-container');
   if (!container) {
     container = document.createElement('div');
@@ -416,12 +417,37 @@ function showMiniToast(message, type = '', duration = 2200) {
 
   const el = document.createElement('div');
   el.className = 'mini-toast' + (type ? ' ' + type : '');
-  el.textContent = message;
+  if (message) {
+    const text = document.createElement('span');
+    text.textContent = message;
+    el.appendChild(text);
+  }
+  if (node) el.appendChild(node);
   container.appendChild(el);
 
   setTimeout(() => {
-    el.classList.add('fade-out');
-    el.addEventListener('animationend', () => el.remove());
+    // Cancel the CSS entry animation (its 'forwards' fill would block opacity changes)
+    el.style.animation = 'none';
+    el.style.opacity = '1'; // pin current value before transitioning
+    el.offsetHeight; // force reflow
+    // Phase 1: fade out
+    el.style.transition = 'opacity 0.35s ease-out';
+    el.style.opacity = '0';
+    el.addEventListener('transitionend', () => {
+      // Phase 2: collapse height so remaining toasts slide up smoothly
+      const h = el.offsetHeight;
+      el.style.height = h + 'px';
+      el.style.overflow = 'hidden';
+      el.offsetHeight; // force reflow
+      el.style.transition = 'height 0.3s ease-in-out, padding 0.3s ease-in-out, margin 0.3s ease-in-out';
+      el.style.height = '0';
+      el.style.paddingTop = '0';
+      el.style.paddingBottom = '0';
+      el.style.marginBottom = '-8px';
+      el.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'height') el.remove();
+      }, { once: true });
+    }, { once: true });
   }, duration);
 }
 

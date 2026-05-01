@@ -498,8 +498,43 @@ function getPresetForDimensions(w, h) {
 }
 
 /**
- * Setup color swatches
+ * Build a swatches DOM node for the active palette (or a given palette index).
+ * Used by both palette selector buttons and color/role change notifications.
  */
+function buildPaletteSwatchNode(ZM, paletteIndex) {
+  const swatches = document.createElement('span');
+  swatches.style.cssText = 'display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle;';
+  const palette = ZM.params.palettes[paletteIndex];
+  palette.forEach(slot => {
+    const s = document.createElement('span');
+    const [r, g, b] = slot.rgb;
+    const border = slot.role === 'background'
+      ? '2px solid rgba(200,200,200,0.6)'
+      : '1px solid rgba(255,255,255,0.15)';
+    s.style.cssText = `position:relative;display:inline-block;width:14px;height:14px;border-radius:3px;background:rgb(${r},${g},${b});border:${border};flex-shrink:0;`;
+    if (slot.role === 'none') {
+      const dim = document.createElement('span');
+      dim.style.cssText = 'position:absolute;inset:0;background:rgba(0,0,0,0.75);border-radius:2px;';
+      s.appendChild(dim);
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 14 14');
+      svg.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;';
+      [['2','2','12','12'],['12','2','2','12']].forEach(([x1,y1,x2,y2]) => {
+        const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        l.setAttribute('x1', x1); l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+        l.setAttribute('stroke', 'rgba(255,255,255,0.75)');
+        l.setAttribute('stroke-width', '1.5');
+        l.setAttribute('stroke-linecap', 'round');
+        svg.appendChild(l);
+      });
+      s.appendChild(svg);
+    }
+    swatches.appendChild(s);
+  });
+  return swatches;
+}
+
 /**
  * Setup palette UI controls
  */
@@ -521,7 +556,9 @@ function setupPaletteUI(ZM) {
       updatePaletteUI(ZM);
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
-      if (ZM.showToast) ZM.showToast(`Color Palette ${paletteIndex + 1} selected`);
+      if (ZM.showToast) {
+        ZM.showToast(`Palette ${paletteIndex + 1}`, '', 4400, buildPaletteSwatchNode(ZM, paletteIndex));
+      }
 
       // Auto-update active state (debounced)
       scheduleStateAutoUpdate(ZM);
@@ -539,6 +576,11 @@ function setupPaletteUI(ZM) {
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
       
+      if (ZM.showToast) {
+        const idx = ZM.params.activePaletteIndex;
+        ZM.showToast(`Palette ${idx + 1}`, '', 4400, buildPaletteSwatchNode(ZM, idx));
+      }
+
       // Auto-update active state (debounced)
       scheduleStateAutoUpdate(ZM);
     });
@@ -564,6 +606,11 @@ function setupPaletteUI(ZM) {
       activePalette[slotIndex].role = newRole;
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
+
+      if (ZM.showToast) {
+        const idx = ZM.params.activePaletteIndex;
+        ZM.showToast(`Palette ${idx + 1}`, '', 4400, buildPaletteSwatchNode(ZM, idx));
+      }
       
       // Auto-update active state (debounced)
       scheduleStateAutoUpdate(ZM);

@@ -3,7 +3,7 @@
 // Manage multiple states/states of the application
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { triggerPaletteChange } from '../core/colorUtils.js';
+import { triggerPaletteChange, getBackgroundColor } from '../core/colorUtils.js';
 
 const STATES_STORAGE_KEY = 'ZigMap26_states';
 const ACTIVE_STATE_KEY = 'ZigMap26_activeState';
@@ -326,19 +326,22 @@ function restoreState(ZM, state, instant = false) {
     ZM.params.geometryScale = state.params.geometryScale;
   }
   
-  // Check if palette changed - trigger smooth transition (unless instant mode)
-  const paletteChanged = oldParams.activePaletteIndex !== ZM.params.activePaletteIndex ||
-                         JSON.stringify(oldParams.palettes) !== JSON.stringify(ZM.params.palettes);
-  
-  console.log('Palette changed?', paletteChanged);
-  
-  if (paletteChanged && !instant) {
-    // Smooth palette transition
+  // Always apply the state's palette — both to ensure new lines use the correct
+  // colors AND to transition existing lines to the restored palette.
+  if (instant) {
+    // Instant mode: snap background directly, then trigger palette so lines update
+    if (ZM.bgTransition) {
+      const newBg = getBackgroundColor(ZM.params);
+      ZM.bgTransition.current = [...newBg];
+      ZM.bgTransition.start = [...newBg];
+      ZM.bgTransition.target = [...newBg];
+      ZM.bgTransition.progress = 1.0;
+      ZM.bgTransition.isTransitioning = false;
+    }
     triggerPaletteChange(ZM);
-  } else if (paletteChanged && instant) {
-    // Instant mode: directly apply palette without transition
-    console.log('Instant palette change - no transition');
-    // The palette is already set in ZM.params, just update UI
+  } else {
+    // Normal mode: smooth palette transition
+    triggerPaletteChange(ZM);
   }
   
   // Update all UI elements WITHOUT triggering events
