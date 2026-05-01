@@ -88,24 +88,24 @@ async function loadUIConfigs() {
  */
 function initializeAllControls(ZM) {
   // Standard sliders
-  wireSlider(ZM, 'thickness', 'thickness-val', 'lineThickness', 1);
-  wireSlider(ZM, 'emit-rate', 'emit-rate-val', 'emitRate', 1);
-  wireSlider(ZM, 'speed', 'speed-val', 'speed');
-  wireSlider(ZM, 'emitter-rotation', 'emitter-rotation-val', 'emitterRotation');
-  wireSlider(ZM, 'geometry-scale', 'geometry-scale-val', 'geometryScale');
-  wireSlider(ZM, 'fade-duration', 'fade-duration-val', 'fadeDuration');
-  wireSlider(ZM, 'color-slot-z-offset', 'color-slot-z-offset-val', 'colorSlotZOffset');
-  wireSlider(ZM, 'ambient-speed-master', 'ambient-speed-master-val', 'ambientSpeedMaster');
-  wireSlider(ZM, 'video-duration', 'video-duration-val', 'videoDuration');
-  wireSlider(ZM, 'video-fps', 'video-fps-val', 'videoFPS');
-  wireSlider(ZM, 'eye-separation', 'eye-separation-val', 'eyeSeparation');
-  wireSlider(ZM, 'state-transition-duration', 'state-transition-duration-val', 'stateTransitionDuration', 1);
-  wireSlider(ZM, 'color-transition-duration', 'color-transition-duration-val', 'colorTransitionDuration', 1);
-  wireSlider(ZM, 'auto-trigger-frequency', 'auto-trigger-frequency-val', 'autoTriggerFrequency');
-  wireSlider(ZM, 'overlay-scale', 'overlay-scale-val', 'overlayScale');
-  wireSlider(ZM, 'overlay-opacity', 'overlay-opacity-val', 'overlayOpacity');
-  wireSlider(ZM, 'overlay-x', 'overlay-x-val', 'overlayX');
-  wireSlider(ZM, 'overlay-y', 'overlay-y-val', 'overlayY');
+  wireSlider(ZM, 'thickness', 'thickness-val', 'lineThickness', 1, 'Thickness');
+  wireSlider(ZM, 'emit-rate', 'emit-rate-val', 'emitRate', 1, 'Emit Rate');
+  wireSlider(ZM, 'speed', 'speed-val', 'speed', 0, 'Speed');
+  wireSlider(ZM, 'emitter-rotation', 'emitter-rotation-val', 'emitterRotation', 0, 'Emitter Rotation');
+  wireSlider(ZM, 'geometry-scale', 'geometry-scale-val', 'geometryScale', 0, 'Geometry Scale');
+  wireSlider(ZM, 'fade-duration', 'fade-duration-val', 'fadeDuration', 0, 'Fade Duration');
+  wireSlider(ZM, 'color-slot-z-offset', 'color-slot-z-offset-val', 'colorSlotZOffset', 0, 'Color Slot Z Offset');
+  wireSlider(ZM, 'ambient-speed-master', 'ambient-speed-master-val', 'ambientSpeedMaster', 0, 'Ambient Speed');
+  wireSlider(ZM, 'video-duration', 'video-duration-val', 'videoDuration', 0, 'Video Duration');
+  wireSlider(ZM, 'video-fps', 'video-fps-val', 'videoFPS', 0, 'Video FPS');
+  wireSlider(ZM, 'eye-separation', 'eye-separation-val', 'eyeSeparation', 0, 'Eye Separation');
+  wireSlider(ZM, 'state-transition-duration', 'state-transition-duration-val', 'stateTransitionDuration', 1, 'State Transition');
+  wireSlider(ZM, 'color-transition-duration', 'color-transition-duration-val', 'colorTransitionDuration', 1, 'Color Transition');
+  wireSlider(ZM, 'auto-trigger-frequency', 'auto-trigger-frequency-val', 'autoTriggerFrequency', 0, 'Auto-Trigger Frequency');
+  wireSlider(ZM, 'overlay-scale', 'overlay-scale-val', 'overlayScale', 0, 'Overlay Scale');
+  wireSlider(ZM, 'overlay-opacity', 'overlay-opacity-val', 'overlayOpacity', 0, 'Overlay Opacity');
+  wireSlider(ZM, 'overlay-x', 'overlay-x-val', 'overlayX', 0, 'Overlay X');
+  wireSlider(ZM, 'overlay-y', 'overlay-y-val', 'overlayY', 0, 'Overlay Y');
   
   // FOV with distance compensation
   setupFOVControl(ZM);
@@ -120,11 +120,11 @@ function initializeAllControls(ZM) {
   setupRangeControl(ZM, 'speed-range', 'speedRange', '%');
   
   // Checkboxes
-  wireCheckbox(ZM, 'random-thickness', 'randomThickness');
-  wireCheckbox(ZM, 'random-speed', 'randomSpeed');
-  wireCheckbox(ZM, 'depth-invert', 'depthInvert');
-  wireCheckbox(ZM, 'auto-trigger-states', 'autoTriggerStates');
-  wireCheckbox(ZM, 'overlay-visible', 'overlayVisible');
+  wireCheckbox(ZM, 'random-thickness', 'randomThickness', 'Random Thickness');
+  wireCheckbox(ZM, 'random-speed', 'randomSpeed', 'Random Speed');
+  wireCheckbox(ZM, 'depth-invert', 'depthInvert', 'Depth Map Invert');
+  wireCheckbox(ZM, 'auto-trigger-states', 'autoTriggerStates', 'Auto-Trigger States');
+  wireCheckbox(ZM, 'overlay-visible', 'overlayVisible', 'Show Overlay');
   
   // Stereoscopic controls
   setupStereoscopicControls(ZM);
@@ -151,7 +151,7 @@ function initializeAllControls(ZM) {
 /**
  * Wire a simple slider to a parameter
  */
-function wireSlider(ZM, sliderId, displayId, paramKey, decimals = 0) {
+function wireSlider(ZM, sliderId, displayId, paramKey, decimals = 0, label = '') {
   const slider = document.getElementById(sliderId);
   const display = document.getElementById(displayId);
   
@@ -187,12 +187,21 @@ function wireSlider(ZM, sliderId, displayId, paramKey, decimals = 0) {
     
     ZM.saveToLocalStorage();
   });
+
+  if (label) {
+    slider.addEventListener('pointerup', () => {
+      if (ZM.showToast) {
+        const val = decimals > 0 ? ZM.params[paramKey].toFixed(decimals) : ZM.params[paramKey];
+        ZM.showToast(`${label}: ${val}`);
+      }
+    });
+  }
 }
 
 /**
  * Wire a checkbox to a parameter
  */
-function wireCheckbox(ZM, checkboxId, paramKey) {
+function wireCheckbox(ZM, checkboxId, paramKey, label) {
   const checkbox = document.getElementById(checkboxId);
   if (!checkbox) return;
   
@@ -201,6 +210,10 @@ function wireCheckbox(ZM, checkboxId, paramKey) {
     ZM.params[paramKey] = e.target.checked;
     ZM.saveToLocalStorage();
     
+    if (label && ZM.showToast) {
+      ZM.showToast(label + (e.target.checked ? ' — ON' : ' — OFF'));
+    }
+
     // Special handling for auto-trigger states checkbox
     if (checkboxId === 'auto-trigger-states') {
       // Reset timer when toggled
@@ -252,6 +265,10 @@ function setupFOVControl(ZM) {
     display.textContent = newFOV.toFixed(2);
     ZM.saveToLocalStorage();
   });
+
+  slider.addEventListener('pointerup', () => {
+    if (ZM.showToast) ZM.showToast(`FOV: ${ZM.params.fov.toFixed(2)}`);
+  });
 }
 
 /**
@@ -275,11 +292,17 @@ function setupClippingPlanes(ZM) {
     nearDisplay.textContent = ZM.params.near.toFixed(2);
     ZM.saveToLocalStorage();
   });
+  nearSlider.addEventListener('pointerup', () => {
+    if (ZM.showToast) ZM.showToast(`Near: ${ZM.params.near.toFixed(2)}`);
+  });
   
   farSlider.addEventListener('input', () => {
     ZM.params.far = parseFloat(farSlider.value);
     farDisplay.textContent = ZM.params.far;
     ZM.saveToLocalStorage();
+  });
+  farSlider.addEventListener('pointerup', () => {
+    if (ZM.showToast) ZM.showToast(`Far: ${ZM.params.far}`);
   });
 }
 
@@ -310,6 +333,9 @@ function setupRangeControl(ZM, baseId, paramBase, suffix = '') {
     minDisplay.textContent = minSlider.value + suffix;
     ZM.saveToLocalStorage();
   });
+  minSlider.addEventListener('pointerup', () => {
+    if (ZM.showToast) ZM.showToast(`${baseId} min: ${ZM.params[minKey]}${suffix}`);
+  });
   
   maxSlider.addEventListener('input', () => {
     if (+maxSlider.value < +minSlider.value) {
@@ -318,6 +344,9 @@ function setupRangeControl(ZM, baseId, paramBase, suffix = '') {
     ZM.params[maxKey] = +maxSlider.value;
     maxDisplay.textContent = maxSlider.value + suffix;
     ZM.saveToLocalStorage();
+  });
+  maxSlider.addEventListener('pointerup', () => {
+    if (ZM.showToast) ZM.showToast(`${baseId} max: ${ZM.params[maxKey]}${suffix}`);
   });
 }
 
@@ -364,6 +393,7 @@ function setupStereoscopicControls(ZM) {
     }, 50);
     
     ZM.saveToLocalStorage();
+    if (ZM.showToast) ZM.showToast('Stereoscopic View (VR)' + (e.target.checked ? ' — ON' : ' — OFF'));
   });
 }
 
@@ -384,6 +414,10 @@ function setupFramebufferControls(ZM) {
     ZM.params.framebufferMode = e.target.checked;
     ZM.updateCanvasSize();
     ZM.saveToLocalStorage();
+    if (ZM.showToast) {
+      const dimStr = e.target.checked ? ` — ON (${ZM.params.framebufferWidth}×${ZM.params.framebufferHeight})` : ' — OFF';
+      ZM.showToast('Framebuffer Resolution' + dimStr);
+    }
   });
   
   // Preset selector
@@ -398,6 +432,7 @@ function setupFramebufferControls(ZM) {
         widthInput.value = w;
         heightInput.value = h;
         if (ZM.params.framebufferMode) ZM.updateCanvasSize();
+        if (ZM.showToast) ZM.showToast(`Framebuffer: ${w}×${h}`);
       }
       ZM.saveToLocalStorage();
     });
@@ -416,6 +451,9 @@ function setupFramebufferControls(ZM) {
       presetSelect.value = ZM.params.framebufferPreset;
       ZM.saveToLocalStorage();
     });
+    widthInput.addEventListener('change', () => {
+      if (ZM.showToast) ZM.showToast(`Framebuffer: ${ZM.params.framebufferWidth}×${ZM.params.framebufferHeight}`);
+    });
   }
   
   if (heightInput) {
@@ -429,6 +467,9 @@ function setupFramebufferControls(ZM) {
       );
       presetSelect.value = ZM.params.framebufferPreset;
       ZM.saveToLocalStorage();
+    });
+    heightInput.addEventListener('change', () => {
+      if (ZM.showToast) ZM.showToast(`Framebuffer: ${ZM.params.framebufferWidth}×${ZM.params.framebufferHeight}`);
     });
   }
 }
@@ -480,7 +521,8 @@ function setupPaletteUI(ZM) {
       updatePaletteUI(ZM);
       triggerPaletteChange(ZM);
       ZM.saveToLocalStorage();
-      
+      if (ZM.showToast) ZM.showToast(`Color Palette ${paletteIndex + 1} selected`);
+
       // Auto-update active state (debounced)
       scheduleStateAutoUpdate(ZM);
     });
@@ -585,6 +627,7 @@ function setupVideoFormatButtons(ZM) {
       btn.classList.add('active');
       ZM.params.videoFormat = btn.dataset.format;
       ZM.saveToLocalStorage();
+      if (ZM.showToast) ZM.showToast(`Video Format: ${btn.dataset.format.toUpperCase()}`);
     });
   });
 }
@@ -604,6 +647,7 @@ function setupFileSaveLoad(ZM) {
       const format = formatSelect ? formatSelect.value : 'project';
       console.log('[UI] Export button clicked, format:', format);
       ZM.downloadJSON(format);
+      if (ZM.showToast) ZM.showToast(`✓ JSON exported (${format})`, 'success');
     });
   }
   
@@ -930,8 +974,10 @@ function setupExportButtons(ZM) {
     videoBtn.addEventListener('click', () => {
       if (ZM.isVideoRecording()) {
         ZM.stopVideoRecording();
+        if (ZM.showToast) ZM.showToast('Video Recording — OFF');
       } else {
         ZM.startVideoRecording();
+        if (ZM.showToast) ZM.showToast('Video Recording — ON');
       }
     });
     

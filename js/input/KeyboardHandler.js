@@ -277,7 +277,9 @@ function getToggleSuffix(action, ZM) {
     case 'toggleStereoMode':
       return ZM.params.stereoscopicMode ? on : off;
     case 'toggleFramebuffer':
-      return ZM.params.framebufferMode ? on : off;
+      return ZM.params.framebufferMode
+        ? ` — ON (${ZM.params.framebufferWidth}×${ZM.params.framebufferHeight})`
+        : off;
     case 'toggleControls':
       return document.querySelector('.controls')?.classList.contains('hidden') ? off : on;
     case 'toggleFullscreen':

@@ -551,6 +551,8 @@ function loadState(ZM, id, instant = false) {
   restoreState(ZM, state, instant);
   ZM.stateManager.activeStateId = id;
   saveActiveStateId(id);
+
+  if (ZM.showToast) ZM.showToast(`State: ${state.name}`);
   
   // Add to history (unless we're navigating through history)
   if (!ZM.stateHistory.isNavigating) {
@@ -1060,6 +1062,7 @@ function initializeAutoTriggerControls(ZM) {
         ZM.autoTriggerTimer.paused = false;
         ZM.saveToLocalStorage();
         console.log('[Auto-Trigger] Enabled and started');
+        if (ZM.showToast) ZM.showToast('Auto-Trigger — PLAYING');
       } else {
         // Toggle pause state
         if (ZM.autoTriggerTimer.paused) {
@@ -1074,6 +1077,7 @@ function initializeAutoTriggerControls(ZM) {
         }
       }
       updateAutoTriggerStatus(ZM);
+      if (ZM.showToast) ZM.showToast('Auto-Trigger — ' + (ZM.autoTriggerTimer.paused ? 'PAUSED' : 'PLAYING'));
     });
   }
   
@@ -1082,6 +1086,7 @@ function initializeAutoTriggerControls(ZM) {
   if (previousBtn) {
     previousBtn.addEventListener('click', () => {
       navigateHistory(ZM, -1);
+      if (ZM.showToast) ZM.showToast('Previous State');
     });
   }
   
@@ -1093,6 +1098,7 @@ function initializeAutoTriggerControls(ZM) {
       ZM.autoTriggerTimer.pausedAt = 0;
       console.log('[Auto-Trigger] Timer reset');
       updateAutoTriggerStatus(ZM);
+      if (ZM.showToast) ZM.showToast('Timer Reset');
     });
   }
   
@@ -1106,6 +1112,7 @@ function initializeAutoTriggerControls(ZM) {
       ZM.stateManager.loadRandomState();
       console.log('[Auto-Trigger] Skipped to next state');
       updateAutoTriggerStatus(ZM);
+      if (ZM.showToast) ZM.showToast('Skip to Next State');
     });
   }
   
