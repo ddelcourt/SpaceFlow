@@ -145,7 +145,7 @@ body.hide-cursor * {
 .shortcuts-toast-timer-bar {
   height: 100%;
   width: 100%;
-  background: #00ff00;
+  background: #4a9eff;
   border-radius: 2px;
   transform-origin: left;
   animation: shortcuts-timer 25s linear forwards;

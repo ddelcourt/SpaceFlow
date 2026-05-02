@@ -1098,7 +1098,7 @@ function initializeAutoTriggerControls(ZM) {
         ZM.autoTriggerTimer.paused = false;
         ZM.saveToLocalStorage();
         console.log('[Auto-Trigger] Enabled and started');
-        if (ZM.showToast) ZM.showToast('Auto-Trigger — PLAYING');
+        if (ZM.showToast) ZM.showToast('▶ States Player');
       } else {
         // Toggle pause state
         if (ZM.autoTriggerTimer.paused) {
@@ -1113,7 +1113,7 @@ function initializeAutoTriggerControls(ZM) {
         }
       }
       updateAutoTriggerStatus(ZM);
-      if (ZM.showToast) ZM.showToast('Auto-Trigger — ' + (ZM.autoTriggerTimer.paused ? 'PAUSED' : 'PLAYING'));
+      if (ZM.showToast) ZM.showToast(ZM.autoTriggerTimer.paused ? '⏸ States Player' : '▶ States Player');
     });
   }
   

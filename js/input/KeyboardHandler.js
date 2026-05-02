@@ -47,7 +47,7 @@ export function setupKeyboardHandlers(ZM) {
             executeAction(shortcut.action, ZM);
             // Show mini feedback toast (skip info-panel toggle — it's self-evident;
             // skip state nav actions — they show their own toast with state name + swatches)
-            const noToastActions = ['toggleShortcutsToast', 'autoTriggerSkip', 'autoTriggerPrevious'];
+            const noToastActions = ['toggleShortcutsToast', 'autoTriggerSkip', 'autoTriggerPrevious', 'autoTriggerPlayPause'];
             if (!noToastActions.includes(shortcut.action) && ZM.showToast) {
               const suffix = getToggleSuffix(shortcut.action, ZM);
               const type = suffix.includes('ON') || suffix.includes('PLAYING') ? 'success' : 'info';
@@ -217,6 +217,7 @@ function executeAction(action, ZM) {
       if (ZM.stateManager && ZM.stateManager.updateAutoTriggerStatus) {
         ZM.stateManager.updateAutoTriggerStatus();
       }
+      if (ZM.showToast) ZM.showToast(ZM.autoTriggerTimer.paused ? '⏸ States Player' : '▶ States Player');
     },
     
     autoTriggerPrevious: () => {

@@ -96,7 +96,11 @@
 }
 
 #canvas-wrapper.framebuffer-mode canvas {
-  border: 1px solid greenyellow;
+  border: 1px solid var(--canvas-border-color, #adff2f);
+}
+
+#canvas-wrapper.framebuffer-mode.canvas-border-hidden canvas {
+  border: none;
 }
 
 /* Canvas sizing is handled dynamically via JS */
