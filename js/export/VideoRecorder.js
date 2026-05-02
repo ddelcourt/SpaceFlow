@@ -54,7 +54,7 @@ export function startVideoRecording(ZM) {
     verbose: false,
     display: false,
     autoSaveTime: 0,
-    workersPath: 'https://cdn.jsdelivr.net/npm/ccapture.js@1.1.0/build/'
+    workersPath: ''
   });
   
   // Start capture
@@ -90,7 +90,7 @@ function renderVideoFrame(ZM) {
   const progress = Math.round((recordingFrameCount / recordingTotalFrames) * 100);
   document.getElementById('video-progress').textContent = `Recording: ${progress}%`;
   
-  setTimeout(() => renderVideoFrame(ZM), 0);
+  requestAnimationFrame(() => renderVideoFrame(ZM));
 }
 
 export function stopVideoRecording(ZM) {

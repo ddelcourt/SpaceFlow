@@ -17,6 +17,18 @@ export function setupMouseHandlers(ZM) {
       ZM.camera.isPanning = false;
       ZM.camera.lastMouseX = e.clientX;
       ZM.camera.lastMouseY = e.clientY;
+    } else if (e.button === 1) {
+      // Middle click: recenter 2D offset only, keep orbit intact
+      ZM.camera.transitionTo(
+        ZM.camera.rotationX,
+        ZM.camera.rotationY,
+        ZM.camera.distance,
+        0, 0
+      );
+      ZM.params.cameraOffsetX = 0;
+      ZM.params.cameraOffsetY = 0;
+      ZM.saveToLocalStorage();
+      e.preventDefault(); // prevent browser auto-scroll cursor
     } else if (e.button === 2) {
       ZM.camera.isPanning = true;
       ZM.camera.isDragging = false;
