@@ -1054,7 +1054,6 @@ function setupOverlayControls(ZM) {
 function setupExportButtons(ZM) {
   const pngBtn = document.getElementById('export-png');
   const svgBtn = document.getElementById('export-svg');
-  const depthBtn = document.getElementById('export-depth-map');
   const videoBtn = document.getElementById('export-video');
   
   if (pngBtn) {
@@ -1065,10 +1064,6 @@ function setupExportButtons(ZM) {
   if (svgBtn) {
     svgBtn.addEventListener('click', () => ZM.exportSVG());
     setupHoverEffect(svgBtn, '#267526', '#1a5f1a');
-  }
-  
-  if (depthBtn) {
-    depthBtn.addEventListener('click', () => ZM.exportDepthMap());
   }
   
   if (videoBtn) {

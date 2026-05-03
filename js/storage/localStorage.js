@@ -100,6 +100,10 @@ export function loadFromLocalStorage(defaultParams) {
     // Ensure project-level settings exist (for backward compatibility)
     if (loaded.ambientSpeedMaster === undefined) loaded.ambientSpeedMaster = 100;
     
+    // Ensure canvas border settings exist (for backward compatibility)
+    if (loaded.canvasBorderVisible === undefined) loaded.canvasBorderVisible = true;
+    if (loaded.canvasBorderColor === undefined) loaded.canvasBorderColor = '#adff2f';
+    
     return { ...defaultParams, ...loaded };
   } catch (e) {
     console.warn('localStorage load failed:', e);
@@ -293,6 +297,10 @@ export function loadJSON(file, callback) {
       if (params.autoTriggerStates === undefined) params.autoTriggerStates = false;
       if (params.autoTriggerFrequency === undefined) params.autoTriggerFrequency = 30;
       if (params.colorSlotZOffset === undefined) params.colorSlotZOffset = 100;
+      
+      // Ensure canvas border settings exist (for backward compatibility)
+      if (params.canvasBorderVisible === undefined) params.canvasBorderVisible = true;
+      if (params.canvasBorderColor === undefined) params.canvasBorderColor = '#adff2f';
       
       // Pass back full data structure or just params for v1
       callback(isV2 ? {
