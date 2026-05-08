@@ -412,6 +412,26 @@ function setupFramebufferControls(ZM) {
   
   if (!modeCheckbox) return;
   
+  // Populate preset dropdown from config
+  if (presetSelect && window.ZigMap26.config?.uiPresets?.framebufferPresets) {
+    const presets = window.ZigMap26.config.uiPresets.framebufferPresets;
+    presetSelect.innerHTML = ''; // Clear existing options
+    
+    // Add all presets from config
+    Object.entries(presets).forEach(([key, preset]) => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = preset.label;
+      presetSelect.appendChild(option);
+    });
+    
+    // Add custom option at the end
+    const customOption = document.createElement('option');
+    customOption.value = 'custom';
+    customOption.textContent = 'Custom Dimensions';
+    presetSelect.appendChild(customOption);
+  }
+  
   // Mode checkbox
   modeCheckbox.checked = ZM.params.framebufferMode;
   modeCheckbox.addEventListener('change', (e) => {
@@ -435,7 +455,14 @@ function setupFramebufferControls(ZM) {
         ZM.params.framebufferHeight = h;
         widthInput.value = w;
         heightInput.value = h;
-        if (ZM.params.framebufferMode) ZM.updateCanvasSize();
+        
+        // Automatically enable framebuffer mode when preset is selected
+        if (!ZM.params.framebufferMode) {
+          ZM.params.framebufferMode = true;
+          if (modeCheckbox) modeCheckbox.checked = true;
+        }
+        
+        ZM.updateCanvasSize();
         if (ZM.showToast) ZM.showToast(`Framebuffer: ${w}×${h}`);
       }
       ZM.saveToLocalStorage();

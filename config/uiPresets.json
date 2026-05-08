@@ -49,6 +49,11 @@
       "width": 1080,
       "height": 1440,
       "label": "1080 × 1440 (Instagram Post)"
+    },
+    "2700x450": {
+      "width": 2700,
+      "height": 450,
+      "label": "2700 × 450 (Syllepse 360)"
     }
   },
   "colorSwatches": [

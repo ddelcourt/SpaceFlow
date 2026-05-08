@@ -58,8 +58,32 @@ export function setupMouseHandlers(ZM) {
       const dx = e.clientX - ZM.camera.lastMouseX;
       const dy = e.clientY - ZM.camera.lastMouseY;
       
-      ZM.camera.offsetX += dx;
-      ZM.camera.offsetY += dy;
+      // Scale mouse movement if in framebuffer mode
+      // When canvas is scaled for display, mouse movements need to be scaled proportionally
+      let scaledDx = dx;
+      let scaledDy = dy;
+      
+      if (ZM.params.framebufferMode && ZM.p5Instance && ZM.p5Instance.canvas) {
+        // Get canvas pixel dimensions
+        const canvasW = ZM.W;
+        const canvasH = ZM.H;
+        
+        // Get canvas CSS display dimensions
+        const displayW = ZM.p5Instance.canvas.clientWidth;
+        const displayH = ZM.p5Instance.canvas.clientHeight;
+        
+        // Calculate scale factors
+        if (displayW > 0 && displayH > 0) {
+          const scaleX = canvasW / displayW;
+          const scaleY = canvasH / displayH;
+          
+          scaledDx = dx * scaleX;
+          scaledDy = dy * scaleY;
+        }
+      }
+      
+      ZM.camera.offsetX += scaledDx;
+      ZM.camera.offsetY += scaledDy;
       
       ZM.params.cameraOffsetX = ZM.camera.offsetX;
       ZM.params.cameraOffsetY = ZM.camera.offsetY;

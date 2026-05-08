@@ -5,63 +5,74 @@
 
 /**
  * Project point using same math as SVG export
+ * Thinking of pan/zoom as camera position offsets:
+ * Camera effective position = (-offsetX, -offsetY, defaultCameraZ + distance)
  */
-function projectPoint(x, y, z, ZM, defaultCameraZ, totalDistance) {
-  const eRad = ZM.params.emitterRotation * Math.PI / 180;
+function projectPoint(x, y, z, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
+  const eRad = ZM.emitterRotationTransition.current * Math.PI / 180;
   const rX = ZM.camera.rotationX;
   const rY = ZM.camera.rotationY;
   
-  // 1. rotateZ
-  let px = x * Math.cos(eRad) - y * Math.sin(eRad);
-  let py = x * Math.sin(eRad) + y * Math.cos(eRad);
+  // Input (x,y,z) is already scaled by geometryScale
+  let px = x;
+  let py = y;
   let pz = z;
   
-  // 2. rotateY
+  // Step 1: Apply rotations in order: Z → Y → X
+  // rotateZ (emitter rotation)
+  const px1 = px * Math.cos(eRad) - py * Math.sin(eRad);
+  const py1 = px * Math.sin(eRad) + py * Math.cos(eRad);
+  px = px1;
+  py = py1;
+  
+  // rotateY (camera horizontal orbit)
   const px2 = px * Math.cos(rY) + pz * Math.sin(rY);
   const pz2 = -px * Math.sin(rY) + pz * Math.cos(rY);
   px = px2;
   pz = pz2;
   
-  // 3. rotateX
+  // rotateX (camera vertical orbit)
   const py3 = py * Math.cos(rX) - pz * Math.sin(rX);
   const pz3 = py * Math.sin(rX) + pz * Math.cos(rX);
   py = py3;
   pz = pz3;
   
-  // 4. Camera distance
-  pz -= totalDistance;
+  // Step 2: Transform to camera space
+  // Subtract camera position from world position
+  const viewX = px - cameraX;
+  const viewY = py - cameraY;
+  const viewZ = pz - cameraZ;
   
-  // 5. Frustum culling
-  if (pz >= -ZM.params.near || pz <= -ZM.params.far) return null;
+  // Step 3: Frustum culling
+  if (viewZ >= -ZM.params.near || viewZ <= -ZM.params.far) return null;
   
-  // 6. Perspective projection
-  const s = defaultCameraZ / -pz;
-  const projX = px * s;
-  const projY = py * s;
+  // Step 4: Perspective projection
+  const s = defaultCameraZ / -viewZ;
+  const projX = viewX * s;
+  const projY = viewY * s;
   
-  // Apply camera offsets (pan) - these shift the projected view
-  const sx = projX + ZM.W / 2 + ZM.camera.offsetX;
-  const sy = projY + ZM.H / 2 + ZM.camera.offsetY;
+  const sx = projX + ZM.W / 2;
+  const sy = projY + ZM.H / 2;
   
-  return { sx: sx, sy: sy, depth: -pz };
+  return { sx: sx, sy: sy, depth: -viewZ };
 }
 
 /**
  * Project vertex from local line space to screen space
  */
-function projectVertex(line, localX, localY, localZ, ZM, defaultCameraZ, totalDistance) {
-  const scale = ZM.params.geometryScale / 100;
+function projectVertex(line, localX, localY, localZ, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
+  const scale = ZM.geometryScaleTransition.current / 100;
   const wx = ((line.x - ZM.W / 2) + localX) * scale;
   const wy = ((line.y - ZM.H / 2) + localY) * scale;
   const wz = (localZ || 0) * scale;
-  return projectPoint(wx, wy, wz, ZM, defaultCameraZ, totalDistance);
+  return projectPoint(wx, wy, wz, ZM, defaultCameraZ, cameraX, cameraY, cameraZ);
 }
 
 /**
  * Scan to find depth range based on all depths that contribute to rendered pixels
  * Collects all vertex depths from visible ribbons to capture the full depth span
  */
-function scanDepthRange(lines, ZM, defaultCameraZ, totalDistance) {
+function scanDepthRange(lines, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
   const allDepths = [];
   let ribbonCount = 0;
   
@@ -76,10 +87,10 @@ function scanDepthRange(lines, ZM, defaultCameraZ, totalDistance) {
     
     // Project vertices
     const leftProj = leftSide
-      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, totalDistance))
+      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, cameraX, cameraY, cameraZ))
       .filter(Boolean);
     const rightProj = rightSide
-      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, totalDistance))
+      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, cameraX, cameraY, cameraZ))
       .filter(Boolean);
     
     if (leftProj.length < 2 || rightProj.length < 2) continue;
@@ -234,19 +245,25 @@ export function exportDepthMap(ZM) {
 function renderDepthMap(ZM) {
   const lines = ZM.emitterInstance.lines.filter(l => l._alpha() > 0);
   
-  // Calculate projection constants
-  const fovRad = ZM.params.fov * Math.PI / 180;
+  // Calculate projection constants - use transition values to match what's rendered
+  const fovRad = ZM.fovTransition.current * Math.PI / 180;
   const defaultCameraZ = (ZM.H / 2) / Math.tan(fovRad / 2);
-  const totalDistance = defaultCameraZ + ZM.camera.distance;
+  
+  // Camera effective position (thinking of pan/zoom as camera position offsets)
+  const cameraX = -ZM.camera.offsetX;
+  const cameraY = -ZM.camera.offsetY;
+  const cameraZ = defaultCameraZ + ZM.camera.distance;
+  
+  console.log('Depth Map Camera Setup:');
+  console.log('  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
   
   // Auto-range from actual geometry
-  const { minDepth, maxDepth } = scanDepthRange(lines, ZM, defaultCameraZ, totalDistance);
+  const { minDepth, maxDepth } = scanDepthRange(lines, ZM, defaultCameraZ, cameraX, cameraY, cameraZ);
   console.log(`Depth map export:`);
   console.log(`  Canvas dimensions: ${ZM.W} × ${ZM.H}`);
   console.log(`  Stereo mode: ${ZM.params.stereoscopicMode}`);
   console.log(`  Active lines: ${lines.length}`);
   console.log(`  Depth range: near=${minDepth.toFixed(1)}, far=${maxDepth.toFixed(1)}`);
-  console.log(`  defaultCameraZ=${defaultCameraZ.toFixed(1)}, totalDistance=${totalDistance.toFixed(1)}`);
   
   // Create offscreen canvas
   const offCanvas = document.createElement('canvas');
@@ -275,9 +292,9 @@ function renderDepthMap(ZM) {
     
     // Project vertices (keep nulls to preserve index correspondence)
     const leftProj = leftSide
-      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, totalDistance));
+      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, cameraX, cameraY, cameraZ));
     const rightProj = rightSide
-      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, totalDistance));
+      .map(pt => projectVertex(line, pt.x, pt.y, line.zOffset, ZM, defaultCameraZ, cameraX, cameraY, cameraZ));
     
     if (leftProj.length < 2 || rightProj.length < 2) continue;
     

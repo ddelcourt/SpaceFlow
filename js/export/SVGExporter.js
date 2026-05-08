@@ -86,36 +86,58 @@ export function exportSVG(ZM) {
   }
   
   // Camera projection setup
-  const fovRad = ZM.params.fov * Math.PI / 180;
+  // Use transition values to match exactly what's rendered
+  const fovRad = ZM.fovTransition.current * Math.PI / 180;
   const defaultCameraZ = (ZM.H / 2) / Math.tan(fovRad / 2);
-  const totalDistance = defaultCameraZ + ZM.camera.distance;
+  const emitterRotation = ZM.emitterRotationTransition.current * Math.PI / 180;
+  
+  // Camera effective position (thinking of pan/zoom as camera position offsets)
+  // In p5.js: camera is at (0, 0, defaultCameraZ), then translate(offsetX, offsetY, -distance) moves the world
+  // This is equivalent to camera being at (-offsetX, -offsetY, defaultCameraZ + distance)
+  const cameraX = -ZM.camera.offsetX;
+  const cameraY = -ZM.camera.offsetY;
+  const cameraZ = defaultCameraZ + ZM.camera.distance;
+  
+  console.log('SVG Export Camera Setup:');
+  console.log('  - FOV:', ZM.fovTransition.current);
+  console.log('  - Default cameraZ:', defaultCameraZ.toFixed(2));
+  console.log('  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
+  console.log('  - Emitter rotation:', (emitterRotation * 180 / Math.PI).toFixed(2));
+  console.log('  - Camera rotation:', ZM.camera.rotationX.toFixed(3), ZM.camera.rotationY.toFixed(3));
+  console.log('  - Geometry scale:', ZM.geometryScaleTransition.current);
   
   function projectPoint(x, y, z) {
-    // Apply rotations: Z → Y → X (matches p5.js WEBGL order)
-    let pt = rotZ(x, y, z, ZM.params.emitterRotation * Math.PI / 180);
+    // Transformation pipeline:
+    // 1. Apply rotations to geometry (Z → Y → X)
+    // 2. Transform to camera space by subtracting camera position
+    // 3. Apply perspective projection
+    
+    // Step 1: Apply rotations in order: Z → Y → X
+    let pt = rotZ(x, y, z, emitterRotation);
     pt = rotY(pt.x, pt.y, pt.z, ZM.camera.rotationY);
     pt = rotX(pt.x, pt.y, pt.z, ZM.camera.rotationX);
     
-    // Apply camera distance
-    pt.z -= totalDistance;
+    // Step 2: Transform to camera space
+    // Subtract camera position from world position
+    const viewX = pt.x - cameraX;
+    const viewY = pt.y - cameraY;
+    const viewZ = pt.z - cameraZ;
     
-    // Frustum culling
-    if (pt.z >= -ZM.params.near || pt.z <= -ZM.params.far) return null;
+    // Step 3: Frustum culling
+    if (viewZ >= -ZM.params.near || viewZ <= -ZM.params.far) return null;
     
-    // Perspective projection
-    const s = defaultCameraZ / -pt.z;
-    
-    // Apply camera offsets (pan) - these shift the projected view
-    const projX = pt.x * s;
-    const projY = pt.y * s;
+    // Step 4: Perspective projection
+    const s = defaultCameraZ / -viewZ;
+    const projX = viewX * s;
+    const projY = viewY * s;
     
     return { 
-      x: projX + ZM.W / 2 + ZM.camera.offsetX, 
-      y: projY + ZM.H / 2 + ZM.camera.offsetY 
+      x: projX + ZM.W / 2, 
+      y: projY + ZM.H / 2 
     };
   }
   
-  const scaleVal = ZM.params.geometryScale / 100;
+  const scaleVal = ZM.geometryScaleTransition.current / 100;
   
   // Process each line
   let exportedCount = 0;
