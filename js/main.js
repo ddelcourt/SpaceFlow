@@ -318,9 +318,20 @@ async function init() {
   } else if (!hadSavedSettings && ZM.syncUIFromParams) {
     // Sync UI if we loaded a preset without states
     ZM.syncUIFromParams();
-  } else if (hadSavedSettings && ZM.syncUIFromParams) {
-    // Sync UI if we loaded saved settings
-    ZM.syncUIFromParams();
+  } else if (hadSavedSettings) {
+    // When loading from localStorage, trigger the active state to ensure proper initialization
+    if (ZM.stateManager.activeStateId && ZM.stateManager.load) {
+      // Update state panel UI first
+      if (ZM.updateStatePanel) {
+        ZM.updateStatePanel();
+      }
+      // Load the active state INSTANTLY to trigger all visual updates
+      console.log('🎯 Triggering active state on load:', ZM.stateManager.activeStateId);
+      ZM.stateManager.load(ZM.stateManager.activeStateId, true); // instant = true
+    } else if (ZM.syncUIFromParams) {
+      // Fallback: sync UI if there's no active state
+      ZM.syncUIFromParams();
+    }
   }
   
   // Setup input handlers

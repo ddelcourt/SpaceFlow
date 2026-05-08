@@ -1,28 +1,28 @@
 {
   "presets": [
     {
-      "filename": "zigmap_init.json",
-      "name": "zigmap_init",
-      "type": "Init"
-    },
-    {
-      "filename": "zigmap_TransitionUniverse.json",
-      "name": "zigmap_TransitionUniverse",
+      "filename": "DowntownAmbient.json",
+      "name": "DowntownAmbient",
       "type": "Preset"
     },
     {
-      "filename": "zigmap_horizon26.json",
-      "name": "zigmap_horizon26",
+      "filename": "TransitionUniverse.json",
+      "name": "TransitionUniverse",
       "type": "Preset"
     },
     {
-      "filename": "zigmap_horizon26_Scope.json",
-      "name": "zigmap_horizon26_Scope",
+      "filename": "Horizon26.json",
+      "name": "Horizon26",
       "type": "Preset"
     },
     {
-      "filename": "zigmap_horizonBW.json",
-      "name": "zigmap_horizonBW",
+      "filename": "Horizon26_Scope.json",
+      "name": "Horizon26_Scope",
+      "type": "Preset"
+    },
+    {
+      "filename": "Horizon26_BW.json",
+      "name": "Horizon26_BW",
       "type": "Preset"
     }
   ]
