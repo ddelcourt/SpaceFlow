@@ -196,61 +196,6 @@
       </div>
     </div>
 
-    <!-- States -->
-    <div class="section">
-      <div class="section-header" data-section="states">
-        <span class="section-title">States</span>
-        <span class="section-toggle">▼</span>
-      </div>
-      <div class="section-content">
-        <div class="section-body">
-          <!-- State Management -->
-          <div class="state-panel">
-            <!-- Auto-Trigger Status (shown when auto-trigger is active) -->
-            <div id="auto-trigger-status" class="auto-trigger-status" style="display: none;">
-              <div class="status-current">
-                <span class="status-label-small">Current:</span>
-                <span id="current-state-name" class="current-state-name">—</span>
-              </div>
-              <div class="status-header">
-                <span class="status-label">Next:</span>
-                <span id="next-state-name" class="next-state-name">Random State</span>
-              </div>
-              <div class="progress-bar-container" id="progress-bar-container">
-                <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                <div id="progress-bar-thumb" class="progress-bar-thumb"></div>
-              </div>
-              <div class="status-footer">
-                <span id="countdown-display" class="countdown-display">0s</span>
-                <div class="status-controls">
-                  <button id="auto-trigger-previous" class="status-control-btn" title="Previous State">⏮</button>
-                  <button id="auto-trigger-play-pause" class="status-control-btn" title="Play/Pause">⏸</button>
-                  <button id="auto-trigger-reset" class="status-control-btn" title="Reset Timer">↻</button>
-                  <button id="auto-trigger-skip" class="status-control-btn" title="Skip to Next">⏭</button>
-                </div>
-              </div>
-            </div>
-            
-            <div id="state-list-container" class="state-list-container">
-              <!-- States will be dynamically inserted here -->
-            </div>
-            
-            <div class="state-controls">
-              <button id="new-state-btn" class="state-control-btn new-state">
-                <span class="icon-new"></span> New
-              </button>
-              <button id="import-state-btn" class="state-control-btn">
-                <span class="icon-import"></span> Import
-              </button>
-              <button id="export-all-states-btn" class="state-control-btn">
-                <span class="icon-export"></span> Export All
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Overlay -->
     <div class="section">
       <div class="section-header" data-section="overlay">
@@ -337,6 +282,65 @@
     </div>
 
   </div><!-- /.controls -->
+
+  <div class="controls-middle">
+
+    <!-- Patch States -->
+    <div class="section">
+      <div class="section-header" data-section="states">
+        <span class="section-title">Patch States</span>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-content">
+        <div class="section-body">
+          <!-- State Management -->
+          <div class="state-panel">
+            <!-- Auto-Trigger Status (shown when auto-trigger is active) -->
+            <div id="auto-trigger-status" class="auto-trigger-status" style="display: none;">
+              <div class="status-current">
+                <span class="status-label-small">Current:</span>
+                <span id="current-state-name" class="current-state-name">—</span>
+              </div>
+              <div class="status-header">
+                <span class="status-label">Next:</span>
+                <span id="next-state-name" class="next-state-name">Random State</span>
+              </div>
+              <div class="progress-bar-container" id="progress-bar-container">
+                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                <div id="progress-bar-thumb" class="progress-bar-thumb"></div>
+              </div>
+              <div class="status-footer">
+                <span id="countdown-display" class="countdown-display">0s</span>
+                <div class="status-controls">
+                  <button id="auto-trigger-previous" class="status-control-btn" title="Previous State">⏮</button>
+                  <button id="auto-trigger-play-pause" class="status-control-btn" title="Play/Pause">⏸</button>
+                  <button id="auto-trigger-reset" class="status-control-btn" title="Reset Timer">↻</button>
+                  <button id="auto-trigger-skip" class="status-control-btn" title="Skip to Next">⏭</button>
+                </div>
+              </div>
+            </div>
+            
+            <div id="state-list-container" class="state-list-container">
+              <!-- States will be dynamically inserted here -->
+            </div>
+            
+            <div class="state-controls">
+              <button id="new-state-btn" class="state-control-btn new-state">
+                <span class="icon-new"></span> New
+              </button>
+              <button id="import-state-btn" class="state-control-btn">
+                <span class="icon-import"></span> Import
+              </button>
+              <button id="export-all-states-btn" class="state-control-btn">
+                <span class="icon-export"></span> Export All
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.controls-middle -->
 
   <div class="controls-right">
 

@@ -72,6 +72,7 @@ function executeAction(action, ZM) {
     // UI Navigation
     toggleControls: () => {
       document.querySelector('.controls').classList.toggle('hidden');
+      document.querySelector('.controls-middle').classList.toggle('hidden');
       document.querySelector('.controls-right').classList.toggle('hidden');
       document.body.classList.toggle('ui-hidden');
     },

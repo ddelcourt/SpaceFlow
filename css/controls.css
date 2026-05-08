@@ -3,29 +3,38 @@
    All UI control elements, sliders, buttons, sections
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.controls {
+/* Shared styles for all control panels */
+.controls,
+.controls-middle,
+.controls-right {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   width: 300px;
   min-width: 300px;
   background: rgba(10, 10, 10, 0.25);
   backdrop-filter: blur(10px);
   padding: 20px;
-  height: 100vh;
+  max-height: 100vh;
   overflow-y: auto;
-  border-right: 1px solid rgba(34, 34, 34, 0.3);
   transition: transform 0.3s ease, opacity 0.3s ease;
   position: fixed;
-  left: 0;
   top: 0;
   z-index: 10;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
-.controls::-webkit-scrollbar {
+.controls::-webkit-scrollbar,
+.controls-middle::-webkit-scrollbar,
+.controls-right::-webkit-scrollbar {
   display: none;
+}
+
+/* Left panel positioning */
+.controls {
+  left: 0;
+  border-right: 1px solid rgba(34, 34, 34, 0.3);
 }
 
 .controls.hidden {
@@ -34,30 +43,22 @@
   pointer-events: none;
 }
 
-/* Right Controls Panel */
-.controls-right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 300px;
-  min-width: 300px;
-  background: rgba(10, 10, 10, 0.25);
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  height: 100vh;
-  overflow-y: auto;
-  border-left: 1px solid rgba(34, 34, 34, 0.3);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 10;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+/* Middle panel positioning */
+.controls-middle {
+  left: 300px;
+  border-right: 1px solid rgba(34, 34, 34, 0.3);
 }
 
-.controls-right::-webkit-scrollbar {
-  display: none;
+.controls-middle.hidden {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Right panel positioning */
+.controls-right {
+  right: 0;
+  border-left: 1px solid rgba(34, 34, 34, 0.3);
 }
 
 .controls-right.hidden {

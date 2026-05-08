@@ -193,6 +193,12 @@ body.hide-cursor * {
   align-items: flex-end;
   gap: 8px;
   pointer-events: none;
+  transition: right 0.3s ease;
+}
+
+/* Offset when right control panel is visible */
+body:not(.ui-hidden) #mini-toast-container {
+  right: 314px;
 }
 
 .mini-toast {
