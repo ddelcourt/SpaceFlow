@@ -16,13 +16,13 @@
       "type": "Preset"
     },
     {
-      "filename": "TransitionUniverse.json",
-      "name": "TransitionUniverse",
+      "filename": "Horizon26.json",
+      "name": "Horizon26",
       "type": "Preset"
     },
     {
-      "filename": "Horizon26.json",
-      "name": "Horizon26",
+      "filename": "Horizon26_BW.json",
+      "name": "Horizon26_BW",
       "type": "Preset"
     },
     {
@@ -31,8 +31,8 @@
       "type": "Preset"
     },
     {
-      "filename": "Horizon26_BW.json",
-      "name": "Horizon26_BW",
+      "filename": "TransitionUniverse.json",
+      "name": "TransitionUniverse",
       "type": "Preset"
     }
   ]

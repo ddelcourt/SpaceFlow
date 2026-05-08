@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+# Master update script - runs all project updaters
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "🚀 Running all update scripts..."
+echo ""
+
+# Run welcome-updater
+echo "📋 Updating Welcome Page Presets..."
+"$SCRIPT_DIR/welcome-updater"
+echo ""
+
+# Run overlay-updater
+echo "🖼️  Updating Overlay Presets..."
+"$SCRIPT_DIR/overlay-updater"
+echo ""
+
+echo "✅ All updates complete!"

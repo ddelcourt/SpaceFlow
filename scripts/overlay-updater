@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#
+# Update overlayPresets.js from assets/overlays/ directory
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+cd "$PROJECT_ROOT"
+
+python3 - <<'EOF'
+import os
+from pathlib import Path
+
+# Configuration
+OVERLAYS_DIR = Path('assets/overlays')
+CONFIG_FILE = Path('config/overlayPresets.js')
+START_MARKER = 'export const OVERLAY_FILES = ['
+END_MARKER = '];'
+
+def get_overlay_files():
+    """Scan overlays directory and return sorted list of .json files"""
+    if not OVERLAYS_DIR.exists():
+        print(f"Error: {OVERLAYS_DIR} not found")
+        return []
+    
+    overlays = [
+        f.name for f in OVERLAYS_DIR.glob('*.json') 
+        if f.is_file() and not f.name.startswith('.')
+    ]
+    
+    return sorted(overlays)
+
+def generate_array_content(files):
+    """Generate the array content for overlayPresets.js"""
+    if not files:
+        return "  // No overlay files found"
+    
+    lines = []
+    for i, filename in enumerate(files):
+        comma = ',' if i < len(files) - 1 else ''
+        lines.append(f"  '{filename}'{comma}")
+    
+    return '\n'.join(lines)
+
+def update_overlay_presets():
+    """Update overlayPresets.js with current overlay list"""
+    if not CONFIG_FILE.exists():
+        print(f"Error: {CONFIG_FILE} not found")
+        return False
+    
+    # Read current file
+    with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # Check for markers
+    if START_MARKER not in content or END_MARKER not in content:
+        print(f"Error: Markers not found in {CONFIG_FILE}")
+        return False
+    
+    # Get overlay files
+    overlay_files = get_overlay_files()
+    print(f"Found {len(overlay_files)} overlay file(s)")
+    
+    # Generate new array content
+    new_array = generate_array_content(overlay_files)
+    
+    # Split content at markers
+    start_idx = content.find(START_MARKER) + len(START_MARKER)
+    end_idx = content.find(END_MARKER)
+    
+    # Build new content
+    new_content = (
+        content[:start_idx] + 
+        '\n' + new_array + '\n' + 
+        content[end_idx:]
+    )
+    
+    # Write updated file
+    with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        f.write(new_content)
+    
+    print(f"✓ Updated {CONFIG_FILE}")
+    
+    # Display files
+    if overlay_files:
+        print("\nOverlay files:")
+        for filename in overlay_files:
+            print(f"  • {filename}")
+    
+    return True
+
+# Run
+if __name__ == '__main__':
+    success = update_overlay_presets()
+    exit(0 if success else 1)
+EOF

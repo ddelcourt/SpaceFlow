@@ -2,9 +2,41 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Update All (Presets + Overlays)",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/update-all",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "Update Welcome Page Presets",
       "type": "shell",
       "command": "${workspaceFolder}/scripts/welcome-updater",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Update Overlay Presets",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/overlay-updater",
       "problemMatcher": [],
       "presentation": {
         "reveal": "always",

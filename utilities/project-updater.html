@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Updater - ZigMap26</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      padding: 20px;
+      line-height: 1.6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #5078ff;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .section {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      color: #5078ff;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon {
+      font-size: 1.5rem;
+    }
+
+    .description {
+      color: #aaa;
+      margin-bottom: 25px;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #5078ff;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      background: #3d5fd4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(80, 120, 255, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.secondary {
+      background: #2a2a2a;
+      border: 1px solid #444;
+    }
+
+    button.secondary:hover {
+      background: #333;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .command-box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: #5fff78;
+      margin-top: 15px;
+      display: none;
+      position: relative;
+    }
+
+    .command-box.show {
+      display: block;
+    }
+
+    .command-box code {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #333;
+      border: 1px solid #555;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .copy-btn:hover {
+      background: #444;
+      color: #fff;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.success {
+      background: rgba(95, 255, 120, 0.1);
+      border: 1px solid rgba(95, 255, 120, 0.3);
+      color: #5fff78;
+    }
+
+    .status.info {
+      background: rgba(80, 120, 255, 0.1);
+      border: 1px solid rgba(80, 120, 255, 0.3);
+      color: #5078ff;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .instructions {
+      background: #111;
+      padding: 20px;
+      border-left: 3px solid #5078ff;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      line-height: 1.8;
+      border-radius: 6px;
+    }
+
+    .instructions h3 {
+      color: #5078ff;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .instructions ol {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+      color: #ccc;
+    }
+
+    .instructions code {
+      background: #1a1a1a;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #5fff78;
+      font-size: 0.85rem;
+    }
+
+    .updates-list {
+      margin-top: 15px;
+      padding-left: 20px;
+    }
+
+    .updates-list li {
+      margin-bottom: 8px;
+      color: #bbb;
+    }
+
+    .updates-list li::marker {
+      color: #5078ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Project Updater</h1>
+    <div class="subtitle">Update project configuration files automatically</div>
+
+    <!-- Master Update Section -->
+    <div class="section">
+      <div class="section-title">
+        <!-- <span class="icon">🚀</span> -->
+        <span>Update All</span>
+      </div>
+      <div class="description">
+        Run all update scripts in one go. This will:
+        <ul class="updates-list">
+          <li><strong>Update Welcome Page</strong> - Scan preset files and update welcome.html</li>
+          <li><strong>Update Overlay List</strong> - Scan overlay files and update overlayPresets.js</li>
+        </ul>
+      </div>
+      <div class="button-group">
+        <button onclick="showCommand('update-all')">
+          Run All Updates
+        </button>
+      </div>
+      <div id="cmd-update-all" class="command-box">
+        <button class="copy-btn" onclick="copyCommand('update-all')">Copy</button>
+        <code id="cmd-update-all-text">./scripts/update-all</code>
+      </div>
+    </div>
+
+    <!-- Individual Scripts Section -->
+    <!-- <div class="section">
+      <div class="section-title">
+        <span>Individual Updates</span>
+      </div>
+      <div class="description">
+        Run specific update scripts individually.
+      </div>
+      <div class="button-group">
+        <button class="secondary" onclick="showCommand('welcome')">
+          Update Welcome Page
+        </button>
+        <button class="secondary" onclick="showCommand('overlay')">
+          Update Overlays
+        </button>
+      </div>
+      <div id="cmd-welcome" class="command-box">
+        <button class="copy-btn" onclick="copyCommand('welcome')">📋 Copy</button>
+        <code id="cmd-welcome-text">./scripts/welcome-updater</code>
+      </div>
+      <div id="cmd-overlay" class="command-box">
+        <button class="copy-btn" onclick="copyCommand('overlay')">📋 Copy</button>
+        <code id="cmd-overlay-text">./scripts/overlay-updater</code>
+      </div>
+    </div> -->
+
+    <!-- Status Message -->
+    <div id="status" class="status"></div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+      <h3>How to Use</h3>
+      <ol>
+        <li>Click a button above to reveal the command</li>
+        <li>Copy the command or open your terminal</li>
+        <li>Run the command from your project root directory</li>
+        <li>Or use VS Code: <code>⇧⌘P</code> → <code>Tasks: Run Task</code></li>
+      </ol>
+    </div>
+  </div>
+
+  <script>
+    let currentCommand = null;
+
+    function showCommand(type) {
+      // Hide all command boxes
+      document.querySelectorAll('.command-box').forEach(box => {
+        box.classList.remove('show');
+      });
+
+      // Show selected command box
+      const cmdBox = document.getElementById(`cmd-${type}`);
+      if (cmdBox) {
+        cmdBox.classList.add('show');
+        currentCommand = type;
+        
+        // Show info status
+        showStatus(`Command ready! Copy and run in your terminal.`, 'info');
+      }
+    }
+
+    function copyCommand(type) {
+      const cmdText = document.getElementById(`cmd-${type}-text`);
+      if (cmdText) {
+        navigator.clipboard.writeText(cmdText.textContent).then(() => {
+          showStatus('✓ Command copied to clipboard!', 'success');
+          
+          // Change button text temporarily
+          const btn = event.target;
+          const originalText = btn.textContent;
+          btn.textContent = '✓ Copied!';
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 2000);
+        });
+      }
+    }
+
+    function showStatus(message, type = 'info') {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status ${type} show`;
+      
+      setTimeout(() => {
+        status.classList.remove('show');
+      }, 3000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Cmd/Ctrl + Enter to copy current command
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && currentCommand) {
+        copyCommand(currentCommand);
+      }
+    });
+  </script>
+</body>
+</html>
