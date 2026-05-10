@@ -126,9 +126,13 @@ html, body {
 #canvas-wrapper canvas {
   display: block;
   cursor: grab;
+  object-fit: contain;
+}
+
+/* In non-framebuffer mode, canvas fills the container */
+#canvas-wrapper:not(.framebuffer-mode) canvas {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain;
 }
 
 #canvas-wrapper canvas.dragging {

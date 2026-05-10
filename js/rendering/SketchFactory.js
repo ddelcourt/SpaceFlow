@@ -65,17 +65,36 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
     const isPrimary = canvasId === 'left-canvas' || canvasId === 'mono-canvas';
     
     p.setup = () => {
-      const canvas = p.createCanvas(ZM.W, ZM.H, p.WEBGL);
-      canvas.parent(canvasId);
-      
-      // Use native pixel density for smooth retina rendering when not in framebuffer mode
+      // Set pixelDensity BEFORE createCanvas (important for WebGL)
       // Use pixelDensity(1) in framebuffer mode to respect exact dimensions
+      // Use native density for smooth retina rendering when not in framebuffer mode
       if (ZM.params.framebufferMode) {
         p.pixelDensity(1);
       } else {
-        p.pixelDensity(p.displayDensity()); // Native retina support
+        p.pixelDensity(p.displayDensity());
       }
+      
+      const canvas = p.createCanvas(ZM.W, ZM.H, p.WEBGL);
+      canvas.parent(canvasId);
       p.frameRate(60);
+      
+      // Optional: Check WebGL limits using p5's drawingContext (the actual WebGL context)
+      if (isPrimary && p.drawingContext) {
+        try {
+          const gl = p.drawingContext;
+          const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+          console.log(`📐 Canvas: ${ZM.W}x${ZM.H} | WebGL Max: ${maxTextureSize}x${maxTextureSize}`);
+          
+          // Warn if size exceeds GPU limits (consider pixelDensity multiplier)
+          const actualWidth = ZM.W * p.pixelDensity();
+          const actualHeight = ZM.H * p.pixelDensity();
+          if (actualWidth > maxTextureSize || actualHeight > maxTextureSize) {
+            console.warn(`⚠️ Canvas buffer ${actualWidth}x${actualHeight} may exceed GPU limit ${maxTextureSize}`);
+          }
+        } catch (e) {
+          console.log('Could not check WebGL limits:', e.message);
+        }
+      }
       
       // Create or reuse emitter
       if (!ZM.emitterInstance) {
@@ -334,6 +353,10 @@ export function initializeSketches(ZM) {
     const prevW = ZM.W;
     const prevH = ZM.H;
     
+    console.log('  - BEFORE dimension update:');
+    console.log('    prevW:', prevW, 'prevH:', prevH);
+    console.log('    Camera offsets:', ZM.camera.offsetX.toFixed(2), ZM.camera.offsetY.toFixed(2));
+    
     // Update dimensions for stereo mode
     if (ZM.params.framebufferMode) {
       ZM.W = ZM.params.framebufferWidth;
@@ -342,6 +365,10 @@ export function initializeSketches(ZM) {
       ZM.W = Math.floor(window.innerWidth / 2);
       ZM.H = window.innerHeight;
     }
+    
+    console.log('  - AFTER dimension update:');
+    console.log('    newW:', ZM.W, 'newH:', ZM.H);
+    console.log('    dimensionsChanged:', (ZM.W !== prevW || ZM.H !== prevH));
     
     // Scale existing emitter and lines proportionally to new dimensions
     // Only scale if dimensions actually changed (mode toggle, not reload)
@@ -415,9 +442,14 @@ export function initializeSketches(ZM) {
       setTimeout(() => updateCanvasSize(ZM), 50);
     }
   } else {
+    // === MONO MODE ===
     // Store old dimensions for proportional scaling
     const prevW = ZM.W;
     const prevH = ZM.H;
+    
+    console.log('  - BEFORE dimension update:');
+    console.log('    prevW:', prevW, 'prevH:', prevH);
+    console.log('    Camera offsets:', ZM.camera.offsetX.toFixed(2), ZM.camera.offsetY.toFixed(2));
     
     // Update dimensions for mono mode
     if (ZM.params.framebufferMode) {
@@ -427,6 +459,10 @@ export function initializeSketches(ZM) {
       ZM.W = window.innerWidth;
       ZM.H = window.innerHeight;
     }
+    
+    console.log('  - AFTER dimension update:');
+    console.log('    newW:', ZM.W, 'newH:', ZM.H);
+    console.log('    dimensionsChanged:', (ZM.W !== prevW || ZM.H !== prevH));
     
     // Scale existing emitter and lines proportionally to new dimensions
     // Only scale if dimensions actually changed (mode toggle, not reload)
@@ -517,7 +553,7 @@ export function updateCanvasSize(ZM) {
       // Scale the framebuffer canvas to fit within that area, preserving aspect ratio.
       const eyeW = Math.floor(window.innerWidth / 2);
       const eyeH = window.innerHeight;
-      const scale = Math.min(eyeW / W, eyeH / H, 1);
+      const scale = Math.min(eyeW / W, eyeH / H); // Allow upscaling
       const displayW = Math.round(W * scale);
       const displayH = Math.round(H * scale);
       
@@ -539,7 +575,7 @@ export function updateCanvasSize(ZM) {
       // Mono + framebuffer: scale the wrapper (and canvas) to fit the viewport
       const scaleX = window.innerWidth / W;
       const scaleY = window.innerHeight / H;
-      const scale = Math.min(scaleX, scaleY, 1);
+      const scale = Math.min(scaleX, scaleY); // Allow upscaling
       const displayW = Math.round(W * scale);
       const displayH = Math.round(H * scale);
       

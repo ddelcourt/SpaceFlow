@@ -68,7 +68,6 @@
     "videoFormat": "webm",
     "depthInvert": false,
     "overlayPresetFile": "Mapping2026_Horizontal-White_O_Shadow.json",
-    "overlayVisible": true,
     "overlayAutoFit": false,
     "overlayScale": 135,
     "overlayOpacity": 100,

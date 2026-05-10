@@ -92,6 +92,10 @@
 #canvas-wrapper canvas {
   display: block;
   cursor: grab;
+}
+
+/* In non-framebuffer mode, canvas fills the container */
+#canvas-wrapper:not(.framebuffer-mode) canvas {
   width: 100%;
   height: 100%;
 }

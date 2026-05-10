@@ -481,7 +481,7 @@ function setupFramebufferControls(ZM) {
   if (widthInput) {
     widthInput.value = ZM.params.framebufferWidth;
     widthInput.addEventListener('input', (e) => {
-      ZM.params.framebufferWidth = Math.max(320, parseInt(e.target.value) || 1920);
+      ZM.params.framebufferWidth = Math.max(8, parseInt(e.target.value) || 1920);
       if (ZM.params.framebufferMode) ZM.updateCanvasSize();
       ZM.params.framebufferPreset = getPresetForDimensions(
         ZM.params.framebufferWidth, 
@@ -498,7 +498,7 @@ function setupFramebufferControls(ZM) {
   if (heightInput) {
     heightInput.value = ZM.params.framebufferHeight;
     heightInput.addEventListener('input', (e) => {
-      ZM.params.framebufferHeight = Math.max(240, parseInt(e.target.value) || 1080);
+      ZM.params.framebufferHeight = Math.max(8, parseInt(e.target.value) || 1080);
       if (ZM.params.framebufferMode) ZM.updateCanvasSize();
       ZM.params.framebufferPreset = getPresetForDimensions(
         ZM.params.framebufferWidth, 
