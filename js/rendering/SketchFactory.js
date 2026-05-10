@@ -363,6 +363,12 @@ export function initializeSketches(ZM) {
         line.canvasWidth = ZM.W;
         line.canvasHeight = ZM.H;
       }
+      
+      // CRITICAL: Scale camera offsets to match scene scaling
+      // Camera offsets are pan values that need to scale with scene coordinates
+      ZM.camera.offsetX *= scaleX;
+      ZM.camera.offsetY *= scaleY;
+      console.log('  - Camera offsets scaled to:', ZM.camera.offsetX.toFixed(1), ',', ZM.camera.offsetY.toFixed(1));
     } else if (ZM.emitterInstance) {
       // Dimensions didn't change, just update canvas dimensions
       ZM.emitterInstance.canvasWidth = ZM.W;
@@ -442,6 +448,12 @@ export function initializeSketches(ZM) {
         line.canvasWidth = ZM.W;
         line.canvasHeight = ZM.H;
       }
+      
+      // CRITICAL: Scale camera offsets to match scene scaling
+      // Camera offsets are pan values that need to scale with scene coordinates
+      ZM.camera.offsetX *= scaleX;
+      ZM.camera.offsetY *= scaleY;
+      console.log('  - Camera offsets scaled to:', ZM.camera.offsetX.toFixed(1), ',', ZM.camera.offsetY.toFixed(1));
     } else if (ZM.emitterInstance) {
       // Dimensions didn't change, just update canvas dimensions
       ZM.emitterInstance.canvasWidth = ZM.W;

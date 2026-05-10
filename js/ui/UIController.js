@@ -514,13 +514,9 @@ function setupFramebufferControls(ZM) {
 
   // Canvas border visibility toggle
   const borderVisibleCheckbox = document.getElementById('canvas-border-visible');
-  const borderColorGroup = document.getElementById('canvas-border-color-group');
-  const borderColorInput = document.getElementById('canvas-border-color');
-  const borderColorVal = document.getElementById('canvas-border-color-val');
 
   const updateBorderVisibility = (visible) => {
-    if (borderColorGroup) borderColorGroup.style.display = visible ? '' : 'none';
-    applyCanvasBorder(visible, ZM.params.canvasBorderColor || '#adff2f');
+    applyCanvasBorder(visible);
   };
 
   if (borderVisibleCheckbox) {
@@ -532,38 +528,19 @@ function setupFramebufferControls(ZM) {
     });
   }
 
-  if (borderColorInput) {
-    borderColorInput.value = ZM.params.canvasBorderColor || '#adff2f';
-    if (borderColorVal) borderColorVal.textContent = borderColorInput.value;
-    borderColorInput.addEventListener('input', (e) => {
-      ZM.params.canvasBorderColor = e.target.value;
-      if (borderColorVal) borderColorVal.textContent = e.target.value;
-      applyCanvasBorder(ZM.params.canvasBorderVisible !== false, e.target.value);
-      ZM.saveToLocalStorage();
-    });
-  }
-
   // Apply initial state
   updateBorderVisibility(ZM.params.canvasBorderVisible !== false);
 }
 
 /**
  * Apply canvas border: sets CSS custom property and toggles a class for visibility.
+ * Always uses the default green color (#adff2f).
  */
-function applyCanvasBorder(visible, color) {
+function applyCanvasBorder(visible, color = '#adff2f') {
   const wrapper = document.getElementById('canvas-wrapper');
   if (!wrapper) return;
   wrapper.style.setProperty('--canvas-border-color', color);
   wrapper.classList.toggle('canvas-border-hidden', !visible);
-}
-
-/**
- * Apply canvas border color as a CSS custom property on the wrapper.
- * The CSS rule reads var(--canvas-border-color) so the color is always live.
- */
-function applyCanvasBorderColor(color) {
-  const wrapper = document.getElementById('canvas-wrapper');
-  if (wrapper) wrapper.style.setProperty('--canvas-border-color', color);
 }
 
 /**
@@ -1461,19 +1438,11 @@ function syncUIFromParams(ZM) {
   // Update palette UI
   updatePaletteUI(ZM);
 
-  // Update canvas border color picker
-  const borderColorInput = document.getElementById('canvas-border-color');
-  const borderColorVal = document.getElementById('canvas-border-color-val');
+  // Update canvas border visibility
   const borderVisibleCheckbox = document.getElementById('canvas-border-visible');
-  const borderColorGroup = document.getElementById('canvas-border-color-group');
   const borderVisible = ZM.params.canvasBorderVisible !== false;
   if (borderVisibleCheckbox) borderVisibleCheckbox.checked = borderVisible;
-  if (borderColorGroup) borderColorGroup.style.display = borderVisible ? '' : 'none';
-  if (borderColorInput && ZM.params.canvasBorderColor) {
-    borderColorInput.value = ZM.params.canvasBorderColor;
-    if (borderColorVal) borderColorVal.textContent = ZM.params.canvasBorderColor;
-  }
-  applyCanvasBorder(borderVisible, ZM.params.canvasBorderColor || '#adff2f');
+  applyCanvasBorder(borderVisible);
   
   // Update overlay preset dropdown
   if (ZM.overlayPresets) {
