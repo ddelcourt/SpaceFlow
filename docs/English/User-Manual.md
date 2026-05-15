@@ -64,6 +64,12 @@ States are complete snapshots of parameters. They allow memorizing and recalling
 - **Update**: overwrites the selected state with the current configuration.
 - **Delete**: removes the selected state.
 - **Rename**: click on a state name to edit it.
+- **Reorder**: drag and drop states using the ⋮⋮ handle on the left side.
+
+**State order and initialization:**
+- State order is preserved in localStorage across sessions.
+- When loading a preset JSON file, the **first state** in the list loads automatically.
+- When refreshing the page or returning to the app, the **last active state** loads automatically.
 
 **Transition controls**
 - **State Transition** (0–30 s): duration of transition between states.

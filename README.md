@@ -73,6 +73,13 @@ States are complete snapshots of configuration (parameters, colors, camera posit
 4. Click Update to overwrite the selected state
 5. Click Delete to remove a state
 6. Click on a state name to rename it
+7. **Drag and drop** states to reorder them (drag handle on left side)
+
+**State order:**
+- **Drag-and-drop**: Click and drag the ⋮⋮ handle to reorder states
+- Order persists across sessions via localStorage
+- When loading a preset JSON, the first state in the list loads automatically
+- When refreshing the page, the last active state loads automatically
 
 **Auto-trigger:**
 Enable Auto-Trigger to automatically cycle through states. Frequency slider (5–120 seconds) defines the interval. A shuffle algorithm ensures each state is visited once before repetition.
@@ -130,7 +137,14 @@ Supported formats: PNG (recommended for transparency), JPG, SVG.
 
 **Load**: opens file picker to load a previously saved `.json` configuration. All parameters are applied immediately and persisted to localStorage.
 
-Parameters are automatically saved to localStorage on every change.
+**localStorage behavior:**
+- Parameters are automatically saved to localStorage on every change
+- State list order and active state persist across sessions
+- **URL preset loading**:
+  - First visit with `?preset=Name` → loads that preset
+  - Return visit with same preset URL → uses your localStorage data (customizations preserved)
+  - Visit with **different** preset URL → loads the new preset (replaces localStorage)
+  - Refresh without URL param → loads your localStorage data and last active state
 
 ---
 

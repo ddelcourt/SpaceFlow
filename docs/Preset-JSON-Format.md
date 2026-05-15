@@ -31,10 +31,15 @@ Preset files are stored in `config/presets/` and registered in `config/presets/m
 |-------|------|----------|-------------|
 | `version` | string | Yes | Format version (currently "2.0") |
 | `params` | object | Yes | Current application parameters |
-| `states` | array | No | Array of saved state configurations |
+| `states` | array | No | Array of saved state configurations (order matters) |
 | `activeStateId` | string | No | ID of currently active state |
 | `overlayPresetFiles` | array | No | List of available overlay preset filenames |
 | `saveDate` | string | No | ISO timestamp of file creation |
+
+**Note on `states` array order:**
+- When loading a preset for the first time, the **first state** in the array is loaded automatically.
+- State order can be modified by users via drag-and-drop in the UI.
+- Modified order persists in localStorage and is preserved on page refresh.
 
 ---
 

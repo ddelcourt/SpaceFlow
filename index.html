@@ -63,48 +63,7 @@
             </select>
           </div>
           
-          <!-- Global Speed Control -->
-          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #333;">
-            <div class="control-group">
-              <label>Global Speed</label>
-              <div class="slider-row">
-                <input type="range" id="ambient-speed-master" min="5" max="100" value="100"/>
-                <span class="value-display"><span id="ambient-speed-master-val">100</span>%</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Transition Duration Controls -->
-          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #333;">
-            <div class="control-group">
-              <label>State Transition <span style="color:#444">(seconds)</span></label>
-              <div class="slider-row">
-                <input type="range" id="state-transition-duration" min="0" max="240" step="1" value="180"/>
-                <span class="value-display" id="state-transition-duration-val">180</span>
-              </div>
-            </div>
-            <div class="control-group">
-              <label>Color Transition <span style="color:#444">(seconds)</span></label>
-              <div class="slider-row">
-                <input type="range" id="color-transition-duration" min="0" max="30" step="0.1" value="3"/>
-                <span class="value-display" id="color-transition-duration-val">3</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Auto-Trigger Controls -->
-          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #333;">
-            <div class="control-group">
-              <label><input type="checkbox" id="auto-trigger-states" autocomplete="off"> Auto-Trigger Frq (s)</label>
-            </div>
-            <div class="control-group">
-              <!-- <label> Frq<span style="color:#444">(s)</span></label> -->
-              <div class="slider-row">
-                <input type="range" id="auto-trigger-frequency" min="5" max="240" step="1" value="30"/>
-                <span class="value-display" id="auto-trigger-frequency-val">30</span>
-              </div>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
@@ -271,41 +230,104 @@
 
   <div class="controls-middle">
 
-    <!-- Patch States -->
+    <!-- States player -->
+    <div class="section">
+      <div class="section-header" data-section="states-player">
+        <span class="section-title">States player</span>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-content">
+        <div class="section-body">
+          <!-- Auto-Trigger Status (shown when auto-trigger is active) -->
+          <div id="auto-trigger-status" class="auto-trigger-status" style="display: none;">
+            <div class="status-current">
+              <span class="status-label-small">Current:</span>
+              <span id="current-state-name" class="current-state-name">—</span>
+            </div>
+            <div class="status-header">
+              <span class="status-label">Next:</span>
+              <span id="next-state-name" class="next-state-name">Random State</span>
+            </div>
+            <div class="progress-bar-container" id="progress-bar-container">
+              <div id="progress-bar-fill" class="progress-bar-fill"></div>
+              <div id="progress-bar-thumb" class="progress-bar-thumb"></div>
+            </div>
+            <div class="status-footer">
+              <span id="countdown-display" class="countdown-display">0s</span>
+              <div class="status-controls">
+                <button id="auto-trigger-previous" class="status-control-btn" title="Previous State">⏮</button>
+                <button id="auto-trigger-play-pause" class="status-control-btn" title="Play/Pause">⏸</button>
+                <button id="auto-trigger-reset" class="status-control-btn" title="Reset Timer">↻</button>
+                <button id="auto-trigger-skip" class="status-control-btn" title="Skip to Next">⏭</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player options -->
+    <div class="section">
+      <div class="section-header" data-section="player-options">
+        <span class="section-title">Player options</span>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-content">
+        <div class="section-body">
+          <!-- Global Speed Control -->
+          <div class="control-group">
+            <label>Global Speed</label>
+            <div class="slider-row">
+              <input type="range" id="ambient-speed-master" min="5" max="100" value="100"/>
+              <span class="value-display"><span id="ambient-speed-master-val">100</span>%</span>
+            </div>
+          </div>
+          
+          <!-- Transition Duration Controls -->
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #333;">
+            <div class="control-group">
+              <label>State Transition <span style="color:#444">(seconds)</span></label>
+              <div class="slider-row">
+                <input type="range" id="state-transition-duration" min="0" max="240" step="1" value="180"/>
+                <span class="value-display" id="state-transition-duration-val">180</span>
+              </div>
+            </div>
+            <div class="control-group">
+              <label>Color Transition <span style="color:#444">(seconds)</span></label>
+              <div class="slider-row">
+                <input type="range" id="color-transition-duration" min="0" max="30" step="0.1" value="3"/>
+                <span class="value-display" id="color-transition-duration-val">3</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Auto-Trigger Controls -->
+          <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #333;">
+            <div class="control-group">
+              <label><input type="checkbox" id="auto-trigger-states" autocomplete="off"> Auto-Trigger Frq (s)</label>
+            </div>
+            <div class="control-group">
+              <!-- <label> Frq<span style="color:#444">(s)</span></label> -->
+              <div class="slider-row">
+                <input type="range" id="auto-trigger-frequency" min="5" max="240" step="1" value="30"/>
+                <span class="value-display" id="auto-trigger-frequency-val">30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- States -->
     <div class="section">
       <div class="section-header" data-section="states">
-        <span class="section-title">Patch States</span>
+        <span class="section-title">States</span>
         <span class="section-toggle">▼</span>
       </div>
       <div class="section-content">
         <div class="section-body">
           <!-- State Management -->
           <div class="state-panel">
-            <!-- Auto-Trigger Status (shown when auto-trigger is active) -->
-            <div id="auto-trigger-status" class="auto-trigger-status" style="display: none;">
-              <div class="status-current">
-                <span class="status-label-small">Current:</span>
-                <span id="current-state-name" class="current-state-name">—</span>
-              </div>
-              <div class="status-header">
-                <span class="status-label">Next:</span>
-                <span id="next-state-name" class="next-state-name">Random State</span>
-              </div>
-              <div class="progress-bar-container" id="progress-bar-container">
-                <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                <div id="progress-bar-thumb" class="progress-bar-thumb"></div>
-              </div>
-              <div class="status-footer">
-                <span id="countdown-display" class="countdown-display">0s</span>
-                <div class="status-controls">
-                  <button id="auto-trigger-previous" class="status-control-btn" title="Previous State">⏮</button>
-                  <button id="auto-trigger-play-pause" class="status-control-btn" title="Play/Pause">⏸</button>
-                  <button id="auto-trigger-reset" class="status-control-btn" title="Reset Timer">↻</button>
-                  <button id="auto-trigger-skip" class="status-control-btn" title="Skip to Next">⏭</button>
-                </div>
-              </div>
-            </div>
-            
             <div id="state-list-container" class="state-list-container">
               <!-- States will be dynamically inserted here -->
             </div>

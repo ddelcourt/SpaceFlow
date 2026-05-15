@@ -73,6 +73,13 @@ Les états sont des instantanés complets de configuration (paramètres, couleur
 4. Cliquer sur Mettre à jour pour écraser l'état sélectionné
 5. Cliquer sur Supprimer pour retirer un état
 6. Cliquer sur le nom d'un état pour le renommer
+7. **Glisser-déposer** les états pour les réordonner (poignée à gauche)
+
+**Ordre des états :**
+- **Glisser-déposer** : Cliquer et faire glisser la poignée ⋮⋮ pour réorganiser
+- L'ordre persiste entre les sessions via localStorage
+- Lors du chargement d'un preset JSON, le premier état de la liste se charge automatiquement
+- Lors de l'actualisation de la page, le dernier état actif se charge automatiquement
 
 **Déclenchement automatique :**
 Activer Auto-déclenchement pour alterner automatiquement entre les états. Le curseur Fréquence (5–120 secondes) définit l'intervalle. Un algorithme de mélange garantit que chaque état est visité une fois avant répétition.
@@ -331,6 +338,15 @@ Capture image par image pour un rendu fluide et déterministe. Démarrage/arrêt
 3. Le projet se restaure immédiatement
 
 Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque modification. Au premier lancement, un projet de démarrage avec des états d'exemple se charge depuis `config/presets/zigmap_init.json`.
+
+**Comportement du localStorage :**
+- Les paramètres sont automatiquement sauvegardés à chaque modification
+- L'ordre de la liste d'états et l'état actif persistent entre les sessions
+- **Chargement des presets via URL** :
+  - Première visite avec `?preset=Nom` → charge ce preset
+  - Visite ultérieure avec même URL de preset → utilise vos données localStorage (personnalisations préservées)
+  - Visite avec URL de preset **différent** → charge le nouveau preset (remplace localStorage)
+  - Actualisation sans paramètre URL → charge vos données localStorage et dernier état actif
 
 ---
 

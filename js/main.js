@@ -236,70 +236,52 @@ async function init() {
   const presetParam = urlParams.get('preset');
   let hadSavedSettings = false;
   
-  // Always try to load from localStorage first
-  hadSavedSettings = ZM.loadFromLocalStorage();
-  const hasStoredStates = ZM.stateManager.states && ZM.stateManager.states.length > 0;
-  
   if (presetParam) {
-    // URL preset parameter exists
-    if (!hadSavedSettings || !hasStoredStates) {
-      // Only load preset if no saved settings or no states (first-time visit)
-      console.log(`[Init] Loading preset from URL (first visit): ${presetParam}`);
-      await loadPresetFile(ZM, presetParam);
-    } else {
-      // User has saved data - respect localStorage, ignore URL preset
-      console.log(`[Init] Ignoring URL preset "${presetParam}" - using localStorage (${ZM.stateManager.states.length} states)`);
-      // Load the first state to ensure params are in sync
-      if (ZM.stateManager.states.length > 0) {
-        const firstState = ZM.stateManager.states[0];
-        // Restore first state params to ensure everything is in sync
-        Object.assign(ZM.params, JSON.parse(JSON.stringify(firstState.params)));
-        if (firstState.camera) {
-          ZM.params.cameraRotationX = firstState.camera.rotationX;
-          ZM.params.cameraRotationY = firstState.camera.rotationY;
-          ZM.params.cameraDistance = firstState.camera.distance;
-          ZM.params.cameraOffsetX = firstState.camera.offsetX || 0;
-          ZM.params.cameraOffsetY = firstState.camera.offsetY || 0;
-          ZM.camera.syncFromParams(ZM.params);
-        }
-      }
-    }
+    // Load preset from URL parameter (overrides localStorage)
+    console.log(`Loading preset from URL: ${presetParam}`);
+    await loadPresetFile(ZM, presetParam);
   } else {
-    // No URL preset parameter
+    // Load saved settings or initial preset
+    hadSavedSettings = ZM.loadFromLocalStorage();
+    
+    // Load initial preset for first-time users
     if (!hadSavedSettings) {
-      // First-time user with no URL preset - load default initial preset
       await loadInitialPreset(ZM);
-    } else if (ZM.stateManager.states.length > 0) {
-      // Has saved states - sync params with first state
-      const firstState = ZM.stateManager.states[0];
-      // Preserve camera params (they're not stored in state.params, but in state.camera)
-      const preservedCameraParams = {
-        cameraRotationX: ZM.params.cameraRotationX,
-        cameraRotationY: ZM.params.cameraRotationY,
-        cameraDistance: ZM.params.cameraDistance,
-        cameraOffsetX: ZM.params.cameraOffsetX,
-        cameraOffsetY: ZM.params.cameraOffsetY
-      };
-      
-      // Restore first state params to ensure palettes are in sync
-      Object.assign(ZM.params, JSON.parse(JSON.stringify(firstState.params)));
-      
-      // Restore preserved camera params (use state's camera if available, otherwise localStorage)
-      if (firstState.camera) {
-        ZM.params.cameraRotationX = firstState.camera.rotationX;
-        ZM.params.cameraRotationY = firstState.camera.rotationY;
-        ZM.params.cameraDistance = firstState.camera.distance;
-        ZM.params.cameraOffsetX = firstState.camera.offsetX || 0;
-        ZM.params.cameraOffsetY = firstState.camera.offsetY || 0;
-        // Sync camera object to match state
-        ZM.camera.syncFromParams(ZM.params);
-      } else {
-        // Fallback to localStorage camera params if state doesn't have camera data
-        Object.assign(ZM.params, preservedCameraParams);
+    } else if (ZM.stateManager.activeStateId) {
+      // If we loaded from localStorage and there's an active state,
+      // ensure params match the active state (not stale localStorage params)
+      console.log('🔄 Syncing params with active state:', ZM.stateManager.activeStateId);
+      const activeState = ZM.stateManager.getStateById(ZM.stateManager.activeStateId);
+      if (activeState) {
+        // Preserve camera params (they're not stored in state.params, but in state.camera)
+        const preservedCameraParams = {
+          cameraRotationX: ZM.params.cameraRotationX,
+          cameraRotationY: ZM.params.cameraRotationY,
+          cameraDistance: ZM.params.cameraDistance,
+          cameraOffsetX: ZM.params.cameraOffsetX,
+          cameraOffsetY: ZM.params.cameraOffsetY
+        };
+        
+        // Restore state params to ensure palettes are in sync
+        Object.assign(ZM.params, JSON.parse(JSON.stringify(activeState.params)));
+        
+        // Restore preserved camera params (use state's camera if available, otherwise localStorage)
+        if (activeState.camera) {
+          ZM.params.cameraRotationX = activeState.camera.rotationX;
+          ZM.params.cameraRotationY = activeState.camera.rotationY;
+          ZM.params.cameraDistance = activeState.camera.distance;
+          ZM.params.cameraOffsetX = activeState.camera.offsetX || 0;
+          ZM.params.cameraOffsetY = activeState.camera.offsetY || 0;
+          // Sync camera object to match state
+          ZM.camera.syncFromParams(ZM.params);
+        } else {
+          // Fallback to localStorage camera params if state doesn't have camera data
+          Object.assign(ZM.params, preservedCameraParams);
+        }
+        
+        // Save back to localStorage to update stale data
+        ZM.saveToLocalStorage();
       }
-      
-      // Save back to localStorage to update stale data
-      ZM.saveToLocalStorage();
     }
   }
   
@@ -336,24 +318,20 @@ async function init() {
   } else if (!hadSavedSettings && ZM.syncUIFromParams) {
     // Sync UI if we loaded a preset without states
     ZM.syncUIFromParams();
-  } else if (hadSavedSettings && ZM.stateManager.states.length > 0) {
-    // When loading from localStorage, always trigger the FIRST state in the list
-    const firstState = ZM.stateManager.states[0];
-    if (firstState && ZM.stateManager.load) {
+  } else if (hadSavedSettings) {
+    // When loading from localStorage, trigger the active state to ensure proper initialization
+    if (ZM.stateManager.activeStateId && ZM.stateManager.load) {
       // Update state panel UI first
       if (ZM.updateStatePanel) {
         ZM.updateStatePanel();
       }
-      // Load the first state INSTANTLY to trigger all visual updates
-      console.log('🎯 Loading first state on init:', firstState.name);
-      ZM.stateManager.load(firstState.id, true); // instant = true
+      // Load the active state INSTANTLY to trigger all visual updates
+      console.log('🎯 Triggering active state on load:', ZM.stateManager.activeStateId);
+      ZM.stateManager.load(ZM.stateManager.activeStateId, true); // instant = true
     } else if (ZM.syncUIFromParams) {
-      // Fallback: sync UI if there's no states
+      // Fallback: sync UI if there's no active state
       ZM.syncUIFromParams();
     }
-  } else if (ZM.syncUIFromParams) {
-    // No states at all - sync UI from params
-    ZM.syncUIFromParams();
   }
   
   // Setup input handlers

@@ -64,6 +64,12 @@ Les états sont des instantanés complets des paramètres. Ils permettent de mé
 - **Update** : écrase l'état sélectionné avec la configuration actuelle.
 - **Delete** : supprime l'état sélectionné.
 - **Renommer** : cliquer sur le nom d'un état pour le modifier.
+- **Réordonner** : glisser-déposer les états avec la poignée ⋮⋮ sur la gauche.
+
+**Ordre et initialisation des états :**
+- L'ordre des états est préservé dans le localStorage entre les sessions.
+- Lors du chargement d'un fichier preset JSON, le **premier état** de la liste se charge automatiquement.
+- Lors de l'actualisation de la page ou du retour à l'application, le **dernier état actif** se charge automatiquement.
 
 **Contrôles de transition**
 - **State Transition** (0–30 s) : durée de transition entre états.
