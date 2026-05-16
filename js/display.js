@@ -12,7 +12,7 @@ import { ZigzagLine } from './core/ZigzagLine.js';
 import { Emitter } from './core/Emitter.js';
 import { Camera } from './core/Camera.js';
 import { getSpawnDistance, buildRibbonSides } from './core/utils.js';
-import { triggerPaletteChange } from './core/colorUtils.js';
+import { triggerPaletteChange, initColorRNG } from './core/colorUtils.js';
 
 // Import rendering
 import { attachToZM } from './rendering/SketchFactory.js';
@@ -80,6 +80,7 @@ window.ZigMap26 = {
 };
 
 // Add wrapper method to properly bind ZM context
+// This ensures ONE function controls palette transitions across ALL windows (main + display)
 window.ZigMap26.triggerPaletteChange = function() {
   triggerPaletteChange(window.ZigMap26);
 };

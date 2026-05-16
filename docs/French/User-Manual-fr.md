@@ -69,7 +69,7 @@ Les états sont des instantanés complets des paramètres. Ils permettent de mé
 - **Save** : enregistre la configuration actuelle comme nouvel état.
 - **Update** : écrase l'état sélectionné avec la configuration actuelle.
 - **Delete** : supprime l'état sélectionné.
-- **Renommer** : cliquer sur le nom d'un état pour le modifier.
+- **Renommer** : cliquer sur le nom d'un état pour le modifier (ou utiliser le bouton renommer ✎).
 - **Réordonner** : glisser-déposer les états avec la poignée ⋮⋮ sur la gauche.
 
 **Ordre et initialisation des états :**
@@ -94,6 +94,7 @@ Quatre palettes distinctes, chacune comportant quatre emplacements de couleur.
 - Cliquer sur un sélecteur de couleur pour modifier une teinte.
 - Attribuer un rôle à chaque couleur : **Line** (lignes zigzag), **Background** (arrière-plan) ou **None** (désactivé).
 - **Color Depth Separation** : espacement sur l'axe Z entre lignes de différentes couleurs.
+- **Color Random Seed** (1-9999) : graine pour sélection déterministe des couleurs. Toutes les fenêtres avec la même graine sélectionneront des couleurs identiques pour les nouvelles lignes, assurant la synchronisation parfaite entre la fenêtre principale et les fenêtres d'affichage.
 
 Lors du changement de palette, les lignes existantes transitionnent en douceur vers les nouvelles couleurs.
 

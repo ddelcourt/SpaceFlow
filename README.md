@@ -79,7 +79,7 @@ States are complete snapshots of configuration (parameters, colors, camera posit
 3. Click Save to create a new state
 4. Click Update to overwrite the selected state
 5. Click Delete to remove a state
-6. Click on a state name to rename it
+6. Click on a state name to rename it (or use the rename button ✎)
 7. **Drag and drop** states to reorder them (drag handle on left side)
 
 **State order:**
@@ -334,6 +334,9 @@ Multiple slots can have the same role.
 
 **Color depth separation** — range: 10–500, default: 100  
 Controls Z-axis spacing between lines of different colors. Higher values reduce visual overlap (z-fighting). Formula: each slot offset = `(slotIndex - 2) × multiplier`.
+
+**Color random seed** — range: 1–9999, default: 1  
+Seed for deterministic color selection. All windows with the same seed will pick identical colors for new lines. Change this value to get different random color patterns while maintaining synchronization across display windows.
 
 **Color transitions**  
 When changing palettes, all existing lines and background transition smoothly over configured duration via RGB linear interpolation.

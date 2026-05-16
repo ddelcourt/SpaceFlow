@@ -42,6 +42,7 @@ export const DEFAULT_PARAMS = {
   colorTransitionDuration: 3,
   stateTransitionDuration: 180, // Transition time for geometry, behavior, camera, modulations
   colorSlotZOffset: 100, // Z-offset multiplier per color slot (prevents z-fighting)
+  colorRandomSeed: 1, // Seed for deterministic color selection (1-9999)
   
   // State Auto-Trigger
   autoTriggerStates: false,

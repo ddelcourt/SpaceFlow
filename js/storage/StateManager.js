@@ -3,7 +3,7 @@
 // Manage multiple states/states of the application
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { triggerPaletteChange, getBackgroundColor } from '../core/colorUtils.js';
+import { getBackgroundColor } from '../core/colorUtils.js';
 
 const STATES_STORAGE_KEY = 'ZigMap26_states';
 const ACTIVE_STATE_KEY = 'ZigMap26_activeState';
@@ -198,7 +198,8 @@ function restoreState(ZM, state, instant = false) {
   // Preserve project-wide settings
   const preservedSettings = {
     stateTransitionDuration: ZM.params.stateTransitionDuration,
-    colorTransitionDuration: ZM.params.colorTransitionDuration,
+    // NOTE: colorTransitionDuration is NOT preserved - it comes from the loaded state
+    // This ensures color transitions match the state's artistic intent
     autoTriggerStates: ZM.params.autoTriggerStates,
     autoTriggerFrequency: ZM.params.autoTriggerFrequency,
     ambientSpeedMaster: ZM.params.ambientSpeedMaster,
@@ -260,6 +261,7 @@ function restoreState(ZM, state, instant = false) {
   if (state.camera && ZM.camera) {
     if (instant) {
       // Instant mode: directly set camera values
+      console.log('📷 Setting camera instantly:', state.camera);
       ZM.camera.rotationX = state.camera.rotationX;
       ZM.camera.rotationY = state.camera.rotationY;
       ZM.camera.distance = state.camera.distance;
@@ -373,6 +375,8 @@ function restoreState(ZM, state, instant = false) {
   
   // Always apply the state's palette — both to ensure new lines use the correct
   // colors AND to transition existing lines to the restored palette.
+  console.log(`🎨 About to trigger palette change: instant=${instant}, palette=${ZM.params.activePaletteIndex}, duration=${ZM.params.colorTransitionDuration}s`);
+  
   if (instant) {
     // Instant mode: snap background directly, then trigger palette so lines update
     if (ZM.bgTransition) {
@@ -383,17 +387,28 @@ function restoreState(ZM, state, instant = false) {
       ZM.bgTransition.progress = 1.0;
       ZM.bgTransition.isTransitioning = false;
     }
-    triggerPaletteChange(ZM);
+    if (ZM.triggerPaletteChange) {
+      console.log('   → Calling triggerPaletteChange (instant mode)');
+      ZM.triggerPaletteChange();
+    }
   } else {
     // Normal mode: smooth palette transition
-    triggerPaletteChange(ZM);
+    if (ZM.triggerPaletteChange) {
+      console.log('   → Calling triggerPaletteChange (transition mode)');
+      ZM.triggerPaletteChange();
+    }
   }
   
-  // Update all UI elements WITHOUT triggering events
-  syncUIWithoutRestart(ZM);
-  
-  // Save to main localStorage
-  ZM.saveToLocalStorage();
+  // Update UI and save (only in main window, not display mode)
+  if (!ZM.isDisplayMode) {
+    // Update all UI elements WITHOUT triggering events
+    syncUIWithoutRestart(ZM);
+    
+    // Save to main localStorage
+    if (ZM.saveToLocalStorage) {
+      ZM.saveToLocalStorage();
+    }
+  }
   
   // Reset auto-trigger timer to prevent immediate re-triggering
   if (ZM.autoTriggerTimer) {
@@ -603,6 +618,7 @@ function loadState(ZM, id, instant = false, toastPrefix = 'State: ') {
   }
   
   console.log(`🎬 Loading state: "${state.name}" (instant: ${instant})`);
+  console.log(`   State colorTransitionDuration: ${state.params.colorTransitionDuration}s`);
   
   restoreState(ZM, state, instant);
   ZM.stateManager.activeStateId = id;
@@ -610,6 +626,7 @@ function loadState(ZM, id, instant = false, toastPrefix = 'State: ') {
   
   // Broadcast state load to display windows - they will call restoreState() with same logic
   if (ZM.windowSync && ZM.windowSync.broadcastStateLoad) {
+    console.log(`📤 Broadcasting state-load to display windows: ${state.name}`);
     ZM.windowSync.broadcastStateLoad(state, instant);
   }
 

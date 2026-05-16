@@ -12,6 +12,7 @@ import { ZigzagLine } from './core/ZigzagLine.js';
 import { Emitter } from './core/Emitter.js';
 import { Camera } from './core/Camera.js';
 import { getSpawnDistance, buildRibbonSides } from './core/utils.js';
+import { initColorRNG, triggerPaletteChange } from './core/colorUtils.js';
 
 // Import storage
 import { loadFromLocalStorage, saveToLocalStorage, clearLocalStorage, downloadJSON, loadJSON } from './storage/localStorage.js';
@@ -163,6 +164,12 @@ window.ZigMap26 = {
   initializeSketches: null
 };
 
+// Add wrapper method to properly bind ZM context
+// This ensures ONE function controls palette transitions across ALL windows (main + display)
+window.ZigMap26.triggerPaletteChange = function() {
+  triggerPaletteChange(window.ZigMap26);
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════
@@ -259,6 +266,9 @@ async function init() {
   } else {
     // Load saved settings or initial preset
     hadSavedSettings = ZM.loadFromLocalStorage();
+    
+    // Initialize color RNG with seed from params
+    initColorRNG(ZM.params.colorRandomSeed || 1);
     
     // Load initial preset for first-time users
     if (!hadSavedSettings) {

@@ -39,6 +39,10 @@ export class ZigzagLine {
     this.colorSlotIndex = colorSlotIndex;
     this.zOffset = (colorSlotIndex - 2) * params.colorSlotZOffset;
     
+    // Store BASE velocity (without ambientSpeedMaster applied)
+    // Effective velocity is calculated dynamically from params.ambientSpeedMaster
+    const speedMultiplier = Math.max(params.ambientSpeedMaster, 0.01) / 100; // Prevent division by zero
+    this.baseVy = vy / speedMultiplier;
     this.vy = vy;
     this.params = params;
     this.segments = SEGMENTS;
@@ -62,6 +66,7 @@ export class ZigzagLine {
     this.targetColor = [...newColor];
     this.colorTransitionProgress = 0.0;
     this.isTransitioning = true;
+    this._loggedDuration = false; // Reset log flag for new transition
     
     // Update z-offset if color slot changed (prevents z-fighting)
     if (newColorSlotIndex !== undefined && newColorSlotIndex !== this.colorSlotIndex) {
@@ -85,6 +90,10 @@ export class ZigzagLine {
 
   update(dt) {
     this.age += dt;
+    
+    // Recalculate effective velocity from current ambientSpeedMaster (dynamic sync)
+    this.vy = this.baseVy * (this.params.ambientSpeedMaster / 100);
+    
     this.y += this.vy * dt;
     const worldY = this.y - this.canvasHeight / 2;
     const dist = this.getSpawnDistance(this.segmentLength);
@@ -92,7 +101,15 @@ export class ZigzagLine {
     
     // Update color transition (only if actively transitioning)
     if (this.isTransitioning) {
-      this.colorTransitionProgress += dt / this.params.colorTransitionDuration;
+      const duration = this.params.colorTransitionDuration;
+      
+      // Debug log first transition to verify params sync (only once per line)
+      if (!this._loggedDuration) {
+        console.log(`🎨 Line ${this.colorSlotIndex} transitioning: duration=${duration}s, params.colorTransitionDuration=${this.params.colorTransitionDuration}s`);
+        this._loggedDuration = true;
+      }
+      
+      this.colorTransitionProgress += dt / duration;
       if (this.colorTransitionProgress >= 1.0) {
         this.colorTransitionProgress = 1.0;
         this.currentColor = [...this.targetColor]; // Snap to final color

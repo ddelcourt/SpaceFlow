@@ -3,6 +3,8 @@
  * Allows a display window to mirror the primary window's rendering
  */
 
+import { initColorRNG } from '../core/colorUtils.js';
+
 const CHANNEL_NAME = 'zigmap26-sync';
 const SYNC_THROTTLE_MS = 16; // ~60fps max
 
@@ -213,6 +215,13 @@ export function initializePrimarySync(ZM) {
       timestamp: Date.now()
     };
     
+    // Log what we're sending (only on explicit broadcasts, not periodic updates)
+    if (!ZM.windowSync._broadcastingTransition) {
+      console.log('📤 Sending full state to display:');
+      console.log(`   colorTransitionDuration: ${state.params.colorTransitionDuration}s`);
+      console.log(`   colorRandomSeed: ${state.params.colorRandomSeed}`);
+    }
+    
     // Include transition states so display window can match ongoing transitions
     if (ZM.geometryScaleTransition) {
       state.geometryScaleTransition = {
@@ -300,6 +309,25 @@ export function initializePrimarySync(ZM) {
       return;
     }
 
+    // Check if this contains palette-critical changes (need immediate sync)
+    const paletteParams = ['activePaletteIndex', 'palettes', 'backgroundColor', 'colorTransitionDuration', 'colorRandomSeed'];
+    const hasPaletteChanges = Object.keys(changes).some(k => paletteParams.includes(k));
+    
+    if (hasPaletteChanges) {
+      // Send palette changes IMMEDIATELY (no throttling) for perfect synchronization
+      const updates = {
+        type: 'delta-sync',
+        changes: changes,
+        timestamp: Date.now()
+      };
+      
+      channel.postMessage(updates);
+      console.log('📤 Broadcasting palette change (immediate):', Object.keys(changes).filter(k => paletteParams.includes(k)).join(', '));
+      lastSyncTime = Date.now();
+      return;
+    }
+
+    // For non-palette changes, use normal throttling
     // Store pending updates
     if (!pendingUpdates) {
       pendingUpdates = {};
@@ -322,7 +350,15 @@ export function initializePrimarySync(ZM) {
         };
         
         channel.postMessage(updates);
-        console.log('📤 Synced params:', Object.keys(pendingUpdates).join(', '));
+        
+        // Enhanced logging for palette changes
+        const changedKeys = Object.keys(pendingUpdates);
+        const paletteRelated = changedKeys.filter(k => ['activePaletteIndex', 'palettes', 'backgroundColor'].includes(k));
+        if (paletteRelated.length > 0) {
+          console.log('📤 Broadcasting palette change:', paletteRelated.join(', '));
+        } else {
+          console.log('📤 Synced params:', changedKeys.join(', '));
+        }
         
         lastSyncTime = Date.now();
         pendingUpdates = null;
@@ -480,10 +516,30 @@ export function initializeDisplaySync(ZM) {
       if (type === 'full-sync') {
         if (!initialSyncReceived) {
           console.log('📥 Received full state from primary window');
+          console.log(`   colorTransitionDuration: ${params.colorTransitionDuration}s`);
+          console.log(`   colorRandomSeed: ${params.colorRandomSeed}`);
+          console.log(`   ZM.params object ID: ${ZM.params}`);
         }
         
-        // Update all params
+        // Update all params (modifies existing object in-place)
+        const beforeDuration = ZM.params.colorTransitionDuration;
         Object.assign(ZM.params, params);
+        const afterDuration = ZM.params.colorTransitionDuration;
+        
+        if (!initialSyncReceived && beforeDuration !== afterDuration) {
+          console.log(`   ✓ colorTransitionDuration updated: ${beforeDuration}s → ${afterDuration}s`);
+          
+          // Verify all lines reference the same params object
+          if (ZM.emitterInstance && ZM.emitterInstance.lines.length > 0) {
+            const firstLine = ZM.emitterInstance.lines[0];
+            console.log(`   ✓ Line params reference: ${firstLine.params === ZM.params ? 'SAME ✓' : 'DIFFERENT ✗'}`);
+          }
+        }
+        
+        // Initialize color RNG with seed from synced params (ensures deterministic color selection)
+        if (params.colorRandomSeed !== undefined) {
+          initColorRNG(params.colorRandomSeed);
+        }
         
         // Update noise offset
         if (noiseOffset !== undefined) {
@@ -698,7 +754,21 @@ export function initializeDisplaySync(ZM) {
         
         const hasTransitionParams = Object.keys(changes).some(k => transitionParams.has(k));
         
+        // Capture old speed values BEFORE Object.assign (for line speed updates)
+        const oldSpeed = 'speed' in changes ? ZM.params.speed : null;
+        
         Object.assign(ZM.params, changes);
+        
+        // Debug log for color transition duration changes
+        if (changes.colorTransitionDuration !== undefined) {
+          console.log(`🎨 Color transition duration synced: ${changes.colorTransitionDuration}s (was: ${ZM.params.colorTransitionDuration}s)`);
+        }
+        
+        // Re-initialize color RNG if seed changed (ensures all windows stay in sync)
+        if (changes.colorRandomSeed !== undefined) {
+          console.log(`🎲 Color RNG seed synced: ${changes.colorRandomSeed}`);
+          initColorRNG(changes.colorRandomSeed);
+        }
 
         // ONLY update camera/geometry if transition params are present (instant changes)
         if (hasTransitionParams) {
@@ -762,8 +832,18 @@ export function initializeDisplaySync(ZM) {
       // Always update palette if palette params changed (not transition-related)
       const paletteParams = ['activePaletteIndex', 'palettes', 'backgroundColor'];
       if (paletteParams.some(param => param in changes)) {
+        console.log(`🎨 Palette params changed:`, Object.keys(changes).filter(k => paletteParams.includes(k)));
         if (ZM.triggerPaletteChange && ZM.sketchReady) {
+          console.log(`   ✓ Triggering palette change on display window`);
           ZM.triggerPaletteChange();
+          
+          // Update previousPaletteState to track this change
+          previousPaletteState = {
+            activePaletteIndex: ZM.params.activePaletteIndex,
+            palettes: JSON.stringify(ZM.params.palettes)
+          };
+        } else if (!ZM.sketchReady) {
+          console.log(`   ⚠️ Sketch not ready yet, palette change deferred`);
         }
       }
       
@@ -787,6 +867,26 @@ export function initializeDisplaySync(ZM) {
         // Color transition duration is used in palette transitions
         // The duration is read from ZM.params.colorTransitionDuration when needed
       }
+      
+      // Update line base speeds when speed or ambientSpeedMaster changes
+      if ('speed' in changes || 'ambientSpeedMaster' in changes) {
+        if (ZM.emitterInstance && ZM.emitterInstance.lines) {
+          // Recalculate baseVy for all existing lines if speed changed
+          if ('speed' in changes && oldSpeed !== null && oldSpeed !== 0) {
+            const speedRatio = changes.speed / oldSpeed;
+            
+            for (const line of ZM.emitterInstance.lines) {
+              // Adjust baseVy proportionally to speed change
+              line.baseVy *= speedRatio;
+            }
+            console.log(`🏃 Updated ${ZM.emitterInstance.lines.length} line base speeds (${oldSpeed} → ${changes.speed})`);
+          }
+          // ambientSpeedMaster is applied dynamically in line.update(), no adjustment needed
+          if ('ambientSpeedMaster' in changes) {
+            console.log(`🌍 Ambient speed master synced: ${changes.ambientSpeedMaster}% (affects ${ZM.emitterInstance.lines.length} lines)`);
+          }
+        }
+      }
 
       // Handle specific param updates
       if ('overlayImageSrc' in changes || 'overlayVisible' in changes) {
@@ -805,10 +905,16 @@ export function initializeDisplaySync(ZM) {
         // NEW: Handle state load - use same restoreState() logic as main window
         const { state, instant } = event.data;
         
+        console.log(`📥 Display window: Received state-load: ${state?.name} instant: ${instant}`);
+        console.log(`   State colorTransitionDuration: ${state?.params?.colorTransitionDuration}s`);
+        console.log(`   Current ZM.params.colorTransitionDuration: ${ZM.params.colorTransitionDuration}s`);
+        
         if (ZM.stateManager && ZM.stateManager.restoreState && state) {
+          console.log('📥 Display window: Calling restoreState()...');
           // Call the exact same restoreState function as main window
           // This ensures perfect synchronization of all transitions
           ZM.stateManager.restoreState(state, instant);
+          console.log('✅ Display window: restoreState() completed');
         }
       
       } else if (type === 'cancel-transitions') {

@@ -69,7 +69,7 @@ States are complete snapshots of parameters. They allow memorizing and recalling
 - **Save**: saves the current configuration as a new state.
 - **Update**: overwrites the selected state with the current configuration.
 - **Delete**: removes the selected state.
-- **Rename**: click on a state name to edit it.
+- **Rename**: click on a state name to edit it (or use the rename button ✎).
 - **Reorder**: drag and drop states using the ⋮⋮ handle on the left side.
 
 **State order and initialization:**
@@ -94,6 +94,7 @@ Four distinct palettes, each with four color slots.
 - Click a color picker to modify a hue.
 - Assign a role to each color: **Line** (zigzag lines), **Background** (canvas background), or **None** (disabled).
 - **Color Depth Separation**: Z-axis spacing between lines of different colors.
+- **Color Random Seed** (1-9999): seed for deterministic color selection. All windows with the same seed will pick identical colors for new lines, ensuring perfect synchronization between the main window and display windows.
 
 When changing palettes, existing lines transition smoothly to new colors.
 

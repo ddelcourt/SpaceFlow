@@ -2,7 +2,7 @@
  * UIController — Binds UI controls to parameters
  */
 
-import { triggerPaletteChange, getBackgroundColor } from '../core/colorUtils.js';
+import { getBackgroundColor, initColorRNG } from '../core/colorUtils.js';
 import { OVERLAY_FILES, OVERLAY_FOLDER } from '../../config/overlayPresets.js';
 import { openDisplayWindow } from '../sync/WindowSync.js';
 
@@ -108,6 +108,10 @@ function initializeAllControls(ZM) {
   wireSlider(ZM, 'eye-separation', 'eye-separation-val', 'eyeSeparation', 0, 'Eye Separation');
   wireSlider(ZM, 'state-transition-duration', 'state-transition-duration-val', 'stateTransitionDuration', 1, 'State Transition');
   wireSlider(ZM, 'color-transition-duration', 'color-transition-duration-val', 'colorTransitionDuration', 1, 'Color Transition');
+  
+  // Color Random Seed (with RNG reinitialization)
+  setupColorRandomSeedControl(ZM);
+  
   wireSlider(ZM, 'auto-trigger-frequency', 'auto-trigger-frequency-val', 'autoTriggerFrequency', 0, 'Auto-Trigger Frequency');
   wireSlider(ZM, 'overlay-scale', 'overlay-scale-val', 'overlayScale', 0, 'Overlay Scale');
   wireSlider(ZM, 'overlay-opacity', 'overlay-opacity-val', 'overlayOpacity', 0, 'Overlay Opacity');
@@ -169,6 +173,7 @@ function wireSlider(ZM, sliderId, displayId, paramKey, decimals = 0, label = '')
     ZM.params[paramKey];
   
   slider.addEventListener('input', () => {
+    const oldValue = ZM.params[paramKey];
     ZM.params[paramKey] = parseFloat(slider.value);
     display.textContent = decimals > 0 ? 
       ZM.params[paramKey].toFixed(decimals) : 
@@ -191,7 +196,22 @@ function wireSlider(ZM, sliderId, displayId, paramKey, decimals = 0, label = '')
       ZM.stateManager.updateAutoTriggerStatus();
     }
     
+    // Update existing line base speeds when speed parameter changes
+    if (paramKey === 'speed' && ZM.emitterInstance && ZM.emitterInstance.lines && oldValue !== 0) {
+      const speedRatio = ZM.params[paramKey] / oldValue;
+      for (const line of ZM.emitterInstance.lines) {
+        line.baseVy *= speedRatio;
+      }
+    }
+    // ambientSpeedMaster is applied dynamically in line.update(), no adjustment needed
+    
     ZM.saveToLocalStorage();
+    
+    // Broadcast param changes during slider drag (in addition to pointerup)
+    // This ensures display windows stay in sync even if palette changes before releasing mouse
+    if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+      ZM.windowSync.broadcastParamChanges({ [paramKey]: ZM.params[paramKey] });
+    }
   });
 
   if (label) {
@@ -203,7 +223,7 @@ function wireSlider(ZM, sliderId, displayId, paramKey, decimals = 0, label = '')
     });
   }
   
-  // Broadcast param change to display window on mouse up
+  // Broadcast param change to display window on mouse up (already broadcasted during input)
   slider.addEventListener('pointerup', () => {
     if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
       ZM.windowSync.broadcastParamChanges({ [paramKey]: ZM.params[paramKey] });
@@ -299,6 +319,41 @@ function setupFOVControl(ZM) {
       ZM.windowSync.broadcastParamChanges({ 
         fov: ZM.params.fov,
         cameraDistance: ZM.params.cameraDistance
+      });
+    }
+  });
+}
+
+/**
+ * Setup color random seed control (reinitializes RNG on change)
+ */
+function setupColorRandomSeedControl(ZM) {
+  const slider = document.getElementById('color-random-seed');
+  const display = document.getElementById('color-random-seed-val');
+  
+  if (!slider || !display) return;
+  
+  slider.value = ZM.params.colorRandomSeed || 1;
+  display.textContent = ZM.params.colorRandomSeed || 1;
+  
+  slider.addEventListener('input', () => {
+    const newSeed = parseInt(slider.value);
+    ZM.params.colorRandomSeed = newSeed;
+    display.textContent = newSeed;
+    
+    // Reinitialize RNG with new seed
+    initColorRNG(newSeed);
+    
+    ZM.saveToLocalStorage();
+  });
+  
+  slider.addEventListener('pointerup', () => {
+    if (ZM.showToast) ZM.showToast(`Color Seed: ${ZM.params.colorRandomSeed}`);
+    
+    // Broadcast seed change to display windows
+    if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+      ZM.windowSync.broadcastParamChanges({ 
+        colorRandomSeed: ZM.params.colorRandomSeed
       });
     }
   });
@@ -654,17 +709,20 @@ function setupPaletteUI(ZM) {
       // Update params and trigger color transitions
       ZM.params.activePaletteIndex = paletteIndex;
       updatePaletteUI(ZM);
-      triggerPaletteChange(ZM);
-      ZM.saveToLocalStorage();
-      if (ZM.showToast) {
-        ZM.showToast(`Palette ${paletteIndex + 1}`, '', 4400, buildPaletteSwatchNode(ZM, paletteIndex));
-      }
       
-      // Broadcast palette change to display window
+      // Broadcast BEFORE triggering so all windows transition simultaneously
       if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
         ZM.windowSync.broadcastParamChanges({ 
           activePaletteIndex: ZM.params.activePaletteIndex
         });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
+      ZM.saveToLocalStorage();
+      if (ZM.showToast) {
+        ZM.showToast(`Palette ${paletteIndex + 1}`, '', 4400, buildPaletteSwatchNode(ZM, paletteIndex));
       }
 
       // Auto-update active state (debounced)
@@ -680,7 +738,18 @@ function setupPaletteUI(ZM) {
       const rgb = hexToRgb(hex);
       
       ZM.params.palettes[ZM.params.activePaletteIndex][slotIndex].rgb = rgb;
-      triggerPaletteChange(ZM);
+      
+      // Broadcast IMMEDIATELY so all windows trigger palette change simultaneously
+      if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+        ZM.windowSync.broadcastParamChanges({ 
+          palettes: ZM.params.palettes,
+          activePaletteIndex: ZM.params.activePaletteIndex
+        });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
       ZM.saveToLocalStorage();
       
       if (ZM.showToast) {
@@ -690,16 +759,6 @@ function setupPaletteUI(ZM) {
 
       // Auto-update active state (debounced)
       scheduleStateAutoUpdate(ZM);
-    });
-    
-    // Broadcast color change to display window when user finishes picking
-    picker.addEventListener('change', () => {
-      if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
-        ZM.windowSync.broadcastParamChanges({ 
-          palettes: ZM.params.palettes,
-          activePaletteIndex: ZM.params.activePaletteIndex
-        });
-      }
     });
   });
   
@@ -721,20 +780,23 @@ function setupPaletteUI(ZM) {
       }
       
       activePalette[slotIndex].role = newRole;
-      triggerPaletteChange(ZM);
-      ZM.saveToLocalStorage();
-
-      if (ZM.showToast) {
-        const idx = ZM.params.activePaletteIndex;
-        ZM.showToast(`Palette ${idx + 1}`, '', 4400, buildPaletteSwatchNode(ZM, idx));
-      }
       
-      // Broadcast palette change to display window
+      // Broadcast BEFORE triggering so all windows transition simultaneously
       if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
         ZM.windowSync.broadcastParamChanges({ 
           palettes: ZM.params.palettes,
           activePaletteIndex: ZM.params.activePaletteIndex
         });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
+      ZM.saveToLocalStorage();
+
+      if (ZM.showToast) {
+        const idx = ZM.params.activePaletteIndex;
+        ZM.showToast(`Palette ${idx + 1}`, '', 4400, buildPaletteSwatchNode(ZM, idx));
       }
       
       // Auto-update active state (debounced)
@@ -797,8 +859,18 @@ function setupPaletteCopyPaste(ZM) {
     // Update UI
     updatePaletteUI(ZM);
     
+    // Broadcast BEFORE triggering so all windows transition simultaneously
+    if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+      ZM.windowSync.broadcastParamChanges({ 
+        palettes: ZM.params.palettes,
+        activePaletteIndex: ZM.params.activePaletteIndex
+      });
+    }
+    
     // Trigger color transitions
-    triggerPaletteChange(ZM);
+    if (ZM.triggerPaletteChange) {
+      ZM.triggerPaletteChange();
+    }
     
     // Save to localStorage
     ZM.saveToLocalStorage();
@@ -1435,7 +1507,9 @@ function setupDocumentationButtons() {
     'doc-tech-en': 'Documentation.md',
     'doc-tech-fr': 'Documentation-fr.md',
     'doc-projection-en': 'Projection-Matrix-Guide.md',
-    'doc-projection-fr': 'Projection-Matrix-Guide-fr.md'
+    'doc-projection-fr': 'Projection-Matrix-Guide-fr.md',
+    'doc-transitions-en': 'Transition-System-Architecture.md',
+    'doc-transitions-fr': 'Transition-System-Architecture-fr.md'
   };
   
   for (const [id, doc] of Object.entries(docButtons)) {
@@ -1467,6 +1541,7 @@ function syncUIFromParams(ZM) {
     { id: 'eye-separation', valId: 'eye-separation-val', param: 'eyeSeparation', decimals: 0 },
     { id: 'state-transition-duration', valId: 'state-transition-duration-val', param: 'stateTransitionDuration', decimals: 1 },
     { id: 'color-transition-duration', valId: 'color-transition-duration-val', param: 'colorTransitionDuration', decimals: 1 },
+    { id: 'color-random-seed', valId: 'color-random-seed-val', param: 'colorRandomSeed', decimals: 0 },
     { id: 'auto-trigger-frequency', valId: 'auto-trigger-frequency-val', param: 'autoTriggerFrequency', decimals: 0 },
     { id: 'overlay-scale', valId: 'overlay-scale-val', param: 'overlayScale', decimals: 0 },
     { id: 'overlay-opacity', valId: 'overlay-opacity-val', param: 'overlayOpacity', decimals: 0 },
@@ -1486,6 +1561,11 @@ function syncUIFromParams(ZM) {
       }
     }
   });
+  
+  // Reinitialize color RNG if seed changed (for state loading)
+  if (ZM.params.colorRandomSeed !== undefined) {
+    initColorRNG(ZM.params.colorRandomSeed);
+  }
   
   // Update checkboxes
   const checkboxMap = {
@@ -1662,16 +1742,17 @@ function updateStatePanel(ZM) {
     
     // Click on item to load
     item.addEventListener('click', (e) => {
-      // Ignore if clicking on action buttons, drag handle, or in edit mode
+      // Ignore if clicking on action buttons, drag handle, state name, or in edit mode
       if (e.target.closest('.state-action-btn')) return;
       if (e.target.closest('.state-drag-handle')) return;
+      if (e.target.closest('.state-name')) return;  // Also ignore clicks on state name
       if (e.target.closest('.state-name.editing')) return;
       ZM.stateManager.load(stateId);
     });
     
-    // Inline editing for state name
+    // Inline editing for state name - single click to rename
     const nameElement = item.querySelector('.state-name');
-    nameElement.addEventListener('dblclick', (e) => {
+    nameElement.addEventListener('click', (e) => {
       e.stopPropagation();
       enableInlineEdit(ZM, stateId, nameElement);
     });

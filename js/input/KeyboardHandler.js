@@ -2,7 +2,7 @@
  * KeyboardHandler — Centralized keyboard shortcuts
  */
 
-import { triggerPaletteChange } from '../core/colorUtils.js';
+// No direct imports from colorUtils - uses ZM.triggerPaletteChange() wrapper
 
 export function setupKeyboardHandlers(ZM) {
   // Load keyboard shortcuts configuration
@@ -164,7 +164,15 @@ function executeAction(action, ZM) {
       
       ZM.params.activePaletteIndex = 0;
       if (ZM.updatePaletteUI) ZM.updatePaletteUI();
-      triggerPaletteChange(ZM);
+      
+      // Broadcast BEFORE triggering so all windows transition simultaneously
+      if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+        ZM.windowSync.broadcastParamChanges({ activePaletteIndex: 0 });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
       ZM.saveToLocalStorage();
     },
     
@@ -175,7 +183,15 @@ function executeAction(action, ZM) {
       
       ZM.params.activePaletteIndex = 1;
       if (ZM.updatePaletteUI) ZM.updatePaletteUI();
-      triggerPaletteChange(ZM);
+      
+      // Broadcast BEFORE triggering so all windows transition simultaneously
+      if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+        ZM.windowSync.broadcastParamChanges({ activePaletteIndex: 1 });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
       ZM.saveToLocalStorage();
     },
     
@@ -186,7 +202,15 @@ function executeAction(action, ZM) {
       
       ZM.params.activePaletteIndex = 2;
       if (ZM.updatePaletteUI) ZM.updatePaletteUI();
-      triggerPaletteChange(ZM);
+      
+      // Broadcast BEFORE triggering so all windows transition simultaneously
+      if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+        ZM.windowSync.broadcastParamChanges({ activePaletteIndex: 2 });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
       ZM.saveToLocalStorage();
     },
     
@@ -197,7 +221,15 @@ function executeAction(action, ZM) {
       
       ZM.params.activePaletteIndex = 3;
       if (ZM.updatePaletteUI) ZM.updatePaletteUI();
-      triggerPaletteChange(ZM);
+      
+      // Broadcast BEFORE triggering so all windows transition simultaneously
+      if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+        ZM.windowSync.broadcastParamChanges({ activePaletteIndex: 3 });
+      }
+      
+      if (ZM.triggerPaletteChange) {
+        ZM.triggerPaletteChange();
+      }
       ZM.saveToLocalStorage();
     },
     
