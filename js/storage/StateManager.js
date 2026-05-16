@@ -338,6 +338,7 @@ function restoreState(ZM, state, instant = false) {
       ZM.geometryScaleTransition.progress = 0.0;
       ZM.geometryScaleTransition.duration = ZM.params.stateTransitionDuration;
       ZM.geometryScaleTransition.isTransitioning = true;
+      console.log(`  ⚙️ Geometry scale transition: ${ZM.geometryScaleTransition.start.toFixed(1)} → ${ZM.geometryScaleTransition.target.toFixed(1)} over ${ZM.params.stateTransitionDuration}ms`);
     }
   } else if (!ZM.geometryScaleTransition && state.params.geometryScale !== undefined) {
     // Sketches not initialized yet - directly set scale
@@ -574,6 +575,8 @@ function loadState(ZM, id, instant = false, toastPrefix = 'State: ') {
     console.warn('State not found:', id);
     return false;
   }
+  
+  console.log(`🎬 Loading state: "${state.name}" (instant: ${instant})`);
   
   restoreState(ZM, state, instant);
   ZM.stateManager.activeStateId = id;

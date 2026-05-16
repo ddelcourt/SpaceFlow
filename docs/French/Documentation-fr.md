@@ -7,6 +7,77 @@ Ce document fournit une vue d'ensemble complète de la structure du code, des mo
 
 ---
 
+## Référence des Paramètres
+
+Liste complète de tous les paramètres configurables dans l'objet `params` :
+
+| Paramètre | Variable | Description |
+|-----------|----------|-------------|
+| **Géométrie** |||
+| Longueur de Segment | `segmentLength` | Hauteur de chaque segment zigzag en pixels |
+| Épaisseur de Ligne | `lineThickness` | Largeur du ruban en pixels |
+| Rotation Émetteur | `emitterRotation` | Rotation de l'émetteur sur l'axe Z en degrés |
+| Échelle Géométrie | `geometryScale` | Multiplicateur d'échelle uniforme en pourcentage (100 = normal) |
+| Durée de Fondu | `fadeDuration` | Durée de la transition fondu entrant/sortant en secondes |
+| **Palettes de Couleurs** |||
+| Palettes | `palettes` | Tableau de 4 palettes, chacune contenant 4 couleurs avec valeurs RGB et rôle |
+| Index Palette Active | `activePaletteIndex` | Palette actuellement sélectionnée (0-3) |
+| Durée Transition Couleur | `colorTransitionDuration` | Temps en secondes pour les transitions de palette |
+| Durée Transition État | `stateTransitionDuration` | Temps en secondes pour les transitions de géométrie, comportement, caméra et modulations |
+| Décalage Z Plage Couleur | `colorSlotZOffset` | Multiplicateur de séparation sur l'axe Z par plage de couleur pour éviter le z-fighting |
+| **Déclenchement Automatique d'États** |||
+| Déclencher États Automatiquement | `autoTriggerStates` | Activer les changements d'état automatiques à intervalles spécifiés |
+| Fréquence Déclenchement Auto | `autoTriggerFrequency` | Temps en secondes entre les changements d'état automatiques (5-240) |
+| **Animation** |||
+| Taux d'Émission | `emitRate` | Nombre de lignes générées par seconde |
+| Vitesse | `speed` | Vitesse de déplacement de base des lignes en pixels par seconde |
+| Maître Vitesse Ambiante | `ambientSpeedMaster` | Multiplicateur de vitesse globale en pourcentage |
+| **Modulation** |||
+| Épaisseur Aléatoire | `randomThickness` | Activer la variation d'épaisseur pour chaque ligne |
+| Vitesse Aléatoire | `randomSpeed` | Activer la variation de vitesse pour chaque ligne |
+| Épaisseur Plage Min | `thicknessRangeMin` | Multiplicateur d'épaisseur minimum en pourcentage |
+| Épaisseur Plage Max | `thicknessRangeMax` | Multiplicateur d'épaisseur maximum en pourcentage |
+| Vitesse Plage Min | `speedRangeMin` | Multiplicateur de vitesse minimum en pourcentage |
+| Vitesse Plage Max | `speedRangeMax` | Multiplicateur de vitesse maximum en pourcentage |
+| **Caméra** |||
+| Champ de Vision | `fov` | Champ de vision de la caméra en degrés |
+| Plan de Découpe Proche | `near` | Distance de découpe proche (0.01) |
+| Plan de Découpe Lointain | `far` | Distance de découpe lointaine (5000) |
+| Rotation Caméra X | `cameraRotationX` | Rotation sur l'axe X (tangage) en radians |
+| Rotation Caméra Y | `cameraRotationY` | Rotation sur l'axe Y (lacet) en radians |
+| Distance Caméra | `cameraDistance` | Distance depuis l'origine (zoom) |
+| Décalage Caméra X | `cameraOffsetX` | Décalage de panoramique horizontal |
+| Décalage Caméra Y | `cameraOffsetY` | Décalage de panoramique vertical |
+| **Stéréoscopique** |||
+| Mode Stéréoscopique | `stereoscopicMode` | Activer le rendu stéréo double caméra côte à côte |
+| Séparation Oculaire | `eyeSeparation` | Distance entre les caméras gauche et droite |
+| **Framebuffer** |||
+| Mode Framebuffer | `framebufferMode` | Verrouiller le canevas à une résolution fixe indépendante de la taille de la fenêtre |
+| Préréglage Framebuffer | `framebufferPreset` | Nom du préréglage de résolution (ex: '1920x1080') |
+| Largeur Framebuffer | `framebufferWidth` | Largeur du canevas en pixels quand le mode framebuffer est actif |
+| Hauteur Framebuffer | `framebufferHeight` | Hauteur du canevas en pixels quand le mode framebuffer est actif |
+| Bordure Canevas Visible | `canvasBorderVisible` | Afficher/masquer la bordure du canevas |
+| Couleur Bordure Canevas | `canvasBorderColor` | Couleur de bordure au format hexadécimal (ex: '#adff2f') |
+| **Export Vidéo** |||
+| Durée Vidéo | `videoDuration` | Durée d'enregistrement en secondes |
+| FPS Vidéo | `videoFPS` | Fréquence d'images de l'enregistrement (images par seconde) |
+| Format Vidéo | `videoFormat` | Format du codec vidéo (ex: 'webm') |
+| **Carte de Profondeur** |||
+| Inverser Profondeur | `depthInvert` | Inverser les valeurs de profondeur dans l'export de carte de profondeur |
+| **Image de Superposition** |||
+| Source Image Superposition | `overlayImageSrc` | URL source ou URL de données de l'image de superposition |
+| Fichier Préréglage Superposition | `overlayPresetFile` | Nom du fichier de superposition préréglé sélectionné |
+| Nom Fichier Personnalisé Superposition | `overlayCustomFilename` | Nom du fichier de superposition personnalisé téléchargé |
+| Source Image Personnalisée Superposition | `overlayCustomImageSrc` | URL de données source de la superposition personnalisée téléchargée |
+| Superposition Visible | `overlayVisible` | Afficher/masquer la superposition sur le canevas |
+| Ajustement Auto Superposition | `overlayAutoFit` | Ajuster automatiquement la superposition aux dimensions du canevas |
+| Échelle Superposition | `overlayScale` | Multiplicateur de taille de la superposition en pourcentage |
+| Opacité Superposition | `overlayOpacity` | Transparence de la superposition en pourcentage (0-100) |
+| Superposition X | `overlayX` | Position horizontale en pourcentage (0-100) |
+| Superposition Y | `overlayY` | Position verticale en pourcentage (0-100) |
+
+---
+
 ## Table des Matières
 
 - [Vue d'Ensemble de l'Architecture](#vue-densemble-de-larchitecture)

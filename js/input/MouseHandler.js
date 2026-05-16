@@ -5,6 +5,26 @@
 export function setupMouseHandlers(ZM) {
   const container = document.getElementById('canvas-container');
   
+  // Throttle camera broadcasts during mouse movements (every 32ms = ~30fps)
+  let lastCameraBroadcast = 0;
+  const CAMERA_BROADCAST_THROTTLE = 32;
+  
+  function broadcastCameraState() {
+    const now = Date.now();
+    if (now - lastCameraBroadcast < CAMERA_BROADCAST_THROTTLE) return;
+    
+    if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
+      ZM.windowSync.broadcastParamChanges({
+        cameraRotationX: ZM.params.cameraRotationX,
+        cameraRotationY: ZM.params.cameraRotationY,
+        cameraDistance: ZM.params.cameraDistance,
+        cameraOffsetX: ZM.params.cameraOffsetX,
+        cameraOffsetY: ZM.params.cameraOffsetY
+      });
+      lastCameraBroadcast = now;
+    }
+  }
+  
   // Mouse down
   container.addEventListener('mousedown', (e) => {
     // Cancel any active camera transition
@@ -54,6 +74,9 @@ export function setupMouseHandlers(ZM) {
       ZM.camera.lastMouseY = e.clientY;
       
       ZM.saveToLocalStorage();
+      
+      // Broadcast camera changes during drag (throttled)
+      broadcastCameraState();
     } else if (ZM.camera.isPanning) {
       const dx = e.clientX - ZM.camera.lastMouseX;
       const dy = e.clientY - ZM.camera.lastMouseY;
@@ -92,26 +115,17 @@ export function setupMouseHandlers(ZM) {
       ZM.camera.lastMouseY = e.clientY;
       
       ZM.saveToLocalStorage();
+      
+      // Broadcast camera changes during pan (throttled)
+      broadcastCameraState();
     }
   });
   
   // Mouse up
   window.addEventListener('mouseup', () => {
-    const wasDragging = ZM.camera.isDragging;
-    const wasPanning = ZM.camera.isPanning;
-    
     ZM.camera.isDragging = false;
     ZM.camera.isPanning = false;
-    
-    // Broadcast camera changes to display window after drag/pan
-    if ((wasDragging || wasPanning) && ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
-      ZM.windowSync.broadcastParamChanges({
-        cameraRotationX: ZM.params.cameraRotationX,
-        cameraRotationY: ZM.params.cameraRotationY,
-        cameraOffsetX: ZM.params.cameraOffsetX,
-        cameraOffsetY: ZM.params.cameraOffsetY
-      });
-    }
+    // No need to broadcast on mouseup - we're already broadcasting during movement
   });
   
   // Prevent context menu on right-click
@@ -137,11 +151,7 @@ export function setupMouseHandlers(ZM) {
     ZM.params.cameraDistance = ZM.camera.distance;
     ZM.saveToLocalStorage();
     
-    // Broadcast camera distance to display window
-    if (ZM.windowSync && ZM.windowSync.broadcastParamChanges) {
-      ZM.windowSync.broadcastParamChanges({
-        cameraDistance: ZM.params.cameraDistance
-      });
-    }
+    // Broadcast camera distance to display window (throttled)
+    broadcastCameraState();
   }, { passive: false });
 }

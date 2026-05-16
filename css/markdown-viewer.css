@@ -1,4 +1,4 @@
-/* Markdown Viewer Styles */
+/* Markdown Viewer Styles - Wiki Layout */
 /* Font sizes and line-heights set to 80% of original values */
 
 * {
@@ -16,9 +16,124 @@ body {
   line-height: 1.28;
   color: #e0e0e0;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  padding: 20px;
+  padding: 0;
   min-height: 100vh;
   text-align: left;
+  display: flex;
+  flex-direction: row;
+}
+
+/* Left Sidebar Navigation (H2) */
+.left-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.95);
+  border-right: 1px solid rgba(80, 120, 255, 0.2);
+  overflow-y: auto;
+  padding: 70px 20px 20px 20px;
+  z-index: 100;
+}
+
+/* Right Sidebar Navigation (H3) */
+.right-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 220px;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.95);
+  border-left: 1px solid rgba(80, 120, 255, 0.2);
+  overflow-y: auto;
+  padding: 80px 20px 20px 20px;
+  z-index: 100;
+}
+
+.nav-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #333;
+}
+
+.left-sidebar ul,
+.right-sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.left-sidebar li,
+.right-sidebar li {
+  margin-bottom: 8px;
+}
+
+.left-sidebar a,
+.right-sidebar a {
+  display: block;
+  padding: 8px 12px;
+  color: #b0b0b0;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  line-height: 1.3;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+
+.left-sidebar a:hover,
+.right-sidebar a:hover {
+  background: rgba(80, 120, 255, 0.1);
+  color: #e0e0e0;
+  border-left-color: #5078ff;
+}
+
+.left-sidebar a.active,
+.right-sidebar a.active {
+  background: rgba(80, 120, 255, 0.2);
+  color: #ffffff;
+  font-weight: 600;
+  border-left-color: #5078ff;
+}
+
+/* Scrollbar styling for sidebars */
+.left-sidebar::-webkit-scrollbar,
+.right-sidebar::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 3px;
+}
+
+.left-sidebar::-webkit-scrollbar-track,
+.right-sidebar::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb,
+.right-sidebar::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: rgba(80, 120, 255, 0.15);
+  border-radius: 2px;
+}
+
+.left-sidebar::-webkit-scrollbar-thumb:hover,
+.right-sidebar::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: rgba(80, 120, 255, 0.3);
+}
+
+/* Firefox scrollbar styling */
+.left-sidebar,
+.right-sidebar,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(80, 120, 255, 0.15) transparent;
 }
 
 .container {
@@ -26,16 +141,20 @@ body {
   margin: 0 auto;
   background: rgba(30, 30, 30, 0.95);
   padding: 40px 50px;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  min-height: 100vh;
+  margin-left: 250px;
+  margin-right: 220px;
+  flex: 1;
 }
 
 .back-btn {
   position: fixed;
   top: 20px;
   left: 20px;
-  z-index: 1000;
+  z-index: 1001;
   padding: 8px 16px;
   background: rgba(80, 120, 255, 0.2);
   border: 1px solid #5078ff;
@@ -45,11 +164,13 @@ body {
   font-size: 0.72rem;
   transition: all 0.2s;
   margin: 0;
+  width: 210px;
+  text-align: center;
 }
 
 .back-btn:hover {
   background: rgba(80, 120, 255, 0.3);
-  transform: translateX(-2px);
+  transform: translateY(-2px);
 }
 
 #content {
@@ -241,6 +362,38 @@ body {
   padding: 20px;
   border-radius: 5px;
   margin: 20px 0;
+}
+
+@media (max-width: 1400px) {
+  /* Hide right sidebar on medium screens */
+  .right-sidebar {
+    display: none;
+  }
+  
+  .container {
+    margin-right: 0;
+    max-width: 100%;
+    padding-right: 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Hide both sidebars on tablets */
+  .left-sidebar,
+  .right-sidebar {
+    display: none;
+  }
+  
+  .container {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
+    padding: 30px 40px;
+  }
+  
+  .back-btn {
+    width: auto;
+  }
 }
 
 @media (max-width: 768px) {

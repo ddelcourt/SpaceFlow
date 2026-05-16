@@ -7,6 +7,77 @@ Codebase structure, architecture patterns, and implementation details.
 
 ---
 
+## Parameter Reference
+
+Complete list of all configurable parameters in the `params` object:
+
+| Parameter | Variable | Description |
+|-----------|----------|-------------|
+| **Geometry** |||
+| Segment Length | `segmentLength` | Height of each zigzag segment in pixels |
+| Line Thickness | `lineThickness` | Width of the ribbon in pixels |
+| Emitter Rotation | `emitterRotation` | Z-axis rotation of the emitter in degrees |
+| Geometry Scale | `geometryScale` | Uniform scale multiplier in percentage (100 = normal) |
+| Fade Duration | `fadeDuration` | Fade-in/fade-out transition duration in seconds |
+| **Color Palettes** |||
+| Palettes | `palettes` | Array of 4 palettes, each containing 4 colors with RGB values and role |
+| Active Palette Index | `activePaletteIndex` | Currently selected palette (0-3) |
+| Color Transition Duration | `colorTransitionDuration` | Time in seconds for palette switch transitions |
+| State Transition Duration | `stateTransitionDuration` | Time in seconds for geometry, behavior, camera, and modulation transitions |
+| Color Slot Z-Offset | `colorSlotZOffset` | Z-axis separation multiplier per color slot to prevent z-fighting |
+| **State Auto-Trigger** |||
+| Auto-Trigger States | `autoTriggerStates` | Enable automatic state changes at specified intervals |
+| Auto-Trigger Frequency | `autoTriggerFrequency` | Time in seconds between automatic state changes (5-240) |
+| **Animation** |||
+| Emit Rate | `emitRate` | Number of lines spawned per second |
+| Speed | `speed` | Base movement speed of lines in pixels per second |
+| Ambient Speed Master | `ambientSpeedMaster` | Global speed multiplier in percentage |
+| **Modulation** |||
+| Random Thickness | `randomThickness` | Enable thickness variation for each line |
+| Random Speed | `randomSpeed` | Enable speed variation for each line |
+| Thickness Range Min | `thicknessRangeMin` | Minimum thickness multiplier in percentage |
+| Thickness Range Max | `thicknessRangeMax` | Maximum thickness multiplier in percentage |
+| Speed Range Min | `speedRangeMin` | Minimum speed multiplier in percentage |
+| Speed Range Max | `speedRangeMax` | Maximum speed multiplier in percentage |
+| **Camera** |||
+| Field of View | `fov` | Camera field of view in degrees |
+| Near Clipping Plane | `near` | Near clipping distance (0.01) |
+| Far Clipping Plane | `far` | Far clipping distance (5000) |
+| Camera Rotation X | `cameraRotationX` | X-axis rotation (pitch) in radians |
+| Camera Rotation Y | `cameraRotationY` | Y-axis rotation (yaw) in radians |
+| Camera Distance | `cameraDistance` | Distance from origin (zoom) |
+| Camera Offset X | `cameraOffsetX` | Horizontal pan offset |
+| Camera Offset Y | `cameraOffsetY` | Vertical pan offset |
+| **Stereoscopic** |||
+| Stereoscopic Mode | `stereoscopicMode` | Enable dual-camera side-by-side stereo rendering |
+| Eye Separation | `eyeSeparation` | Distance between left and right cameras |
+| **Framebuffer** |||
+| Framebuffer Mode | `framebufferMode` | Lock canvas to fixed resolution independent of window size |
+| Framebuffer Preset | `framebufferPreset` | Resolution preset name (e.g., '1920x1080') |
+| Framebuffer Width | `framebufferWidth` | Canvas width in pixels when framebuffer mode is active |
+| Framebuffer Height | `framebufferHeight` | Canvas height in pixels when framebuffer mode is active |
+| Canvas Border Visible | `canvasBorderVisible` | Show/hide canvas border |
+| Canvas Border Color | `canvasBorderColor` | Border color in hex format (e.g., '#adff2f') |
+| **Video Export** |||
+| Video Duration | `videoDuration` | Recording length in seconds |
+| Video FPS | `videoFPS` | Recording frame rate (frames per second) |
+| Video Format | `videoFormat` | Video codec format (e.g., 'webm') |
+| **Depth Map** |||
+| Depth Invert | `depthInvert` | Invert depth values in depth map export |
+| **Overlay Image** |||
+| Overlay Image Source | `overlayImageSrc` | Source URL or data URL of the overlay image |
+| Overlay Preset File | `overlayPresetFile` | Filename of selected preset overlay |
+| Overlay Custom Filename | `overlayCustomFilename` | Name of custom uploaded overlay file |
+| Overlay Custom Image Source | `overlayCustomImageSrc` | Source data URL of custom uploaded overlay |
+| Overlay Visible | `overlayVisible` | Show/hide overlay on canvas |
+| Overlay Auto-Fit | `overlayAutoFit` | Automatically fit overlay to canvas dimensions |
+| Overlay Scale | `overlayScale` | Overlay size multiplier in percentage |
+| Overlay Opacity | `overlayOpacity` | Overlay transparency in percentage (0-100) |
+| Overlay X | `overlayX` | Horizontal position in percentage (0-100) |
+| Overlay Y | `overlayY` | Vertical position in percentage (0-100) |
+
+---
+
 ## Table of Contents
 
 - [Architecture Overview](#architecture-overview)

@@ -171,6 +171,9 @@ async function init() {
   // Setup window resize handler
   setupResizeHandler(ZM);
   
+  // Setup keyboard shortcuts
+  setupKeyboardShortcuts();
+  
   // Initialize sketches
   console.log('🎨 Initializing sketches...');
   ZM.initializeSketches();
@@ -234,6 +237,116 @@ function setupResizeHandler(ZM) {
       ZM.updateOverlay();
     }
   });
+}
+
+/**
+ * Setup keyboard shortcuts for display window
+ */
+function setupKeyboardShortcuts() {
+  // Setup fullscreen button
+  const fullscreenBtn = document.getElementById('fullscreen-btn');
+
+  // Helper: is the Fullscreen API available on this device?
+  const canFullscreen = !!(
+    document.documentElement.requestFullscreen ||
+    document.documentElement.webkitRequestFullscreen
+  );
+
+  // Helper: enter fullscreen cross-browser
+  const enterFullscreen = () => {
+    const el = document.documentElement;
+    if (el.requestFullscreen) return el.requestFullscreen();
+    if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+    return Promise.reject(new Error('Fullscreen not supported'));
+  };
+
+  // Helper: exit fullscreen cross-browser
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) return document.exitFullscreen();
+    if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+  };
+
+  // Helper: current fullscreen element cross-browser
+  const getFullscreenElement = () =>
+    document.fullscreenElement || document.webkitFullscreenElement || null;
+
+  // Toggle fullscreen function
+  const toggleFullscreen = () => {
+    if (!getFullscreenElement()) {
+      enterFullscreen().then(() => {
+        console.log('🖥️ Entered fullscreen mode');
+      }).catch(err => {
+        console.error('Failed to enter fullscreen:', err);
+      });
+    } else {
+      exitFullscreen();
+      console.log('🪟 Exited fullscreen mode');
+    }
+  };
+
+  // Hide fullscreen button if not supported
+  if (!canFullscreen && fullscreenBtn) {
+    fullscreenBtn.style.display = 'none';
+  }
+
+  // Hide if already running as PWA standalone
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    if (fullscreenBtn) fullscreenBtn.style.display = 'none';
+  }
+
+  // Fullscreen button click handler
+  if (fullscreenBtn && canFullscreen) {
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+  }
+
+  // Keyboard shortcuts
+  window.addEventListener('keydown', (e) => {
+    // F11 or 'f' or 'F' or Enter key: Toggle fullscreen
+    if (e.key === 'F11' || e.key === 'f' || e.key === 'F' || e.key === 'Enter') {
+      e.preventDefault();
+      toggleFullscreen();
+    }
+    
+    // ESC key: Exit fullscreen (browser default, but let's log it)
+    if (e.key === 'Escape' && getFullscreenElement()) {
+      console.log('🪟 Exiting fullscreen mode (ESC pressed)');
+    }
+  });
+
+  // Setup cursor auto-hide in fullscreen
+  let cursorTimeout = null;
+  const hideCursor = () => {
+    if (getFullscreenElement()) {
+      document.body.classList.add('hide-cursor');
+    }
+  };
+  
+  const showCursor = () => {
+    document.body.classList.remove('hide-cursor');
+    clearTimeout(cursorTimeout);
+    if (getFullscreenElement()) {
+      cursorTimeout = setTimeout(hideCursor, 2000); // Hide after 2 seconds of inactivity
+    }
+  };
+
+  // Track mouse movement in fullscreen
+  document.addEventListener('mousemove', showCursor);
+  document.addEventListener('mousedown', showCursor);
+
+  // Handle fullscreen change events
+  const onFullscreenChange = () => {
+    if (getFullscreenElement()) {
+      console.log('🖥️ Fullscreen mode active');
+      cursorTimeout = setTimeout(hideCursor, 2000);
+    } else {
+      console.log('🪟 Fullscreen mode exited');
+      document.body.classList.remove('hide-cursor');
+      clearTimeout(cursorTimeout);
+    }
+  };
+
+  document.addEventListener('fullscreenchange', onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange', onFullscreenChange);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

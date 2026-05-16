@@ -94,6 +94,65 @@
     #overlay-container img.visible {
       display: block;
     }
+    
+    /* Fullscreen Button */
+    .fullscreen-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      background: #121a25;
+      border: none;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.2s ease;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
+      opacity: 0.3;
+    }
+    
+    .fullscreen-btn:hover {
+      background: #0052cc;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4);
+    }
+    
+    .fullscreen-btn:active {
+      transform: translateY(0px);
+    }
+    
+    .fullscreen-btn svg {
+      display: block;
+    }
+    
+    /* Hide fullscreen button when in fullscreen mode */
+    :fullscreen .fullscreen-btn,
+    ::backdrop .fullscreen-btn,
+    html:fullscreen .fullscreen-btn,
+    body:fullscreen .fullscreen-btn {
+      display: none;
+    }
+    
+    /* Firefox */
+    :-moz-full-screen .fullscreen-btn {
+      display: none;
+    }
+    
+    /* Webkit */
+    :-webkit-full-screen .fullscreen-btn {
+      display: none;
+    }
+    
+    /* Hide cursor in fullscreen after inactivity */
+    .hide-cursor,
+    .hide-cursor * {
+      cursor: none !important;
+    }
   </style>
   
   <!-- External Libraries -->
@@ -108,6 +167,13 @@
     <div id="overlay-container">
       <img id="overlay-image" alt="Overlay">
     </div>
+    
+    <!-- Fullscreen Button -->
+    <button id="fullscreen-btn" class="fullscreen-btn" title="Toggle Fullscreen (F11 or F)">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+      </svg>
+    </button>
   </div>
   
   <!-- Connection status indicator -->

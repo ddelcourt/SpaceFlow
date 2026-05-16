@@ -8,9 +8,23 @@
 </head>
 <body>
   <a href="javascript:window.close()" class="back-btn">← Close</a>
+  
+  <!-- Left Navigation: H2 Sections -->
+  <nav id="left-nav" class="left-sidebar">
+    <div class="nav-header">Sections</div>
+    <ul id="left-nav-list"></ul>
+  </nav>
+  
+  <!-- Main Content -->
   <div class="container">
     <div id="content" class="loading">Loading documentation...</div>
   </div>
+  
+  <!-- Right Navigation: H3 Subsections -->
+  <nav id="right-nav" class="right-sidebar">
+    <div class="nav-header">In this Section</div>
+    <ul id="right-nav-list"></ul>
+  </nav>
 
   <!-- External Libraries (offline-ready) -->
   <script src="../lib/marked.min.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js'"></script>
@@ -82,6 +96,12 @@
             document.title = firstH1.textContent + ' - Documentation';
           }
           
+          // Build navigation menus
+          buildNavigation();
+          
+          // Setup scroll spy
+          setupScrollSpy();
+          
           // Setup anchor link handling
           document.querySelectorAll('#content a[href^="#"]').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -132,6 +152,184 @@
             </div>
           `;
         });
+    }
+    
+    // Build navigation from H2 and H3 headings
+    function buildNavigation() {
+      const content = document.getElementById('content');
+      const h2Elements = content.querySelectorAll('h2');
+      const h3Elements = content.querySelectorAll('h3');
+      
+      const leftNavList = document.getElementById('left-nav-list');
+      const rightNavList = document.getElementById('right-nav-list');
+      
+      leftNavList.innerHTML = '';
+      rightNavList.innerHTML = '';
+      
+      // Build left navigation (H2 sections)
+      h2Elements.forEach((h2, index) => {
+        // Ensure H2 has an ID
+        if (!h2.id) {
+          h2.id = 'section-' + index;
+        }
+        
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + h2.id;
+        a.textContent = h2.textContent;
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          scrollToElement(h2.id);
+        });
+        li.appendChild(a);
+        leftNavList.appendChild(li);
+      });
+      
+      // Build right navigation (H3 subsections)
+      let currentH2 = null;
+      const allHeadings = content.querySelectorAll('h2, h3');
+      
+      allHeadings.forEach((heading, index) => {
+        if (heading.tagName === 'H2') {
+          currentH2 = heading;
+        } else if (heading.tagName === 'H3') {
+          // Ensure H3 has an ID
+          if (!heading.id) {
+            heading.id = 'subsection-' + index;
+          }
+          
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = '#' + heading.id;
+          a.textContent = heading.textContent;
+          a.addEventListener('click', function(e) {
+            e.preventDefault();
+            scrollToElement(heading.id);
+          });
+          li.appendChild(a);
+          rightNavList.appendChild(li);
+        }
+      });
+      
+      // Show/hide navigation panels
+      document.getElementById('left-nav').style.display = h2Elements.length > 0 ? 'block' : 'none';
+      document.getElementById('right-nav').style.display = h3Elements.length > 0 ? 'block' : 'none';
+    }
+    
+    // Scroll to element with smooth behavior
+    function scrollToElement(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, null, '#' + id);
+        updateActiveNavItem();
+      }
+    }
+    
+    // Setup scroll spy to highlight current section
+    function setupScrollSpy() {
+      let ticking = false;
+      
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(function() {
+            updateActiveNavItem();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+      
+      // Initial update
+      updateActiveNavItem();
+    }
+    
+    // Update active navigation item based on scroll position
+    function updateActiveNavItem() {
+      const content = document.getElementById('content');
+      const headings = content.querySelectorAll('h2, h3');
+      
+      let currentHeading = null;
+      const scrollPosition = window.scrollY + 100; // Offset for better UX
+      
+      // Find the current heading
+      headings.forEach(heading => {
+        if (heading.offsetTop <= scrollPosition) {
+          currentHeading = heading;
+        }
+      });
+      
+      // Update left nav (H2)
+      const leftNavLinks = document.querySelectorAll('#left-nav a');
+      leftNavLinks.forEach(link => {
+        link.classList.remove('active');
+        if (currentHeading && link.getAttribute('href') === '#' + currentHeading.id) {
+          link.classList.add('active');
+        }
+      });
+      
+      // Update right nav (H3)
+      const rightNavLinks = document.querySelectorAll('#right-nav a');
+      rightNavLinks.forEach(link => {
+        link.classList.remove('active');
+        if (currentHeading && link.getAttribute('href') === '#' + currentHeading.id) {
+          link.classList.add('active');
+        }
+      });
+      
+      // Update right nav to show subsections of current H2
+      if (currentHeading && currentHeading.tagName === 'H2') {
+        updateRightNavForSection(currentHeading);
+      } else if (currentHeading && currentHeading.tagName === 'H3') {
+        // Find parent H2
+        let h2 = currentHeading.previousElementSibling;
+        while (h2 && h2.tagName !== 'H2') {
+          h2 = h2.previousElementSibling;
+        }
+        if (h2) {
+          updateRightNavForSection(h2);
+        }
+      }
+    }
+    
+    // Update right navigation to show only H3s under current H2
+    function updateRightNavForSection(h2Element) {
+      const content = document.getElementById('content');
+      const rightNavList = document.getElementById('right-nav-list');
+      
+      // Find all H3s between this H2 and the next H2
+      const allHeadings = content.querySelectorAll('h2, h3');
+      const h3s = [];
+      let inSection = false;
+      
+      allHeadings.forEach(heading => {
+        if (heading === h2Element) {
+          inSection = true;
+        } else if (heading.tagName === 'H2' && inSection) {
+          inSection = false;
+        } else if (heading.tagName === 'H3' && inSection) {
+          h3s.push(heading);
+        }
+      });
+      
+      // Rebuild right nav
+      rightNavList.innerHTML = '';
+      h3s.forEach((h3, index) => {
+        if (!h3.id) {
+          h3.id = 'subsection-' + h2Element.id + '-' + index;
+        }
+        
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + h3.id;
+        a.textContent = h3.textContent;
+        a.addEventListener('click', function(e) {
+          e.preventDefault();
+          scrollToElement(h3.id);
+        });
+        li.appendChild(a);
+        rightNavList.appendChild(li);
+      });
     }
   </script>
 </body>

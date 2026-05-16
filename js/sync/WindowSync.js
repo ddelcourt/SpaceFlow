@@ -202,6 +202,7 @@ export function initializeDisplaySync(ZM) {
 
     const channel = new BroadcastChannel(CHANNEL_NAME);
     let initialSyncReceived = false;
+    let previousPaletteState = null; // Track palette state to detect changes in full-sync
 
     console.log('🖥️ Display window sync initialized');
 
@@ -246,12 +247,17 @@ export function initializeDisplaySync(ZM) {
         // Update geometry scale transition - snap to current value (no independent transitions)
         if (event.data.geometryScaleTransition && ZM.geometryScaleTransition) {
           const trans = event.data.geometryScaleTransition;
-          // Use the primary window's CURRENT value, not start a new transition
+          // Use the primary window's CURRENT value for rendering
           ZM.geometryScaleTransition.current = trans.current;
-          ZM.geometryScaleTransition.target = trans.current;  // Set target = current to prevent transitioning
+          ZM.geometryScaleTransition.target = trans.current;  // Set target = current to prevent display from re-interpolating
           ZM.geometryScaleTransition.start = trans.current;
           ZM.geometryScaleTransition.progress = 1.0;
-          ZM.geometryScaleTransition.isTransitioning = false; // Never transition in display window
+          ZM.geometryScaleTransition.isTransitioning = false; // Never run transition logic in display window
+          
+          // Debug: log if we're receiving transition updates
+          if (trans.isTransitioning && !initialSyncReceived) {
+            console.log(`📊 Display receiving transition: geometryScale = ${trans.current.toFixed(1)} (primary transitioning: ${trans.isTransitioning})`);
+          }
         } else if (ZM.geometryScaleTransition && params.geometryScale !== undefined) {
           // Fallback: snap to param value if transition data not provided
           ZM.geometryScaleTransition.current = params.geometryScale;
@@ -313,8 +319,26 @@ export function initializeDisplaySync(ZM) {
           ZM.syncUIFromParams();
         }
 
-        // DO NOT trigger palette change - we've already synced the exact color state
-        // Calling triggerPaletteChange would start a new independent transition
+        // Detect palette changes and trigger color transitions on existing lines
+        // Compare current palette state with previous to avoid unnecessary transitions
+        const currentPaletteState = {
+          activePaletteIndex: params.activePaletteIndex,
+          palettes: JSON.stringify(params.palettes) // Stringify for comparison
+        };
+        
+        const paletteChanged = previousPaletteState && (
+          previousPaletteState.activePaletteIndex !== currentPaletteState.activePaletteIndex ||
+          previousPaletteState.palettes !== currentPaletteState.palettes
+        );
+        
+        if (paletteChanged && ZM.triggerPaletteChange && ZM.sketchReady) {
+          // Palette has changed - transition existing lines to new colors
+          ZM.triggerPaletteChange();
+          console.log('🎨 Palette changed in display window - transitioning existing lines');
+        }
+        
+        // Update previous palette state for next comparison
+        previousPaletteState = currentPaletteState;
 
         if (!initialSyncReceived) {
           initialSyncReceived = true;
@@ -467,10 +491,12 @@ export function initializeDisplaySync(ZM) {
  * @returns {Window} Reference to opened window
  */
 export function openDisplayWindow() {
+  // Open display window with minimal chrome
+  // Note: Modern browsers may ignore these features for security reasons
   const displayWindow = window.open(
     'display.html',
     'zigmap26-display',
-    'width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no'
+    'width=1920,height=1080,menubar=no,toolbar=no,location=no,status=no,scrollbars=no,resizable=yes'
   );
 
   if (displayWindow) {
