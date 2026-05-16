@@ -40,12 +40,19 @@ Real-time generative tool producing animated zigzag patterns in 3D space. Featur
 ### Mouse
 
 | Action | Control |
-|--------|----------|
-| Rotate camera | Left-click + drag |
-| Pan camera | Right-click + drag (or middle-click + drag) |
+|--------|-----------|
+| Rotate camera (orbit) | Left-click + drag |
+| Pan camera (2D offset) | Right-click + drag |
+| Z-rotation (roll) | Middle-click + drag horizontally |
 | Zoom | Mouse wheel |
 
 Camera controls are active only when the cursor is on the canvas. In stereoscopic mode, controls apply to the canvas that was clicked. Scroll sensitivity is proportional to camera distance.
+
+**Camera control details:**
+- **Orbit control** (left-click + drag): Rotates the camera around the scene center (X/Y axes)
+- **Pan control** (right-click + drag): Moves the camera view in 2D space without changing the orbit angle
+- **Z-rotation control** (middle-click + drag): Rolls the entire scene around the Z-axis, creating a rotation effect
+- **Zoom control** (mouse wheel): Changes the camera distance from the scene center
 
 ### Keyboard
 
@@ -208,10 +215,26 @@ Defines visible portion of 3D space. Adjust if geometry appears clipped at extre
 ### Display Window (Multi-display synchronization)
 
 **Open Display Window** button (located in Project section)  
-Opens a secondary fullscreen window for multi-monitor presentations. The display window mirrors the main window's animation in real-time, synchronized via parameter broadcasting.
+Opens secondary fullscreen windows for multi-monitor presentations. The display windows mirror the main window's animation in real-time, synchronized via intelligent parameter broadcasting. You can open multiple display windows by clicking the button multiple times—each receives a unique sequential ID (display-1, display-2, display-3, etc.).
+
+**Dual synchronization strategy:**
+
+The system uses two different broadcasting approaches for optimal performance:
+
+1. **State transitions** (efficient):
+   - When loading states or changing parameters via UI, the main window broadcasts a single transition *command*
+   - Display windows receive the command and execute the same smooth transition locally
+   - Result: Perfect synchronization with minimal bandwidth (1 message instead of 60+ per second)
+   - Examples: Loading a new state, changing FOV, adjusting geometry scale
+
+2. **Manual camera control** (real-time):
+   - During mouse drag, pan, zoom, or Z-rotation, the main window broadcasts camera position updates at 60fps
+   - Display windows snap instantly to match the manual control movements
+   - Result: Responsive real-time following during live performance or interaction
+   - Examples: Dragging to orbit camera, middle-click drag for Z-rotation, mouse wheel zoom
 
 **How it works:**
-- The main window broadcasts all parameter changes to display windows via the BroadcastChannel API
+- The main window broadcasts parameter changes and commands to display windows via the BroadcastChannel API
 - Each window runs its own independent generative code using the synchronized parameters
 - Both windows generate their animations independently based on the same state values
 
@@ -227,11 +250,12 @@ The main display and secondary display images will appear **similar but not pixe
 
 **Why this approach is more efficient than image streaming:**
 
-- **Lower bandwidth**: Broadcasting compact parameter updates (a few bytes) is far more efficient than streaming high-resolution video frames (megabytes per second)
+- **Lower bandwidth**: Broadcasting compact parameter updates (a few bytes) and transition commands is far more efficient than streaming high-resolution video frames (megabytes per second)
 - **Better performance**: Each window renders natively at its own resolution and refresh rate, avoiding video compression artifacts
 - **Hardware acceleration**: Each window uses full GPU acceleration for WebGL rendering, maintaining smooth 60fps performance
 - **Scalability**: Multiple display windows can connect without exponentially increasing data transfer
 - **Resolution independence**: Each display can run at its optimal resolution without downscaling streamed content
+- **Intelligent synchronization**: Transition commands ensure smooth animations with minimal overhead, while real-time updates provide responsive manual control
 
 This generative synchronization approach is ideal for live installations, multi-projector setups, and performance contexts where smooth, high-quality rendering across multiple displays is essential.
 

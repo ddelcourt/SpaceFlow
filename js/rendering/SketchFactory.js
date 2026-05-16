@@ -233,23 +233,6 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
           }
         }
         
-        // Broadcast transitions to display window (only if we're primary and transitions are active)
-        if (isPrimary && ZM.windowSync && ZM.windowSync.broadcastFullState) {
-          const anyTransitionActive = 
-            ZM.fovTransition.isTransitioning ||
-            ZM.emitterRotationTransition.isTransitioning ||
-            ZM.geometryScaleTransition.isTransitioning ||
-            ZM.camera.transition.isActive ||
-            ZM.bgTransition.isTransitioning;
-          
-          // Throttle broadcasts to ~30fps during transitions (every other frame at 60fps)
-          if (anyTransitionActive && p.frameCount % 2 === 0) {
-            ZM.windowSync._broadcastingTransition = true;
-            ZM.windowSync.broadcastFullState();
-            ZM.windowSync._broadcastingTransition = false;
-          }
-        }
-        
         // Auto-trigger random state switching (only on primary canvas AND not in display mode)
         // Each trigger loads a TRULY RANDOM state (excluding current) - no sequence or pattern
         if (isPrimary && !ZM.isDisplayMode && ZM.params.autoTriggerStates && ZM.stateManager && ZM.stateManager.states.length > 1) {

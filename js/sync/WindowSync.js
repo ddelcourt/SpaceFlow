@@ -234,7 +234,7 @@ export function initializePrimarySync(ZM) {
   }
 
   /**
-   * Broadcast immediate camera update (for manual mouse control end)
+   * Broadcast immediate camera update (for manual mouse control - real-time)
    */
   function broadcastCameraImmediate(cameraState) {
     const message = {
@@ -244,12 +244,12 @@ export function initializePrimarySync(ZM) {
         rotationY: cameraState.rotationY,
         distance: cameraState.distance,
         offsetX: cameraState.offsetX,
-        offsetY: cameraState.offsetY
+        offsetY: cameraState.offsetY,
+        emitterRotation: cameraState.emitterRotation
       },
       timestamp: Date.now()
     };
     channel.postMessage(message);
-    console.log('📤 Camera immediate update (mouse drag end)');
   }
 
   /**
@@ -563,11 +563,10 @@ export function initializeDisplaySync(ZM) {
         }
       
       } else if (type === 'camera-immediate') {
-        // NEW: Handle immediate camera update (mouse drag end)
+        // NEW: Handle immediate camera update (manual mouse control - real-time)
         const { state } = event.data;
         
         if (ZM.camera && state) {
-          console.log('📥 Camera immediate update');
           // Snap instantly to new position
           ZM.camera.rotationX = state.rotationX;
           ZM.camera.rotationY = state.rotationY;
@@ -585,6 +584,16 @@ export function initializeDisplaySync(ZM) {
           ZM.params.cameraDistance = state.distance;
           ZM.params.cameraOffsetX = state.offsetX;
           ZM.params.cameraOffsetY = state.offsetY;
+          
+          // Handle emitter rotation if included (for Z-rotation control)
+          if (state.emitterRotation !== undefined && ZM.emitterRotationTransition) {
+            ZM.emitterRotationTransition.current = state.emitterRotation;
+            ZM.emitterRotationTransition.target = state.emitterRotation;
+            ZM.emitterRotationTransition.start = state.emitterRotation;
+            ZM.emitterRotationTransition.progress = 1.0;
+            ZM.emitterRotationTransition.isTransitioning = false;
+            ZM.params.emitterRotation = state.emitterRotation;
+          }
         }
       
       } else if (type === 'geometry-transition') {

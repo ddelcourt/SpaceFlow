@@ -13,6 +13,7 @@ export class Camera {
     this.offsetY = params.cameraOffsetY || 0;
     this.isDragging = false;
     this.isPanning = false;
+    this.isRotating = false;
     this.lastMouseX = 0;
     this.lastMouseY = 0;
     

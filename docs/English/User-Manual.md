@@ -16,11 +16,18 @@
 
 | Action | Control |
 |--------|----------|
-| Rotate the view | Left-click + drag |
-| Pan the view | Right-click + drag |
+| Rotate the view (orbit) | Left-click + drag |
+| Pan the view (2D offset) | Right-click + drag |
+| Z-rotation (roll scene) | Middle-click + drag horizontally |
 | Zoom | Mouse wheel |
 
 Mouse controls are active only when the cursor is on the animation area, not on the control panel.
+
+**Control details:**
+- **Orbit** (left-click): Rotates camera around scene center on X/Y axes
+- **Pan** (right-click): Moves camera view in 2D without changing orbit angle  
+- **Z-rotation** (middle-click): Rolls entire scene around Z-axis
+- **Zoom** (wheel): Changes camera distance from scene center
 
 ---
 
@@ -115,10 +122,16 @@ Camera and display settings.
 
 ### Display Window
 
-For multi-monitor presentations and installations, the **Open Display Window** button (in the Project section) opens a synchronized secondary display window.
+For multi-monitor presentations and installations, the **Open Display Window** button (in the Project section) opens synchronized secondary display windows. You can open multiple display windows—each receives a unique ID (display-1, display-2, display-3, etc.).
+
+**Dual synchronization strategy:**
+
+1. **State transitions** (efficient): When loading states or changing parameters via UI, a single transition command is broadcast. Display windows execute the same smooth transition locally. Result: Perfect sync with minimal bandwidth.
+
+2. **Manual camera control** (real-time): During mouse interaction (orbit, pan, zoom, Z-rotation), camera positions are broadcast at 60fps for responsive real-time following.
 
 **How it works:**
-The main window broadcasts all parameter changes to display windows in real-time. Each window runs its own independent generative code using the same parameters, creating similar but not identical animations.
+The main window broadcasts parameter changes and commands to display windows in real-time. Each window runs its own independent generative code using the same parameters, creating similar but not identical animations.
 
 **Why displays differ slightly:**
 The images on the main and secondary displays will be **visually similar but not pixel-perfect identical**. This is normal and expected:
@@ -133,6 +146,7 @@ The images on the main and secondary displays will be **visually similar but not
 - Each display runs at its optimal resolution independently
 - Multiple displays can connect without performance degradation
 - No video compression artifacts
+- Intelligent synchronization: transition commands for smooth animations, real-time updates for manual control
 
 This approach is ideal for live installations and multi-projector setups requiring high-quality synchronized animations.
 
