@@ -103,12 +103,6 @@ export class ZigzagLine {
     if (this.isTransitioning) {
       const duration = this.params.colorTransitionDuration;
       
-      // Debug log first transition to verify params sync (only once per line)
-      if (!this._loggedDuration) {
-        console.log(`🎨 Line ${this.colorSlotIndex} transitioning: duration=${duration}s, params.colorTransitionDuration=${this.params.colorTransitionDuration}s`);
-        this._loggedDuration = true;
-      }
-      
       this.colorTransitionProgress += dt / duration;
       if (this.colorTransitionProgress >= 1.0) {
         this.colorTransitionProgress = 1.0;
