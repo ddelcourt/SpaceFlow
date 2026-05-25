@@ -1501,10 +1501,9 @@ function setupLanguageFilter() {
  */
 function setupDocumentationButtons() {
   const docButtons = {
+    'doc-readme': '../README.md',
     'doc-manual-en': 'User-Manual.md',
     'doc-manual-fr': 'User-Manual-fr.md',
-    'doc-readme-en': '../README.md',
-    'doc-readme-fr': 'README-fr.md',
     'doc-tech-en': 'Documentation.md',
     'doc-tech-fr': 'Documentation-fr.md',
     'doc-projection-en': 'Projection-Matrix-Guide.md',
@@ -1512,6 +1511,7 @@ function setupDocumentationButtons() {
     'doc-transitions-en': 'Transition-System-Architecture.md',
     'doc-transitions-fr': 'Transition-System-Architecture-fr.md',
     'doc-spaceflow': 'SPACEFLOW-ARCHITECTURE.md',
+    'doc-migration': 'MIGRATION-STRATEGY.md',
     'doc-patch-system-en': 'PATCH-SYSTEM.md',
     'doc-patch-system-fr': 'PATCH-SYSTEM.md',
     'doc-player': 'Player-README.md',

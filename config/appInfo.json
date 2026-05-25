@@ -8,13 +8,12 @@
   "license": "MIT",
   "repository": "https://github.com/ddelcourt/ZigMap",
   "documentation": {
+    "readme": {
+      "en": "docs/markdown-viewer.html?doc=../README.md"
+    },
     "userManual": {
       "en": "docs/markdown-viewer.html?doc=User-Manual.md",
       "fr": "docs/markdown-viewer.html?doc=User-Manual-fr.md"
-    },
-    "readme": {
-      "en": "docs/markdown-viewer.html?doc=../README.md",
-      "fr": "docs/markdown-viewer.html?doc=README-fr.md"
     },
     "technical": {
       "en": "docs/markdown-viewer.html?doc=Documentation.md",
@@ -26,6 +25,9 @@
     },
     "spaceflowArchitecture": {
       "en": "docs/markdown-viewer.html?doc=SPACEFLOW-ARCHITECTURE.md"
+    },
+    "migrationStrategy": {
+      "en": "docs/markdown-viewer.html?doc=MIGRATION-STRATEGY.md"
     },
     "patchSystem": {
       "en": "docs/markdown-viewer.html?doc=PATCH-SYSTEM.md",

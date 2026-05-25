@@ -7,25 +7,15 @@
 
 ---
 
-## ⚠️ CRITICAL REQUIREMENT ⚠️
+## ⚠️ CRITICAL REQUIREMENT: SVG Export is NON-NEGOTIABLE
 
-### SVG Export is NON-NEGOTIABLE
+**SVG export is the #1 priority** — it must work flawlessly in all phases:
 
-**THIS IS THE #1 PRIORITY FOR ANY ARCHITECTURAL CHANGE:**
+- 🚨 **Core professional feature** — used in production workflows (Illustrator, Inkscape)
+- 🚨 **Resolution-independent vectors** — essential for print and editing
+- 🚨 **Zero tolerance for breakage** — any update that breaks SVG export must be reverted
 
-🚨 **SVG export functionality must ALWAYS work**  
-🚨 **ANY code update that breaks SVG export is UNACCEPTABLE**  
-🚨 **EVERY architectural decision must preserve SVG export**
-
-**Why This Matters:**
-- SVG export is a **core professional feature**
-- Resolution-independent vector graphics for print and editing
-- Used in production workflows (Illustrator, Inkscape)
-- Cannot be compromised under any circumstances
-
-**Implementation Rule:**
-- ❌ Breaking SVG export = BAD update (must be reverted)
-- ✅ Preserving SVG export = GOOD update (can proceed)
+**Rule:** Test SVG export after every architectural change. If broken, revert immediately.
 
 ---
 
@@ -45,7 +35,6 @@
 - 🎭 **States**: Complete snapshots work across different patches
 - 🎛️ **Scalability**: UI adapts from 3 to 100+ parameters automatically
 - 🚀 **Future-Ready**: Architecture supports future layer system for VJ workflows
-- 🚨 **SVG Export Guarantee**: All export formats (including critical SVG) fully preserved
 
 ---
 
@@ -160,7 +149,7 @@ Single algorithm       →    Pluggable patches
         └──────────────────────────────────────┘
                            ↕
 ┌─────────────────────────────────────────────────────────┐
-│                    PATCH MODULES                         │
+│                PATCH IMPLEMENTATIONS                     │
 │               (Pluggable Algorithms)                     │
 │                                                          │
 │  📦 zigzag/                                              │
@@ -183,13 +172,13 @@ Single algorithm       →    Pluggable patches
 - Handles UI shell generation
 - Coordinates storage and sync
 - **Manages State Management system** (save/load/transition)
-- **Controls state player and auto-trigger**
+- **Controls state sequencer and auto-trigger**
 - **Orchestrates parameter interpolation during transitions**
 
 #### Layer 2: Patch Interface (Contract)
 - Defines what framework expects from patches
 - Defines what patches can expect from framework
-- **Specifies how patches publish parameters** (via `getManifest()`)
+- **Specifies how patches declare parameters** (via `getManifest()`)
 - **Defines parameter manifest structure** (types, categories, validation)
 - Ensures patches are interchangeable
 - Enables future extensibility
@@ -352,14 +341,14 @@ SpaceFlow Application
 
 ---
 
-### ⚡ Animation (Global)
+### ⚡ Animation (Global Time Control)
 
-**Purpose**: Master controls affecting all patches
+**Purpose**: Master timing controls affecting all patches
 
 **Properties:**
 ```javascript
 {
-  ambientSpeedMaster: 100,          // Global speed multiplier (%)
+  ambientSpeedMaster: 100,          // Global speed multiplier (%) — scales time for ALL patches
   stateTransitionDuration: 3.0,     // State change animation time (seconds)
   autoTriggerStates: false,         // Auto-cycle through states
   autoTriggerFrequency: 30          // Time between state changes (seconds)
@@ -367,9 +356,77 @@ SpaceFlow Application
 ```
 
 **Why Universal:**
-- Master speed affects all animation
-- State transitions apply to all properties
+- `ambientSpeedMaster` is a **global time scaling factor** that affects ALL patches
+- State transitions apply to all properties (camera, geometry, colors, parameters)
 - Auto-trigger is application-level behavior
+
+---
+
+#### 🔑 How `ambientSpeedMaster` Controls Patch Timing
+
+**Framework Implementation:**
+
+```javascript
+class SketchFactory {
+  draw() {
+    // 1. Calculate raw time delta
+    const rawDt = deltaTime / 1000; // Convert ms to seconds
+    
+    // 2. Apply global time scaling
+    const scaledDt = rawDt * (SpaceFlow.params.ambientSpeedMaster / 100);
+    
+    // 3. Pass scaled time to patch
+    SpaceFlow.currentPatch.update(scaledDt, SpaceFlow.params);
+    
+    // All patches receive the same scaled time delta
+    // If ambientSpeedMaster = 100 → normal speed (1x)
+    // If ambientSpeedMaster = 50  → half speed (0.5x)
+    // If ambientSpeedMaster = 200 → double speed (2x)
+  }
+}
+```
+
+**Patch receives scaled time:**
+
+```javascript
+class ZigzagEmitterPatch {
+  update(dt, params) {
+    // dt is already scaled by ambientSpeedMaster
+    // Patch doesn't need to know about the scaling factor
+    
+    this.emitter.update(dt);  // Emission timing scales automatically
+    
+    for (const line of this.lines) {
+      line.update(dt);  // Animation speed scales automatically
+    }
+  }
+}
+```
+
+**Result:**
+- ✅ User adjusts ONE slider (`ambientSpeedMaster`) to control speed of ALL animations
+- ✅ Works with zigzag patch, particle systems, fractals, ANY patch
+- ✅ Patches don't need special code — they just use the `dt` parameter
+- ✅ Frame-independent animation is maintained (animation speed remains consistent across different frame rates)
+
+**UI Control:**
+```
+┌─────────────────────────────────┐
+│ UNIVERSAL                       │
+│                                 │
+│ ▼ ANIMATION ⚡                  │
+│   Ambient Speed     [100%    ]  │ ← Affects ALL patches
+│   State Transition  [3.0 s   ]  │
+│   Auto-Trigger      ☐           │
+│   Trigger Frequency [30 s    ]  │
+│                                 │
+└─────────────────────────────────┘
+```
+
+**Key Insight:** `ambientSpeedMaster` is **NOT a patch parameter**. It's a framework-level time multiplier that scales the `dt` value before it reaches patches. This means:
+- Patches never access `params.ambientSpeedMaster` directly
+- Framework handles all time scaling transparently
+- Adding new patches requires no special timing code
 
 ---
 
@@ -763,9 +820,7 @@ class ZigzagPatch {
 
 **Status**: ✅ Fully preserves current SVG functionality  
 **Requirement**: Patches MUST implement `getGeometry()`  
-**Priority**: 🚨 HIGHEST — This functionality is NON-NEGOTIABLE  
-**Testing**: MUST verify SVG export works after every change  
-**Guarantee**: SVG export quality and features CANNOT be reduced
+**Priority**: 🚨 HIGHEST
 
 ---
 
@@ -802,26 +857,12 @@ class ZigzagPatch {
 | **SVG** | Geometry API | `getGeometry()` | ❌ No | Infinite | N/A | ⚠️ Requires implementation | 🚨 **CRITICAL** |
 | **Depth** | Geometry API | `getGeometry()` | ❌ No | Fixed | ✅ Yes | ⚠️ Requires implementation | High |
 
-**Key Insight:**
+**Key Points:**
 - Canvas-based exports (PNG, Video) work with **ANY** patch automatically
-- **Both PNG and Video respect framebuffer mode** for fixed-resolution exports
+- Both PNG and Video respect framebuffer mode for fixed-resolution exports
 - Geometry-based exports (SVG, Depth) require patches to implement `getGeometry()`
-- Framework handles ALL projection math and file generation
-- Patches only provide raw 3D geometry in world space
-
-**🚨 ABSOLUTE GUARANTEE — SVG EXPORT:**
-✅ SVG export functionality is **fully preserved** in SpaceFlow architecture  
-✅ **ZERO** loss of features, quality, or capability  
-✅ Actually becomes MORE powerful (any patch can export SVG)  
-✅ Cleaner separation: patches define geometry, framework handles export  
-✅ **MUST work in every phase of migration**  
-✅ **ANY breaking change is unacceptable and must be reverted immediately**  
-
-**Implementation Commitment:**
-- SVG export will be the **first system tested** in every phase
-- Migration cannot proceed to next phase if SVG export is broken
-- Rollback procedures ready if SVG export fails
-- SVG export quality is verified pixel-perfect against current implementation
+- Framework handles projection math; patches provide 3D geometry
+- SVG export is **fully preserved** with cleaner architecture (patches define geometry, framework handles export)
 
 ---
 
@@ -883,7 +924,7 @@ export class PatchInterface {
   
   /**
    * Returns patch metadata and parameter definitions
-   * 🔑 THIS IS HOW PATCHES PUBLISH PARAMETERS TO THE FRAMEWORK
+   * 🔑 THIS IS HOW PATCHES DECLARE PARAMETERS TO THE FRAMEWORK
    * @returns {Object} Manifest with name, version, parameters
    *                   Return null to use external manifest.json instead
    */
@@ -939,7 +980,7 @@ export class PatchInterface {
 - `setup(config)` — Initialize patch
 - `update(dt, params)` — Update animation state
 - `draw(p, camera, params)` — Render visuals
-- `getManifest()` — Publish parameter definitions (return manifest object OR null for external file)
+- `getManifest()` — Declare parameter definitions (return manifest object OR null for external file)
 - `getGeometry()` — 🚨 **CRITICAL** Export geometry for SVG/depth (return `{type, items: [], metadata: {}}`)
 
 **🔘 OPTIONAL** — Implement if needed:
@@ -951,8 +992,8 @@ export class PatchInterface {
 While `getGeometry()` is listed as required, patches that don't implement it will still work for PNG/Video exports. However, **SVG export will be disabled** for that patch. This is acceptable for prototypes, but production patches should support full export capabilities.
 
 **Key Point on getManifest():**
-- Can return manifest object inline (Option 1: all-in-code)
-- Can return `null` to use external `manifest.json` file (Option 2: separation of concerns, recommended)
+- Can return manifest object inline ⭐ **RECOMMENDED** (Option 2: self-contained, single source of truth)
+- Can return `null` to use external `manifest.json` file (Option 1: separation of concerns, alternative)
 - Framework automatically handles both approaches
 
 ### What Patches Get From Framework
@@ -967,7 +1008,7 @@ While `getGeometry()` is listed as required, patches that don't implement it wil
 ### What Patches Provide To Framework
 
 1. **Manifest** — Parameter definitions, categories, metadata (via `getManifest()` or external `manifest.json`)
-   - **This is the PRIMARY interface** for parameter publication
+   - **This is the PRIMARY interface** for parameter declaration
    - Tells framework: what parameters exist, their types, defaults, ranges, UI layout
    - Framework auto-generates UI, validation, storage, sync from this
 2. **Rendering** — Via `draw(p, camera, params)` method
@@ -2181,15 +2222,16 @@ Your new patches with arbitrary parameters will work seamlessly! The framework j
 
 ---
 
-### How Patches Publish Parameters
+### How Patches Declare Parameters
 
-**The Parameter Publication Flow:**
+**The Parameter Declaration Flow:**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    PATCH (Layer 3)                       │
 │                                                          │
-│  Option 1: External File        Option 2: Inline        │
+│  Option 1: External File        Option 2: Inline ⭐      │
+│  (Alternative)                  (Recommended)            │
 │  ┌──────────────────┐           ┌──────────────────┐   │
 │  │  manifest.json   │           │  getManifest() { │   │
 │  │  {               │           │    return {      │   │
@@ -2240,7 +2282,7 @@ Your new patches with arbitrary parameters will work seamlessly! The framework j
 
 Patches have **two options** for exposing their parameter definitions to the framework:
 
-#### Option 1: External Manifest File (Recommended)
+#### Option 1: External Manifest File (Alternative)
 
 **Structure:**
 ```
@@ -2270,49 +2312,427 @@ export class ZigzagEmitterPatch {
 - ✅ Easy to edit without touching code
 - ✅ Can be hot-reloaded during development
 - ✅ Easier for non-programmers to adjust parameters
-- ✅ Version control shows parameter changes clearly
 
-#### Option 2: Inline Method (Alternative)
+**Disadvantages:**
+- ⚠️ Two files to maintain (code + manifest)
+- ⚠️ External dependency (manifest.json must exist)
+- ⚠️ Less portable (need to distribute multiple files)
 
-**In patch class:**
+#### Option 2: Inline Method ⭐ **RECOMMENDED**
+
+**Complete example with inline manifest:**
+
+> **Note:** This manifest defines **patch-specific parameters only** (`scope: "patch"`). Universal parameters like `ambientSpeedMaster`, camera controls, palettes, export settings, etc. are defined by the framework and work with ALL patches. Patches only define parameters specific to their own functionality.
+
 ```javascript
+// patches/zigzag/ZigzagEmitterPatch.js
 export class ZigzagEmitterPatch {
+  
+  /**
+   * 🔑 Declare parameters to framework via inline manifest
+   * 
+   * This manifest defines ONLY patch-specific parameters.
+   * Universal parameters (camera, colors, ambientSpeedMaster, export, etc.)
+   * are managed by the framework and available to all patches.
+   */
   getManifest() {
     return {
       name: "Zigzag Emitter",
       version: "1.0.0",
-      description: "Animated zigzag ribbons in 3D space",
+      description: "Animated zigzag ribbons in 3D space with modulation",
       author: "ddelcourt",
+      category: "generative",
+      tags: ["3d", "ribbons", "animated", "generative"],
+      
       parameters: [
+        // ─────────────────────────────────────────────
+        // GEOMETRY
+        // ─────────────────────────────────────────────
         {
           key: "segmentLength",
           label: "Segment Length",
+          description: "Height of each zigzag segment",
           type: "slider",
+          scope: "patch",
+          category: "geometry",
+          subcategory: "shape",
           min: 5,
           max: 200,
           default: 50,
-          category: "geometry"
+          step: 1,
+          unit: "px",
+          order: 1
         },
-        // ... more parameters ...
+        {
+          key: "lineThickness",
+          label: "Line Thickness",
+          description: "Width of the zigzag ribbon",
+          type: "slider",
+          scope: "patch",
+          category: "geometry",
+          subcategory: "shape",
+          min: 1,
+          max: 100,
+          default: 24,
+          step: 0.1,
+          unit: "px",
+          order: 2
+        },
+        {
+          key: "emitterRotation",
+          label: "Emitter Rotation",
+          description: "Rotation angle of emission point",
+          type: "slider",
+          scope: "patch",
+          category: "geometry",
+          subcategory: "transform",
+          min: 0,
+          max: 360,
+          default: 0,
+          step: 1,
+          unit: "°",
+          order: 3
+        },
+        {
+          key: "geometryScale",
+          label: "Geometry Scale",
+          description: "Overall scale multiplier for all geometry",
+          type: "slider",
+          scope: "patch",
+          category: "geometry",
+          subcategory: "transform",
+          min: 10,
+          max: 300,
+          default: 100,
+          step: 1,
+          unit: "%",
+          order: 4
+        },
+        
+        // ─────────────────────────────────────────────
+        // BEHAVIOR
+        // ─────────────────────────────────────────────
+        {
+          key: "emitRate",
+          label: "Emit Rate",
+          description: "Number of lines emitted per second",
+          type: "slider",
+          scope: "patch",
+          category: "behavior",
+          min: 0.1,
+          max: 10,
+          default: 2.0,
+          step: 0.1,
+          unit: "lines/s",
+          order: 1
+        },
+        {
+          key: "speed",
+          label: "Speed",
+          description: "Animation speed for line progression",
+          type: "slider",
+          scope: "patch",
+          category: "behavior",
+          min: 10,
+          max: 500,
+          default: 100,
+          step: 1,
+          unit: "px/s",
+          order: 2
+        },
+        {
+          key: "fadeDuration",
+          label: "Fade Duration",
+          description: "Time for lines to fade out",
+          type: "slider",
+          scope: "patch",
+          category: "behavior",
+          min: 0.1,
+          max: 5,
+          default: 1.0,
+          step: 0.1,
+          unit: "s",
+          order: 3
+        },
+        
+        // ─────────────────────────────────────────────
+        // MODULATION
+        // ─────────────────────────────────────────────
+        {
+          key: "randomThickness",
+          label: "Random Thickness",
+          description: "Enable thickness variation per line",
+          type: "checkbox",
+          scope: "patch",
+          category: "modulation",
+          default: false,
+          order: 1,
+          enablesParameters: ["thicknessRangeMin", "thicknessRangeMax"]
+        },
+        {
+          key: "thicknessRangeMin",
+          label: "Min Thickness",
+          description: "Minimum thickness for random variation",
+          type: "slider",
+          scope: "patch",
+          category: "modulation",
+          min: 10,
+          max: 100,
+          default: 50,
+          step: 1,
+          unit: "%",
+          order: 2,
+          dependsOn: "randomThickness",
+          visibleWhen: { "randomThickness": true }
+        },
+        {
+          key: "thicknessRangeMax",
+          label: "Max Thickness",
+          description: "Maximum thickness for random variation",
+          type: "slider",
+          scope: "patch",
+          category: "modulation",
+          min: 100,
+          max: 300,
+          default: 150,
+          step: 1,
+          unit: "%",
+          order: 3,
+          dependsOn: "randomThickness",
+          visibleWhen: { "randomThickness": true }
+        },
+        {
+          key: "randomSpeed",
+          label: "Random Speed",
+          description: "Enable speed variation per line",
+          type: "checkbox",
+          scope: "patch",
+          category: "modulation",
+          default: false,
+          order: 4,
+          enablesParameters: ["speedRangeMin", "speedRangeMax"]
+        },
+        {
+          key: "speedRangeMin",
+          label: "Min Speed",
+          description: "Minimum speed for random variation",
+          type: "slider",
+          scope: "patch",
+          category: "modulation",
+          min: 10,
+          max: 100,
+          default: 50,
+          step: 1,
+          unit: "%",
+          order: 5,
+          dependsOn: "randomSpeed",
+          visibleWhen: { "randomSpeed": true }
+        },
+        {
+          key: "speedRangeMax",
+          label: "Max Speed",
+          description: "Maximum speed for random variation",
+          type: "slider",
+          scope: "patch",
+          category: "modulation",
+          min: 100,
+          max: 300,
+          default: 200,
+          step: 1,
+          unit: "%",
+          order: 6,
+          dependsOn: "randomSpeed",
+          visibleWhen: { "randomSpeed": true }
+        }
       ],
+      
       categories: [
-        { id: "geometry", label: "Geometry", icon: "📐" }
+        {
+          id: "geometry",
+          label: "Geometry",
+          icon: "📐",
+          scope: "patch",
+          order: 1,
+          collapsible: true,
+          defaultCollapsed: false,
+          transitionable: true,
+          subcategories: [
+            { id: "shape", label: "Shape", order: 1 },
+            { id: "transform", label: "Transform", order: 2 }
+          ]
+        },
+        {
+          id: "behavior",
+          label: "Behavior",
+          icon: "🎬",
+          scope: "patch",
+          order: 2,
+          collapsible: true,
+          defaultCollapsed: false,
+          transitionable: true
+        },
+        {
+          id: "modulation",
+          label: "Modulation",
+          icon: "📊",
+          scope: "patch",
+          order: 3,
+          collapsible: true,
+          defaultCollapsed: true,
+          transitionable: false
+        }
       ]
     };
+  }
+  
+  /**
+   * Setup patch instance
+   */
+  setup(p, camera, params) {
+    this.p = p;
+    this.camera = camera;
+    this.params = params; // Reference to SpaceFlow.params
+    
+    // Initialize patch-specific objects
+    this.emitter = new Emitter(params);
+    this.lines = [];
+  }
+  
+  /**
+   * Update animation state
+   */
+  update(dt, params) {
+    // Update emitter with current parameter values
+    this.emitter.update(dt);
+    
+    // Update all active lines
+    for (let i = this.lines.length - 1; i >= 0; i--) {
+      this.lines[i].update(dt);
+      
+      // Remove dead lines
+      if (this.lines[i].isDead()) {
+        this.lines.splice(i, 1);
+      }
+    }
+  }
+  
+  /**
+   * Draw current frame
+   */
+  draw(p, camera, params) {
+    for (const line of this.lines) {
+      line.draw(p, camera);
+    }
+  }
+  
+  /**
+   * Export geometry for SVG/Depth export
+   */
+  getGeometry() {
+    return {
+      type: "ribbons",
+      ribbons: this.lines.map(line => ({
+        vertices: line.getVertices(),
+        color: line.color,
+        thickness: line.thickness,
+        opacity: line.opacity
+      }))
+    };
+  }
+  
+  /**
+   * Optional: React to parameter changes
+   */
+  onParameterChange(key, value) {
+    // Patch can optionally respond to specific parameter changes
+    if (key === "emitterRotation") {
+      this.emitter.setRotation(value);
+    }
+  }
+  
+  /**
+   * Cleanup on patch unload
+   */
+  destroy() {
+    this.lines = [];
+    this.emitter = null;
   }
 }
 ```
 
+**Generated UI from this inline manifest:**
+
+```
+┌─────────────────────────────────────────────┐
+│ PATCH: Zigzag Emitter v1.0.0                │
+│ Animated zigzag ribbons in 3D space         │
+├─────────────────────────────────────────────┤
+│                                             │
+│ ▼ GEOMETRY 📐                               │
+│   Shape:                                    │
+│     Segment Length    [50 px       ]        │
+│     Line Thickness    [24 px       ]        │
+│                                             │
+│   Transform:                                │
+│     Emitter Rotation  [0°          ]        │
+│     Geometry Scale    [100%        ]        │
+│                                             │
+│ ▼ BEHAVIOR 🎬                               │
+│   Emit Rate           [2.0 lines/s ]        │
+│   Speed               [100 px/s    ]        │
+│   Fade Duration       [1.0 s       ]        │
+│                                             │
+│ ▶ MODULATION 📊 — 6 controls                │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+**When user expands MODULATION and checks "Random Thickness":**
+
+```
+▼ MODULATION 📊
+  Random Thickness      ☑️
+  Min Thickness         [50%        ]  ← Now visible
+  Max Thickness         [150%       ]  ← Now visible
+  
+  Random Speed          ☐
+```
+
 **Advantages:**
-- ✅ Everything in one file (single source of truth)
-- ✅ No external file dependencies
-- ✅ Can generate parameters programmatically
-- ✅ Useful for patches with dynamic parameter sets
+- ✅ **Everything in one file** — Single source of truth
+- ✅ **No external dependencies** — Patch is self-contained
+- ✅ **Version control friendly** — All changes in one commit
+- ✅ **Easier debugging** — All code and config together
+- ✅ **Can generate parameters dynamically** — Useful for procedural patches
+- ✅ **Better for distribution** — One file to share
+- ✅ **Immediate validation** — IDE can catch typos in manifest
+- ✅ **Better code organization** — Clear separation within the same file
 
 **Disadvantages:**
-- ❌ Mixing code and configuration
-- ❌ Harder to modify parameters
-- ❌ No hot-reload during development
+- ⚠️ Large manifest makes file longer (but still manageable with code folding)
+- ⚠️ Can't hot-reload manifest without reloading patch code
+
+**Best Practice:**
+Use inline manifests for production patches. The benefits of self-containment and version control far outweigh the minor inconvenience of a longer file. Modern editors handle this well with code folding.
+
+**🔑 Key Architectural Note:**
+
+Notice that the inline manifest does **NOT include `ambientSpeedMaster`**. This is intentional!
+
+**Why?**
+- `ambientSpeedMaster` is a **universal framework parameter**, not a patch parameter
+- It controls timing for ALL patches via the `dt` parameter passed to `update(dt, params)`
+- Framework scales time delta BEFORE passing it to patches:
+  ```javascript
+  const scaledDt = rawDt * (ambientSpeedMaster / 100);
+  patch.update(scaledDt, params);  // Patch receives scaled time
+  ```
+- Patches never need to know about `ambientSpeedMaster` — they just use the `dt` they receive
+
+**Result:**
+- ✅ User controls speed of ALL patches with ONE slider
+- ✅ Adding new patches requires no timing code
+- ✅ Consistent timing behavior across entire application
 
 ---
 
@@ -2404,7 +2824,7 @@ slider.addEventListener('input', (e) => {
 | 9. Store | Save/load states | Nothing (automatic) |
 | 10. Sync | Broadcast to display windows | Nothing (automatic) |
 
-**Key Insight:** Patches are **publishers**, Framework is **consumer**. Once a patch publishes its manifest, the framework handles everything else.
+**Key Insight:** Patches **declare their interface**, framework **consumes the manifest**. Once a patch declares its manifest, the framework handles everything else.
 
 ---
 
@@ -3855,21 +4275,12 @@ function exportSVG(framework) {
 }
 ```
 
-**🚨 MANDATORY SVG EXPORT TESTING CHECKLIST (CANNOT SKIP):**
-- [ ] Export SVG from zigzag patch — **MUST WORK**
-- [ ] Verify pixel-perfect match with current exports — **MANDATORY**
-- [ ] Test with different camera angles — **REQUIRED**
-- [ ] Test with multiple color palettes — **REQUIRED**
-- [ ] Test with framebuffer mode enabled — **REQUIRED**
-- [ ] Verify file size is comparable — **REQUIRED**
-- [ ] Test in vector editor (Illustrator/Inkscape) — **MUST OPEN AND EDIT CORRECTLY**
-- [ ] Compare quality side-by-side with current version — **MUST BE IDENTICAL**
-- [ ] Verify all colors, opacity, and layering are correct — **ZERO DEFECTS ALLOWED**
-
-**Failure Criteria:**
-- If ANY checkbox fails, the migration phase FAILS
-- The change must be reverted or fixed before proceeding
-- SVG export is GO/NO-GO for every phase
+**SVG Export Testing (Required Each Phase):**
+- Export SVG and verify pixel-perfect match with current version
+- Test with different camera angles and color palettes
+- Verify in vector editor (Illustrator/Inkscape)
+- Compare file size, quality, colors, opacity, layering
+- **GO/NO-GO:** If ANY test fails, phase cannot proceed
 
 ### State File Migration
 
@@ -3915,135 +4326,44 @@ SpaceFlow ensures **100% backward compatibility** with existing preset files. He
 **Framework loads this as:**
 
 ```javascript
-// 1. DETECT FORMAT VERSION
-const presetVersion = preset.version || "1.0";
-
-if (presetVersion === "2.0") {
-  // 2. AUTO-MIGRATION TO SPACEFLOW FORMAT
+// Auto-migration (simplified concept)
+if (preset.version === "2.0") {
   const migratedPreset = {
     version: "3.0",
-    metadata: {
-      sourceVersion: "2.0",
-      migratedAt: Date.now(),
-      sourceFile: presetFileName
-    },
+    metadata: { sourceVersion: "2.0", migratedAt: Date.now() },
     
-    // 3. SPLIT PARAMETERS BY SCOPE
+    // Split parameters by scope (universal vs patch)
     universal: {
-      // Extract universal params
-      camera: {
-        fov: preset.params.fov,
-        near: preset.params.near,
-        far: preset.params.far,
-        rotationX: preset.params.cameraRotationX,
-        rotationY: preset.params.cameraRotationY,
-        distance: preset.params.cameraDistance,
-        offsetX: preset.params.cameraOffsetX,
-        offsetY: preset.params.cameraOffsetY
-      },
-      palette: {
-        palettes: preset.params.palettes,
-        activeIndex: preset.params.activePaletteIndex,
-        colorTransitionDuration: preset.params.colorTransitionDuration,
-        colorSlotZOffset: preset.params.colorSlotZOffset
-      },
-      stateManagement: {
-        stateTransitionDuration: preset.params.stateTransitionDuration,
-        autoTriggerStates: preset.params.autoTriggerStates,
-        autoTriggerFrequency: preset.params.autoTriggerFrequency,
-        ambientSpeedMaster: preset.params.ambientSpeedMaster
-      },
-      framebuffer: {
-        mode: preset.params.framebufferMode,
-        preset: preset.params.framebufferPreset,
-        width: preset.params.framebufferWidth,
-        height: preset.params.framebufferHeight
-      },
-      stereoscopic: {
-        mode: preset.params.stereoscopicMode,
-        eyeSeparation: preset.params.eyeSeparation
-      },
-      overlay: {
-        imageSrc: preset.params.overlayImageSrc,
-        visible: preset.params.overlayVisible,
-        scale: preset.params.overlayScale,
-        opacity: preset.params.overlayOpacity,
-        x: preset.params.overlayX,
-        y: preset.params.overlayY
-      },
-      export: {
-        videoDuration: preset.params.videoDuration,
-        videoFPS: preset.params.videoFPS,
-        videoFormat: preset.params.videoFormat,
-        depthInvert: preset.params.depthInvert
-      }
+      camera: extractCameraParams(preset.params),
+      palette: extractPaletteParams(preset.params),
+      animation: extractAnimationParams(preset.params),
+      export: extractExportParams(preset.params),
+      // ... other universal systems
     },
     
-    // 4. DETERMINE PATCH TYPE
     patch: {
-      name: "zigzag-emitter",  // Auto-detected from parameters
+      name: "zigzag-emitter",  // Auto-detected
       version: "1.0.0",
-      
-      // Extract patch-specific params
-      parameters: {
-        segmentLength: preset.params.segmentLength,
-        lineThickness: preset.params.lineThickness,
-        emitterRotation: preset.params.emitterRotation,
-        geometryScale: preset.params.geometryScale,
-        fadeDuration: preset.params.fadeDuration,
-        emitRate: preset.params.emitRate,
-        speed: preset.params.speed,
-        randomThickness: preset.params.randomThickness,
-        randomSpeed: preset.params.randomSpeed,
-        thicknessRangeMin: preset.params.thicknessRangeMin,
-        thicknessRangeMax: preset.params.thicknessRangeMax,
-        speedRangeMin: preset.params.speedRangeMin,
-        speedRangeMax: preset.params.speedRangeMax
-      }
+      parameters: extractPatchParams(preset.params)  // Zigzag-specific
     },
     
-    // 5. MIGRATE STATES
-    states: preset.states.map(state => ({
-      id: state.id,
-      name: state.name,
-      timestamp: state.timestamp,
-      universal: {
-        camera: state.camera,
-        palette: {
-          palettes: state.params.palettes,
-          activeIndex: state.params.activePaletteIndex
-        }
-      },
-      patch: {
-        parameters: {
-          segmentLength: state.params.segmentLength,
-          lineThickness: state.params.lineThickness,
-          emitterRotation: state.params.emitterRotation,
-          geometryScale: state.params.geometryScale,
-          fadeDuration: state.params.fadeDuration,
-          emitRate: state.params.emitRate,
-          speed: state.params.speed,
-          randomThickness: state.params.randomThickness,
-          randomSpeed: state.params.randomSpeed,
-          thicknessRangeMin: state.params.thicknessRangeMin,
-          thicknessRangeMax: state.params.thicknessRangeMax,
-          speedRangeMin: state.params.speedRangeMin,
-          speedRangeMax: state.params.speedRangeMax
-        }
-      },
-      metadata: state.metadata
-    })),
-    
+    states: migrateStates(preset.states),  // Migrate each state
     activeStateId: preset.activeStateId
   };
   
-  // 6. LOAD ZIGZAG PATCH (LEGACY WRAPPER)
-  const patch = await PatchLoader.load('zigzag-emitter');
+  // Load zigzag patch
+  await PatchLoader.load('zigzag-emitter');
   
-  // 7. APPLY PARAMETERS
+  // Apply migrated preset
   SpaceFlow.applyPreset(migratedPreset);
 }
 ```
+
+**Key Benefits:**
+- ✅ **Zero user action required** — Old presets load automatically
+- ✅ **Lossless migration** — All parameters preserved
+- ✅ **Transparent process** — Users don't see migration happening
+- ✅ **Backward compatible** — ZigMap26 functionality fully maintained
 
 ---
 
@@ -4608,47 +4928,84 @@ This architecture transforms SpaceFlow from a monolithic application into a **mo
 ✅ **Scalable**: Works from 3 to 100+ parameters  
 ✅ **States**: Complete snapshots work across patches  
 ✅ **Future-Ready**: Architecture supports layers/VJ mode  
-✅ **Export Preservation**: All export formats (PNG, Video, SVG, Depth) fully preserved
+✅ **Export Preservation**: All formats (PNG, Video, SVG, Depth) fully preserved
 
-### Export System Guarantee
+### Export System Summary
 
-**🚨 CRITICAL SUCCESS FACTOR:**
+| Export Type | Status | Patch Requirement | Priority |
+|-------------|--------|-------------------|----------|
+| **PNG** | ✅ Automatic | None | Normal |
+| **Video** | ✅ Automatic | None | Normal |
+| **SVG** | ✅ Preserved | `getGeometry()` | 🚨 **CRITICAL** |
+| **Depth Map** | ✅ Preserved | `getGeometry()` | High |
 
-Export functionality is **non-negotiable** and must work flawlessly.
-
-**SVG EXPORT IS THE MOST CRITICAL EXPORT FORMAT AND MUST ALWAYS WORK.**
-
-| Export Type | Status | Guarantee | Priority |
-|-------------|--------|-----------|----------|
-| **PNG** | ✅ Automatic | Works with ANY patch immediately | Normal |
-| **Video** | ✅ Automatic | Works with ANY patch immediately | Normal |
-| **SVG** | ✅ Preserved | Requires `getGeometry()` implementation | 🚨 **CRITICAL** |
-| **Depth Map** | ✅ Preserved | Requires `getGeometry()` implementation | High |
-
-**🚨 SVG EXPORT SPECIFICALLY (ABSOLUTE REQUIREMENTS):**
-- ✅ Same projection math (pixel-perfect) — **MANDATORY**
-- ✅ Same quality and features — **NO DEGRADATION ALLOWED**
-- ✅ Resolution-independent vectors — **MUST PRESERVE**
-- ✅ Editable in vector software — **REQUIRED FOR PROFESSIONAL USE**
-- ✅ Clean separation: patches provide geometry, framework handles export
-- ✅ More powerful: ANY patch can export SVG
-- ✅ **ZERO tolerance for broken SVG export**
-- ✅ **Testing required after EVERY code change**
-- ✅ **This is NON-NEGOTIABLE**
+**SVG Export:** Fully preserved with cleaner architecture. Patches provide geometry, framework handles export. Testing required after each migration phase.
 
 ### Next Steps
 
 1. **Review & Refine**: Discuss any concerns or modifications
-2. **Begin Phase 0**: Set up directory structure, interfaces
-3. **🚨 CRITICAL: Migrate Export System First**: Ensure SVG works BEFORE anything else
-4. **Verify SVG Export**: Test extensively, compare with current version
-5. **Prototype**: Build a simple test patch to validate architecture
-6. **Test SVG Again**: Every phase must verify SVG export still works
-7. **Iterate**: Adjust based on real-world usage (but NEVER break SVG export)
+2. **Phase 0**: Set up directory structure, interfaces
+3. **Phase 1**: Migrate export system, verify SVG works
+4. **Phase 2**: Build dynamic parameter system
+5. **Phase 3**: Wrap legacy zigzag code as patch
+6. **Phase 4**: Generate UI from manifest
+7. **Phase 5**: Full migration complete
+
+**Testing Priority:** SVG export validation after every phase.
 
 ---
 
 **The future of SpaceFlow is modular, extensible, and beautiful.** ✨
+
+---
+
+## Implementation Considerations
+
+### Browser Compatibility
+- **Supported:** Modern evergreen browsers (Chrome, Firefox, Safari, Edge)
+- **Required:** ES6+ support, WebGL 1.0, Canvas API
+- **Dependencies:** p5.js (v1.4+), CCapture.js
+- **Not supported:** IE11, legacy mobile browsers
+
+### Performance Limits
+- **Parameters:** No hard limit, but UI becomes unwieldy beyond ~50 parameters per patch
+- **Particles/Lines:** Tested up to 10,000 active elements (60fps on modern hardware)
+- **State Transitions:** Smooth up to 100 parameters simultaneously
+- **Recommendation:** Keep patches focused; split complex behaviors into multiple patches
+
+### Security Considerations
+- **Manifest validation:** Framework validates all manifest data to prevent injection
+- **No eval():** Patches loaded as ES6 modules, no dynamic code execution
+- **Sandboxing:** Patches cannot access global scope or DOM directly
+- **User input:** All parameter values sanitized before storage
+
+### Common Pitfalls & Debugging
+
+**For Patch Developers:**
+1. **Forgetting `getGeometry()`** → SVG export won't work (console warning shown)
+2. **Direct global access** → Use dependency injection via constructor
+3. **Stateful patches** → Keep animation state internal, react to parameter changes
+4. **Memory leaks** → Always implement `destroy()` to clean up resources
+
+**For Framework Migration:**
+1. **Test SVG export first** → This is the #1 priority after every change
+2. **Maintain flat parameter access** → `params.lineThickness` must work (backward compat)
+3. **Version mismatches** → Framework handles gracefully with console warnings
+4. **Race conditions** → PatchLoader ensures only one patch loads at a time
+
+### Developer Onboarding
+1. Read this document (SPACEFLOW-ARCHITECTURE.md)
+2. Study the zigzag patch as reference implementation
+3. Copy patch template from `patches/zigzag/`
+4. Start with inline manifest (Option 2 - recommended)
+5. Test frequently with SVG export
+6. Use browser DevTools console for `getGeometry()` debugging
+
+### API Versioning Strategy
+- **Patch Interface:** Semantic versioning (currently 1.0.0)
+- **Breaking changes:** Major version bump, deprecation warnings for 1 release cycle
+- **Backward compatibility:** Framework maintains support for previous major version
+- **Manifest format:** Versioned separately (`manifestVersion` field in future)
 
 ---
 
