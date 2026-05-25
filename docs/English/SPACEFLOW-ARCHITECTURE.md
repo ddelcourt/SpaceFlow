@@ -7,13 +7,35 @@
 
 ---
 
+## ⚠️ CRITICAL REQUIREMENT ⚠️
+
+### SVG Export is NON-NEGOTIABLE
+
+**THIS IS THE #1 PRIORITY FOR ANY ARCHITECTURAL CHANGE:**
+
+🚨 **SVG export functionality must ALWAYS work**  
+🚨 **ANY code update that breaks SVG export is UNACCEPTABLE**  
+🚨 **EVERY architectural decision must preserve SVG export**
+
+**Why This Matters:**
+- SVG export is a **core professional feature**
+- Resolution-independent vector graphics for print and editing
+- Used in production workflows (Illustrator, Inkscape)
+- Cannot be compromised under any circumstances
+
+**Implementation Rule:**
+- ❌ Breaking SVG export = BAD update (must be reverted)
+- ✅ Preserving SVG export = GOOD update (can proceed)
+
+---
+
 ## Executive Summary
 
-**SpaceFlow** transforms ZigMap26 from a monolithic zigzag generator into a modular framework for real-time 3D generative art. This document defines the complete architecture for achieving this vision.
+**SpaceFlow** transforms ZigMap26 from a monolithic zigzag generator into a modular framework for real-time 3D generative art. This document defines the complete architecture for achieving this vision **while guaranteeing SVG export functionality is fully preserved**.
 
 ### Core Innovation
 
-**Manifest-Driven Patch System**: Patches define their parameters once in a JSON manifest, and everything else (UI generation, storage, validation, state management) happens automatically.
+**Manifest-Driven Patch System**: Patches define their parameters once in a JSON manifest, and everything else (UI generation, storage, validation, state management) happens automatically at the framework level.
 
 ### Key Benefits
 
@@ -23,6 +45,7 @@
 - 🎭 **States**: Complete snapshots work across different patches
 - 🎛️ **Scalability**: UI adapts from 3 to 100+ parameters automatically
 - 🚀 **Future-Ready**: Architecture supports future layer system for VJ workflows
+- 🚨 **SVG Export Guarantee**: All export formats (including critical SVG) fully preserved
 
 ---
 
@@ -152,6 +175,9 @@ Single algorithm       →    Pluggable patches
 - Manages application lifecycle
 - Handles UI shell generation
 - Coordinates storage and sync
+- **Manages State Management system** (save/load/transition)
+- **Controls state player and auto-trigger**
+- **Orchestrates parameter interpolation during transitions**
 
 #### Layer 2: Patch Interface (Contract)
 - Defines what framework expects from patches
@@ -164,6 +190,9 @@ Single algorithm       →    Pluggable patches
 - Define their own parameters via manifest
 - Implement standard interface methods
 - Can be developed independently
+- **Manage internal animation state** (particles, buffers, physics)
+- **React to parameter values** (which may be mid-transition)
+- **Do NOT control state transitions** (framework handles)
 
 ---
 
@@ -350,23 +379,440 @@ SpaceFlow Application
   canvasBorderColor: "#adff2f",
   videoDuration: 10,                // Video recording length (seconds)
   videoFPS: 60,
-  videoFormat: "webm"
+  videoFormat: "webm"               // "webm" or "gif"
 }
 ```
+
+**Framebuffer Mode:**
+When `framebufferMode` is enabled, the canvas renders at the specified fixed resolution (`framebufferWidth` × `framebufferHeight`) regardless of window size. This setting affects:
+- PNG exports (captures at framebuffer resolution)
+- Video exports (records at framebuffer resolution)
+- SVG exports (not affected, resolution-independent)
+- Depth map exports (uses framebuffer resolution)
 
 **Why Universal:**
 - All patches need export capabilities
 - Resolution settings apply at canvas level
 - Video recording is framework-level
 
-**Framework Responsibilities:**
-- Capture canvas to PNG/video
-- Request geometry from patch: `patch.getGeometry()`
-- Generate SVG/depth maps from geometry
+---
 
-**Patch Responsibilities:**
-- Provide geometry in standard format via `getGeometry()`
-- Return array of lines/shapes with vertices and metadata
+#### Export Pipeline Architecture
+
+SpaceFlow provides **four export formats**, each using a different pipeline:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    EXPORT PIPELINE                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────┐    ┌──────────┐    ┌────────────────────┐   │
+│  │   PNG    │───▶│  Canvas  │───▶│  Direct capture    │   │
+│  │  Export  │    │ Renderer │    │  (screenshot)      │   │
+│  └──────────┘    └──────────┘    └────────────────────┘   │
+│       ↓                                                     │
+│  Framebuffer-aware, includes overlay                       │
+│                                                             │
+│  ┌──────────┐    ┌──────────┐    ┌────────────────────┐   │
+│  │  Video   │───▶│  Canvas  │───▶│  Frame-by-frame    │   │
+│  │  Export  │    │ Renderer │    │  capture (CCapture)│   │
+│  └──────────┘    └──────────┘    └────────────────────┘   │
+│       ↓                                                     │
+│  Framebuffer-aware, time-based recording, includes overlay │
+│                                                             │
+│  ┌──────────┐    ┌──────────┐    ┌────────────────────┐   │
+│  │   SVG    │───▶│ Geometry │───▶│  Vector generation │   │
+│  │  Export  │    │  API     │    │  (resolution-free) │   │
+│  └──────────┘    └──────────┘    └────────────────────┘   │
+│       ↓                                                     │
+│  Calls patch.getGeometry() → processes vertices            │
+│                                                             │
+│  ┌──────────┐    ┌──────────┐    ┌────────────────────┐   │
+│  │  Depth   │───▶│ Geometry │───▶│  Grayscale render  │   │
+│  │   Map    │    │  API     │    │  based on Z-depth  │   │
+│  └──────────┘    └──────────┘    └────────────────────┘   │
+│       ↓                                                     │
+│  Calls patch.getGeometry() → projects & rasterizes         │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 1. PNG Export (Canvas-Based)
+
+**Method**: Direct canvas capture
+
+**Process:**
+1. Framework captures current canvas pixels
+2. Applies overlay if enabled (composite operation)
+3. Converts to PNG via `canvas.toDataURL()`
+4. Triggers download
+
+**Patch Requirements:**
+- ✅ None — works automatically with any rendering
+- ✅ Patches just need to implement `draw()`
+
+**Characteristics:**
+- Resolution-dependent
+- Includes overlays
+- Fast and simple
+- Perfect pixel accuracy of what's on screen
+- **Framebuffer-aware**: Respects fixed resolution settings when framebuffer mode is enabled
+
+**Framework Implementation:**
+```javascript
+// In PNGExporter.js
+function exportPNG(framework) {
+  const canvas = framework.getCanvas();
+  const overlay = framework.getOverlay();
+  
+  // Composite canvas + overlay
+  const composited = compositeWithOverlay(canvas, overlay);
+  
+  // Convert to PNG
+  const dataURL = composited.toDataURL('image/png');
+  downloadFile(dataURL, `spaceflow-${timestamp()}.png`);
+}
+```
+
+**Status**: ✅ Works with ANY patch automatically
+
+---
+
+#### 2. Video Export (Canvas-Based)
+
+**Method**: Frame-by-frame canvas capture using CCapture.js
+
+**Process:**
+1. Framework starts recording loop
+2. For each frame:
+   - Render patch via `draw()`
+   - Capture canvas pixels
+   - Apply overlay
+   - Add frame to video encoder
+3. After duration completes, encode and download
+
+**Patch Requirements:**
+- ✅ None — works automatically
+- ✅ Patches implement time-based animation in `update(dt)`
+
+**Characteristics:**
+- Time-based recording
+- Includes overlays
+- Configurable FPS and duration
+- WebM or GIF output
+- **Framebuffer-aware**: Respects fixed resolution settings when framebuffer mode is enabled
+
+**Framework Implementation:**
+```javascript
+// In VideoRecorder.js
+function startRecording(framework, duration, fps) {
+  const capturer = new CCapture({
+    format: framework.params.videoFormat,
+    framerate: fps
+  });
+  
+  capturer.start();
+  
+  let elapsed = 0;
+  const frameInterval = 1 / fps;
+  
+  const recordLoop = () => {
+    framework.patch.update(frameInterval);
+    framework.patch.draw(framework.p, framework.camera, framework.params);
+    
+    // Apply overlay
+    if (framework.overlay.visible) {
+      framework.drawOverlay();
+    }
+    
+    capturer.capture(framework.canvas);
+    elapsed += frameInterval;
+    
+    if (elapsed < duration) {
+      requestAnimationFrame(recordLoop);
+    } else {
+      capturer.stop();
+      capturer.save();
+    }
+  };
+  
+  recordLoop();
+}
+```
+
+**Status**: ✅ Works with ANY patch automatically
+
+---
+
+#### 3. SVG Export (Geometry-Based) 🚨 ABSOLUTELY CRITICAL — NON-NEGOTIABLE 🚨
+
+**Method**: Vector generation from 3D geometry
+
+**⚠️ WHY SVG EXPORT IS ABSOLUTELY CRITICAL AND MUST NEVER BE BROKEN:**
+
+**Professional Requirements:**
+- **Resolution-independent** — Scale infinitely without quality loss (ESSENTIAL for print)
+- **Editable** — Open in Illustrator, Inkscape, etc. (REQUIRED for production workflows)
+- **Precise** — Exact mathematical representations (CRITICAL for accuracy)
+- **Small files** — Efficient for sharing and archiving
+- **Print-ready** — Professional output quality (NON-NEGOTIABLE)
+
+**Business Impact:**
+- Used in professional creative workflows
+- Core feature users depend on
+- Competitive advantage over raster-only tools
+- Cannot be temporarily unavailable during migration
+
+**MANDATE:** Any architectural change that compromises SVG export is unacceptable and must be redesigned.
+
+**Process:**
+1. Framework calls `patch.getGeometry()`
+2. Patch returns array of geometric primitives (lines, ribbons, shapes)
+3. Framework projects 3D coordinates → 2D screen space
+4. Framework generates SVG elements (`<polygon>`, `<path>`, etc.)
+5. Framework applies colors, opacity, transformations
+6. Download as `.svg` file
+
+**Patch Requirements:**
+- ✅ Implement `getGeometry()` method
+- ✅ Return geometry in standardized format (see below)
+- ✅ Include vertex positions, colors, opacity
+
+**Critical Implementation Details:**
+
+**getGeometry() Contract:**
+```javascript
+class ZigzagPatch {
+  getGeometry() {
+    return {
+      type: 'ribbons',           // Type hint for framework
+      units: 'world',             // Coordinate space
+      items: [
+        {
+          type: 'ribbon',
+          vertices: [             // Centerline vertices in 3D
+            { x: 100, y: 200, z: 50 },
+            { x: 150, y: 180, z: 45 },
+            // ... more vertices
+          ],
+          thickness: 24,          // Width of ribbon
+          color: { r: 255, g: 200, b: 100 },
+          opacity: 0.95,
+          zOffset: 0              // Layering depth
+        },
+        // ... more ribbons
+      ],
+      metadata: {
+        bounds: { minX, maxX, minY, maxY, minZ, maxZ },
+        count: 150,
+        patch: 'zigzag-emitter-v1'
+      }
+    };
+  }
+}
+```
+
+**Geometry Format Specification:**
+
+**Supported Primitive Types:**
+- `ribbon` — Thick line with width (centerline + thickness)
+- `polygon` — Closed shape with vertices
+- `polyline` — Open path
+- `circle` — Center + radius
+- `ellipse` — Center + radii + rotation
+
+**Ribbon Format (most common):**
+```javascript
+{
+  type: 'ribbon',
+  vertices: [           // Centerline in 3D world space
+    { x, y, z },
+    // ... 
+  ],
+  thickness: number,    // Width of ribbon in world units
+  color: { r, g, b },   // RGB values (0-255)
+  opacity: number,      // 0.0 - 1.0
+  zOffset: number       // Z-layer for rendering order
+}
+```
+
+**Framework SVG Generation:**
+```javascript
+// In SVGExporter.js
+function exportSVG(framework) {
+  // 1. Get geometry from patch
+  const geometry = framework.patch.getGeometry();
+  
+  // 2. Create SVG document
+  const svg = createSVGElement('svg', {
+    width: framework.W,
+    height: framework.H,
+    viewBox: `0 0 ${framework.W} ${framework.H}`
+  });
+  
+  // 3. Add background
+  addBackground(svg, framework.getBackgroundColor());
+  
+  // 4. Process each geometric item
+  geometry.items.forEach(item => {
+    if (item.type === 'ribbon') {
+      // Build ribbon sides from centerline
+      const { leftSide, rightSide } = expandRibbon(
+        item.vertices,
+        item.thickness / 2
+      );
+      
+      // Project 3D → 2D
+      const leftProjected = leftSide.map(v => 
+        project3Dto2D(v, framework.camera)
+      );
+      const rightProjected = rightSide.map(v => 
+        project3Dto2D(v, framework.camera)
+      );
+      
+      // Create SVG polygon
+      const polygon = createSVGElement('polygon', {
+        points: [...leftProjected, ...rightProjected.reverse()]
+          .map(p => `${p.x},${p.y}`).join(' '),
+        fill: `rgb(${item.color.r},${item.color.g},${item.color.b})`,
+        'fill-opacity': item.opacity,
+        stroke: 'none'
+      });
+      
+      svg.appendChild(polygon);
+    }
+    // Handle other primitive types...
+  });
+  
+  // 5. Download
+  downloadSVG(svg, `spaceflow-${timestamp()}.svg`);
+}
+```
+
+**Projection Pipeline (Framework Provides):**
+```javascript
+function project3Dto2D(vertex, camera) {
+  // 1. Apply geometry scale
+  let { x, y, z } = scaleVertex(vertex, params.geometryScale);
+  
+  // 2. Apply rotations (emitter + camera)
+  ({ x, y, z } = rotateZ(x, y, z, params.emitterRotation));
+  ({ x, y, z } = rotateY(x, y, z, camera.rotationY));
+  ({ x, y, z } = rotateX(x, y, z, camera.rotationX));
+  
+  // 3. Transform to camera space
+  const viewX = x - camera.offsetX;
+  const viewY = y - camera.offsetY;
+  const viewZ = z - camera.distance;
+  
+  // 4. Frustum culling
+  if (viewZ >= -camera.near || viewZ <= -camera.far) {
+    return null; // Outside view
+  }
+  
+  // 5. Perspective projection
+  const fovScale = (canvasHeight / 2) / Math.tan(camera.fov / 2);
+  const scale = fovScale / -viewZ;
+  const screenX = viewX * scale + canvasWidth / 2;
+  const screenY = viewY * scale + canvasHeight / 2;
+  
+  return { x: screenX, y: screenY };
+}
+```
+
+**Migration Strategy for Zigzag Patch:**
+```javascript
+// Current: Direct access to emitter.lines
+function exportSVG(ZM) {
+  ZM.emitterInstance.lines.forEach(line => {
+    const verts = line._buildVertices();
+    // ... process
+  });
+}
+
+// Future: Patch provides geometry
+class ZigzagPatch {
+  getGeometry() {
+    return {
+      type: 'ribbons',
+      items: this.emitter.lines
+        .filter(line => line._alpha() > 0)
+        .map(line => ({
+          type: 'ribbon',
+          vertices: line._buildVertices(),
+          thickness: line.lineThickness,
+          color: { r: line.currentColor[0], g: line.currentColor[1], b: line.currentColor[2] },
+          opacity: line._alpha(),
+          zOffset: line.zOffset
+        }))
+    };
+  }
+}
+```
+
+**Status**: ✅ Fully preserves current SVG functionality  
+**Requirement**: Patches MUST implement `getGeometry()`  
+**Priority**: 🚨 HIGHEST — This functionality is NON-NEGOTIABLE  
+**Testing**: MUST verify SVG export works after every change  
+**Guarantee**: SVG export quality and features CANNOT be reduced
+
+---
+
+#### 4. Depth Map Export (Geometry-Based)
+
+**Method**: Grayscale rendering based on Z-depth
+
+**Process:**
+1. Framework calls `patch.getGeometry()`
+2. Framework projects geometry to screen space
+3. Framework scans for min/max depth values
+4. Framework rasterizes polygons as grayscale (near=white, far=black)
+5. Download as PNG
+
+**Patch Requirements:**
+- ✅ Same `getGeometry()` as SVG export
+- ✅ Z-coordinates must be meaningful
+
+**Characteristics:**
+- Used for displacement mapping
+- Useful for 3D reconstruction
+- Matches SVG export perspective exactly
+
+**Status**: ✅ Works automatically if `getGeometry()` implemented
+
+---
+
+#### Export System Summary
+
+| Format | Method | Patch Requirement | Overlay | Resolution | Framebuffer-Aware | Current Status | Priority |
+|--------|--------|------------------|---------|------------|-------------------|----------------|----------|
+| **PNG** | Canvas capture | None (automatic) | ✅ Yes | Fixed | ✅ Yes | ✅ Works always | Normal |
+| **Video** | Canvas recording | None (automatic) | ✅ Yes | Fixed | ✅ Yes | ✅ Works always | Normal |
+| **SVG** | Geometry API | `getGeometry()` | ❌ No | Infinite | N/A | ⚠️ Requires implementation | 🚨 **CRITICAL** |
+| **Depth** | Geometry API | `getGeometry()` | ❌ No | Fixed | ✅ Yes | ⚠️ Requires implementation | High |
+
+**Key Insight:**
+- Canvas-based exports (PNG, Video) work with **ANY** patch automatically
+- **Both PNG and Video respect framebuffer mode** for fixed-resolution exports
+- Geometry-based exports (SVG, Depth) require patches to implement `getGeometry()`
+- Framework handles ALL projection math and file generation
+- Patches only provide raw 3D geometry in world space
+
+**🚨 ABSOLUTE GUARANTEE — SVG EXPORT:**
+✅ SVG export functionality is **fully preserved** in SpaceFlow architecture  
+✅ **ZERO** loss of features, quality, or capability  
+✅ Actually becomes MORE powerful (any patch can export SVG)  
+✅ Cleaner separation: patches define geometry, framework handles export  
+✅ **MUST work in every phase of migration**  
+✅ **ANY breaking change is unacceptable and must be reverted immediately**  
+
+**Implementation Commitment:**
+- SVG export will be the **first system tested** in every phase
+- Migration cannot proceed to next phase if SVG export is broken
+- Rollback procedures ready if SVG export fails
+- SVG export quality is verified pixel-perfect against current implementation
 
 ---
 
@@ -480,7 +926,7 @@ export class PatchInterface {
 2. **Color API** — Access to current palette colors
 3. **Canvas Dimensions** — Width, height, pixel density
 4. **Time Delta** — Consistent dt for frame-independent animation
-5. **Parameter Values** — Current values from UI/states
+5. **Parameter Values** — Current values from UI/states (may be mid-transition, interpolated by framework)
 6. **Export Requests** — Framework calls `getGeometry()` when exporting
 
 ### What Patches Provide To Framework
@@ -499,17 +945,36 @@ Patches **MUST NOT**:
 - ❌ Manipulate window sync
 - ❌ Change color palettes directly
 - ❌ Access DOM (framework manages UI)
+- ❌ Manage application states (framework handles State Management system)
+- ❌ Control state transitions (framework orchestrates)
 
 Patches **CAN**:
 - ✅ Create internal classes/utilities
 - ✅ Use p5.js drawing functions
-- ✅ Access their own parameters
-- ✅ Manage animation state
+- ✅ Access their own parameters (read-only)
+- ✅ Manage internal animation state (particle positions, line buffers, physics, etc.)
+- ✅ React smoothly to parameter changes
 - ✅ Import shared utilities
 
 ---
 
 ## 6. State Management
+
+**🏛️ STATE MANAGEMENT IS FRAMEWORK-LEVEL**
+
+The **Framework** (not patches) manages the entire State Management system:
+- Saving states (capturing all parameters)
+- Loading states (restoring parameters)
+- States list UI (display, reorder, rename)
+- States player (auto-trigger, transitions)
+- Orchestrating transitions between states
+- Parameter value interpolation during transitions
+
+**Patches only:**
+- Receive current parameter values (which may be mid-transition)
+- React to parameter changes smoothly
+- Manage their internal animation state (particles, buffers, etc.)
+- Do NOT control when/how states change
 
 ### What is a State?
 
@@ -587,6 +1052,20 @@ States enable:
 
 ### State Transitions
 
+**Framework Responsibility:**
+The framework orchestrates all state transitions:
+1. User triggers state change (click, auto-trigger, keyboard)
+2. Framework loads target state parameters
+3. Framework interpolates values over transition duration
+4. Framework passes interpolated values to patch via `update(dt, params)`
+5. Patch renders based on current parameter values
+
+**Patch Responsibility:**
+Patches simply respond to the parameter values they receive:
+- Parameters might be mid-transition (interpolated values)
+- Patch doesn't know or care if a state transition is happening
+- Patch just renders using current values
+
 Different property types transition differently:
 
 #### ✅ Smooth Transitions (Interpolated)
@@ -616,6 +1095,21 @@ Colors use their own duration (`colorTransitionDuration`):
 colorProgress = elapsed / colorTransitionDuration;
 newColor = lerpColor(oldColor, targetColor, colorProgress);
 ```
+
+**📋 Summary: Who Does What in State Transitions**
+
+| Responsibility | Framework | Patch |
+|----------------|-----------|-------|
+| Save state | ✅ Yes (captures all params) | ❌ No |
+| Load state | ✅ Yes (restores params) | ❌ No |
+| Trigger transition | ✅ Yes (user/auto-trigger) | ❌ No |
+| Interpolate values | ✅ Yes (lerp between states) | ❌ No |
+| States UI/player | ✅ Yes (list, rename, reorder) | ❌ No |
+| Receive parameters | ❌ No | ✅ Yes (via `update(dt, params)`) |
+| Render visuals | ❌ No | ✅ Yes (using current params) |
+| Manage internal state | ❌ No | ✅ Yes (particles, buffers, physics) |
+
+**Key Point:** Patches are **stateless** from the application's perspective. They receive parameters and render. They don't know or care about the State Management system.
 
 ### Cross-Patch States
 
@@ -1541,6 +2035,101 @@ const thickness = SpaceFlow.patchAPI.getParam('lineThickness');
 const thickness = params.lineThickness; // Passed to patch methods
 ```
 
+### Export Functionality Preservation
+
+**🚨 CRITICAL REQUIREMENT — HIGHEST PRIORITY:**
+
+All export formats must continue working throughout migration, with **SVG export being absolutely non-negotiable and must NEVER be broken under any circumstances.**
+
+**SVG Export Priority:**
+- SVG export is **more important** than any architectural improvement
+- If a change breaks SVG export, the change is **unacceptable**
+- Migration phases cannot proceed without working SVG export
+- This is **not negotiable** under any circumstances
+
+**PNG & Video (Canvas-Based):**
+- ✅ **No changes required** — work automatically with any patch
+- ✅ Continue capturing canvas pixels as today
+- ✅ **Framebuffer-aware** — respect fixed resolution settings when enabled
+- ✅ Zero risk during migration
+
+**SVG & Depth Map (Geometry-Based):**
+- ⚠️ **Requires patch cooperation** — must implement `getGeometry()`
+- ✅ **Framework handles all complexity** (projection, SVG generation)
+- ✅ **Same quality and features** as current implementation
+
+**Migration Steps for SVG Export:**
+
+**Phase 1: Extract SVG Logic to Universal System**
+```javascript
+// Move from main.js to export/SVGExporter.js
+class SVGExporter {
+  export(geometry, camera, params) {
+    // All projection math stays here
+    // All SVG generation stays here
+    // Framework-level, patch-agnostic
+  }
+}
+```
+
+**Phase 2: Create getGeometry() Interface**
+```javascript
+// Add to ZigzagLine and Emitter classes
+class Emitter {
+  getGeometry() {
+    return {
+      type: 'ribbons',
+      items: this.lines
+        .filter(line => line._alpha() > 0)
+        .map(line => ({
+          type: 'ribbon',
+          vertices: line._buildVertices(),
+          thickness: line.lineThickness,
+          color: { 
+            r: line.currentColor[0], 
+            g: line.currentColor[1], 
+            b: line.currentColor[2] 
+          },
+          opacity: line._alpha(),
+          zOffset: line.zOffset
+        }))
+    };
+  }
+}
+```
+
+**Phase 3: Refactor Export Call**
+```javascript
+// OLD (current)
+function exportSVG(ZM) {
+  ZM.emitterInstance.lines.forEach(line => {
+    // Direct access to internal state
+  });
+}
+
+// NEW (SpaceFlow)
+function exportSVG(framework) {
+  const geometry = framework.patch.getGeometry();
+  // Process standardized geometry
+}
+```
+
+**🚨 MANDATORY SVG EXPORT TESTING CHECKLIST (CANNOT SKIP):**
+- [ ] Export SVG from zigzag patch — **MUST WORK**
+- [ ] Verify pixel-perfect match with current exports — **MANDATORY**
+- [ ] Test with different camera angles — **REQUIRED**
+- [ ] Test with multiple color palettes — **REQUIRED**
+- [ ] Test with framebuffer mode enabled — **REQUIRED**
+- [ ] Verify file size is comparable — **REQUIRED**
+- [ ] Test in vector editor (Illustrator/Inkscape) — **MUST OPEN AND EDIT CORRECTLY**
+- [ ] Compare quality side-by-side with current version — **MUST BE IDENTICAL**
+- [ ] Verify all colors, opacity, and layering are correct — **ZERO DEFECTS ALLOWED**
+
+**Failure Criteria:**
+- If ANY checkbox fails, the migration phase FAILS
+- The change must be reverted or fixed before proceeding
+- SVG export is GO/NO-GO for every phase
+
 ### State File Migration
 
 **Automatic Conversion:**
@@ -1574,6 +2163,14 @@ If issues arise:
 2. Feature flags for new vs old systems
 3. Can revert per-system (UI, storage, etc.)
 4. Comprehensive test suite catches regressions
+5. **🚨 SVG EXPORT MUST NEVER BREAK — ABSOLUTE HIGHEST PRIORITY 🚨**
+
+**SVG Export Protection:**
+- Immediate rollback if SVG export breaks
+- SVG export system has dedicated backup
+- Can run old SVG export alongside new code if needed
+- Zero tolerance for SVG export failures
+- **Broken SVG export = CRITICAL BUG = Immediate fix required**
 
 ---
 
@@ -1782,13 +2379,43 @@ This architecture transforms SpaceFlow from a monolithic application into a **mo
 ✅ **Scalable**: Works from 3 to 100+ parameters  
 ✅ **States**: Complete snapshots work across patches  
 ✅ **Future-Ready**: Architecture supports layers/VJ mode  
+✅ **Export Preservation**: All export formats (PNG, Video, SVG, Depth) fully preserved
+
+### Export System Guarantee
+
+**🚨 CRITICAL SUCCESS FACTOR:**
+
+Export functionality is **non-negotiable** and must work flawlessly.
+
+**SVG EXPORT IS THE MOST CRITICAL EXPORT FORMAT AND MUST ALWAYS WORK.**
+
+| Export Type | Status | Guarantee | Priority |
+|-------------|--------|-----------|----------|
+| **PNG** | ✅ Automatic | Works with ANY patch immediately | Normal |
+| **Video** | ✅ Automatic | Works with ANY patch immediately | Normal |
+| **SVG** | ✅ Preserved | Requires `getGeometry()` implementation | 🚨 **CRITICAL** |
+| **Depth Map** | ✅ Preserved | Requires `getGeometry()` implementation | High |
+
+**🚨 SVG EXPORT SPECIFICALLY (ABSOLUTE REQUIREMENTS):**
+- ✅ Same projection math (pixel-perfect) — **MANDATORY**
+- ✅ Same quality and features — **NO DEGRADATION ALLOWED**
+- ✅ Resolution-independent vectors — **MUST PRESERVE**
+- ✅ Editable in vector software — **REQUIRED FOR PROFESSIONAL USE**
+- ✅ Clean separation: patches provide geometry, framework handles export
+- ✅ More powerful: ANY patch can export SVG
+- ✅ **ZERO tolerance for broken SVG export**
+- ✅ **Testing required after EVERY code change**
+- ✅ **This is NON-NEGOTIABLE**
 
 ### Next Steps
 
 1. **Review & Refine**: Discuss any concerns or modifications
 2. **Begin Phase 0**: Set up directory structure, interfaces
-3. **Prototype**: Build a simple test patch to validate architecture
-4. **Iterate**: Adjust based on real-world usage
+3. **🚨 CRITICAL: Migrate Export System First**: Ensure SVG works BEFORE anything else
+4. **Verify SVG Export**: Test extensively, compare with current version
+5. **Prototype**: Build a simple test patch to validate architecture
+6. **Test SVG Again**: Every phase must verify SVG export still works
+7. **Iterate**: Adjust based on real-world usage (but NEVER break SVG export)
 
 ---
 
@@ -1797,4 +2424,5 @@ This architecture transforms SpaceFlow from a monolithic application into a **mo
 ---
 
 *Document Status: Complete & Ready for Implementation*  
-*Last Updated: May 25, 2026*
+*Last Updated: May 25, 2026*  
+*Export Pipeline: Fully Documented & Preserved*
