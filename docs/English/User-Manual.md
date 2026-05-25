@@ -150,7 +150,6 @@ The images on the main and secondary displays will be **visually similar but not
 - Intelligent synchronization: transition commands for smooth animations, real-time updates for manual control
 
 **Bidirectional keyboard control**
-
 Display windows support **remote keyboard control**, enabling you to operate the entire system from any display window. This is particularly useful for live performances where you're watching the projector output instead of the control window.
 
 **Supported keys from display windows:**

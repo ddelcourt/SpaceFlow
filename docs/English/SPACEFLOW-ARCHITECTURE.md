@@ -61,11 +61,13 @@
 5. [Patch System](#5-patch-system)
    - 5a. [SVG Export from Patches: Complete Flow](#5a-svg-export-from-patches-complete-flow)
 6. [State Management](#6-state-management)
+   - 6a. [Dynamic Parameter Storage for Arbitrary Patches](#6a-dynamic-parameter-storage-for-arbitrary-patches)
 
 ### Part III: Dynamic Parameters
 7. [Parameter Manifest](#7-parameter-manifest)
 8. [Parameter Types](#8-parameter-types)
 9. [Dynamic UI Generation](#9-dynamic-ui-generation)
+   - [How Manifest Defines UI Structure](#how-manifest-defines-ui-structure-)
 
 ### Part IV: User Interface
 10. [UI Layout Strategy](#10-ui-layout-strategy)
@@ -76,6 +78,10 @@
 13. [Implementation Roadmap](#13-implementation-roadmap)
 14. [File Structure](#14-file-structure)
 15. [Migration Strategy](#15-migration-strategy)
+    - [Preset File Compatibility](#preset-file-compatibility-matrix)
+    - [Legacy Patch Wrapper](#legacy-patch-wrapper)
+    - [Parameter Name Compatibility](#parameter-name-compatibility)
+    - [Zero-Disruption Migration](#summary-zero-disruption-migration)
 16. [Code Examples](#16-code-examples)
 
 ---
@@ -1576,6 +1582,580 @@ function loadState(state, currentPatch) {
 
 ---
 
+## 6a. Dynamic Parameter Storage for Arbitrary Patches 🔑
+
+### THE CRITICAL CONCERN: How do we save/load states for patches with arbitrary parameters?
+
+This is a **fundamental architectural requirement**. Each patch defines different parameters, and the framework must handle ANY parameter set without hardcoding.
+
+---
+
+### The Problem Illustrated
+
+**Current Zigzag Patch:**
+```json
+{
+  "segmentLength": 120,
+  "lineThickness": 26.8,
+  "emitterRotation": 222,
+  "geometryScale": 158
+}
+```
+
+**Future Particle Patch:**
+```json
+{
+  "particleCount": 1000,
+  "gravity": 9.8,
+  "windSpeed": 15,
+  "attractorStrength": 0.5
+}
+```
+
+**Future Fractal Patch:**
+```json
+{
+  "iterations": 5,
+  "branchAngle": 45,
+  "lengthRatio": 0.67,
+  "colorCycle": 360
+}
+```
+
+**Question:** How does one preset format handle all these different parameter sets?
+
+---
+
+### The Solution: Manifest-Driven Dynamic Storage
+
+**Key Insight:** The **patch manifest defines what to save**. The framework doesn't need to know parameter names in advance.
+
+---
+
+### Version 3.0 Preset Format (Multi-Patch)
+
+```json
+{
+  "version": "3.0",
+  "metadata": {
+    "appName": "SpaceFlow",
+    "appVersion": "1.0.0",
+    "createdAt": "2026-05-25T14:30:00.000Z",
+    "author": "ddelcourt"
+  },
+  
+  "activePatch": "zigzag-emitter",
+  
+  "universal": {
+    "camera": { /* universal camera params */ },
+    "palette": { /* universal palette params */ },
+    "stateManagement": { /* universal state params */ },
+    "framebuffer": { /* universal framebuffer params */ },
+    "stereoscopic": { /* universal stereo params */ },
+    "overlay": { /* universal overlay params */ },
+    "export": { /* universal export params */ }
+  },
+  
+  "patches": {
+    "zigzag-emitter": {
+      "version": "1.0.0",
+      "parameters": {
+        "segmentLength": 120,
+        "lineThickness": 26.8,
+        "emitterRotation": 222,
+        "geometryScale": 158,
+        "fadeDuration": 1,
+        "emitRate": 1.1,
+        "speed": 69,
+        "randomThickness": true,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150
+      }
+    },
+    
+    "particle-system": {
+      "version": "1.0.0",
+      "parameters": {
+        "particleCount": 500,
+        "gravity": 9.8,
+        "windSpeed": 15,
+        "attractorStrength": 0.5,
+        "particleSize": 3,
+        "trailLength": 20
+      }
+    }
+    
+    // More patches can be added as needed
+  },
+  
+  "states": [
+    {
+      "id": "state_1773371830542_jrv4aki30",
+      "name": "Gentle Flow",
+      "timestamp": 1773371830543,
+      "patchName": "zigzag-emitter",
+      "patchVersion": "1.0.0",
+      
+      "universal": {
+        "camera": {
+          "rotationX": -3.195,
+          "rotationY": 3.130,
+          "distance": 1926.056,
+          "offsetX": -26,
+          "offsetY": -39
+        },
+        "palette": {
+          "activeIndex": 0
+        }
+      },
+      
+      "patch": {
+        "segmentLength": 85,
+        "lineThickness": 18.5,
+        "emitterRotation": 180,
+        "geometryScale": 120,
+        "fadeDuration": 1.5,
+        "emitRate": 0.8,
+        "speed": 55
+      }
+    },
+    
+    {
+      "id": "state_1773371834789_xyz9def",
+      "name": "Particle Storm",
+      "timestamp": 1773371834789,
+      "patchName": "particle-system",
+      "patchVersion": "1.0.0",
+      
+      "universal": {
+        "camera": {
+          "rotationX": 0.5,
+          "rotationY": 1.2,
+          "distance": 1500,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "palette": {
+          "activeIndex": 1
+        }
+      },
+      
+      "patch": {
+        "particleCount": 800,
+        "gravity": 15,
+        "windSpeed": 25,
+        "attractorStrength": 0.8
+      }
+    }
+  ],
+  
+  "activeStateId": "state_1773371830542_jrv4aki30"
+}
+```
+
+**Key Features:**
+1. **Multi-patch storage** — One preset can contain parameters for multiple patches
+2. **Active patch indicator** — `activePatch` tells which patch to load
+3. **Patch-specific sections** — `patches` object contains params for each patch type
+4. **State patch identity** — Each state stores `patchName` and `patchVersion`
+5. **Arbitrary parameters** — Framework doesn't hardcode parameter names
+
+---
+
+### How Framework Handles Arbitrary Parameters
+
+**1. Saving State (Capture Current Parameters):**
+
+```javascript
+class StateManager {
+  captureCurrentState(name) {
+    // Get current patch
+    const patch = SpaceFlow.currentPatch;
+    const manifest = patch.getManifest();
+    
+    // Extract parameter definitions from manifest
+    const patchParams = {};
+    manifest.parameters.forEach(paramDef => {
+      if (paramDef.scope === 'patch') {
+        // Dynamically read current value (ANY parameter name)
+        patchParams[paramDef.key] = SpaceFlow.params[paramDef.key];
+      }
+    });
+    
+    // Extract universal parameters (framework knows these)
+    const universalParams = this.extractUniversalParams();
+    
+    return {
+      id: this.generateStateId(),
+      name: name,
+      timestamp: Date.now(),
+      patchName: patch.name,
+      patchVersion: patch.version,
+      universal: universalParams,
+      patch: patchParams  // ← Arbitrary parameters from manifest
+    };
+  }
+}
+```
+
+**2. Loading State (Apply Arbitrary Parameters):**
+
+```javascript
+class StateManager {
+  loadState(state) {
+    // Always apply universal parameters (framework knows structure)
+    this.applyUniversalParams(state.universal);
+    
+    // Check if state matches current patch
+    const currentPatch = SpaceFlow.currentPatch;
+    
+    if (state.patchName !== currentPatch.name) {
+      // Different patch - can't load patch-specific params
+      showToast(`State "${state.name}" was created with ${state.patchName}. Only camera and colors applied.`, 'warning');
+      return;
+    }
+    
+    if (state.patchVersion !== currentPatch.version) {
+      // Same patch, different version - attempt with warning
+      console.warn(`State version mismatch: ${state.patchVersion} → ${currentPatch.version}`);
+    }
+    
+    // Apply patch-specific parameters dynamically
+    Object.keys(state.patch).forEach(paramKey => {
+      // No hardcoded parameter names - just apply whatever's there
+      SpaceFlow.params[paramKey] = state.patch[paramKey];
+    });
+    
+    // Notify patch of parameter changes (if it wants to react)
+    if (currentPatch.onParameterChange) {
+      Object.keys(state.patch).forEach(paramKey => {
+        currentPatch.onParameterChange(paramKey, state.patch[paramKey]);
+      });
+    }
+    
+    // Trigger UI update
+    DynamicUI.syncWithParams(SpaceFlow.params);
+  }
+}
+```
+
+**3. Saving Preset (Store All Patch Parameters):**
+
+```javascript
+class PresetManager {
+  savePreset(filename) {
+    const patch = SpaceFlow.currentPatch;
+    const manifest = patch.getManifest();
+    
+    // Extract current parameters from manifest
+    const patchParameters = {};
+    manifest.parameters.forEach(paramDef => {
+      if (paramDef.scope === 'patch') {
+        patchParameters[paramDef.key] = SpaceFlow.params[paramDef.key];
+      }
+    });
+    
+    const preset = {
+      version: "3.0",
+      metadata: {
+        appName: "SpaceFlow",
+        appVersion: SpaceFlow.version,
+        createdAt: new Date().toISOString()
+      },
+      activePatch: patch.name,
+      universal: this.extractUniversalParams(),
+      patches: {
+        [patch.name]: {
+          version: patch.version,
+          parameters: patchParameters  // ← Arbitrary params from manifest
+        }
+      },
+      states: SpaceFlow.stateManager.states,
+      activeStateId: SpaceFlow.stateManager.activeStateId
+    };
+    
+    // Save to file
+    this.downloadJSON(filename, preset);
+  }
+}
+```
+
+**4. Loading Preset (Restore Arbitrary Parameters):**
+
+```javascript
+class PresetManager {
+  async loadPreset(presetData) {
+    // Detect version and migrate if needed
+    if (presetData.version === "2.0") {
+      presetData = this.migrateFromV2(presetData);
+    }
+    
+    // Get active patch name
+    const patchName = presetData.activePatch;
+    
+    // Load patch (if not already loaded)
+    if (SpaceFlow.currentPatch?.name !== patchName) {
+      await PatchLoader.load(patchName);
+    }
+    
+    // Apply universal parameters
+    this.applyUniversalParams(presetData.universal);
+    
+    // Apply patch-specific parameters
+    const patchData = presetData.patches[patchName];
+    if (patchData && patchData.parameters) {
+      // Dynamically apply ALL parameters (no hardcoding)
+      Object.keys(patchData.parameters).forEach(paramKey => {
+        SpaceFlow.params[paramKey] = patchData.parameters[paramKey];
+      });
+    }
+    
+    // Load states
+    SpaceFlow.stateManager.states = presetData.states || [];
+    SpaceFlow.stateManager.activeStateId = presetData.activeStateId;
+    
+    // Load first state if no active state
+    if (!presetData.activeStateId && presetData.states.length > 0) {
+      SpaceFlow.stateManager.loadState(presetData.states[0].id);
+    }
+    
+    // Regenerate UI from patch manifest
+    DynamicUI.generate(SpaceFlow.currentPatch.getManifest(), SpaceFlow.params);
+  }
+}
+```
+
+---
+
+### Multi-Patch Preset Support
+
+**A preset can store parameters for MULTIPLE patches:**
+
+```json
+{
+  "version": "3.0",
+  "activePatch": "zigzag-emitter",
+  
+  "patches": {
+    "zigzag-emitter": {
+      "version": "1.0.0",
+      "parameters": {
+        "segmentLength": 120,
+        "lineThickness": 26.8
+        /* ... zigzag params */
+      }
+    },
+    
+    "particle-system": {
+      "version": "1.0.0",
+      "parameters": {
+        "particleCount": 500,
+        "gravity": 9.8
+        /* ... particle params */
+      }
+    },
+    
+    "fractal-tree": {
+      "version": "1.0.0",
+      "parameters": {
+        "iterations": 5,
+        "branchAngle": 45
+        /* ... fractal params */
+      }
+    }
+  },
+  
+  "states": [
+    { "patchName": "zigzag-emitter", /* ... */ },
+    { "patchName": "particle-system", /* ... */ },
+    { "patchName": "zigzag-emitter", /* ... */ },
+    { "patchName": "fractal-tree", /* ... */ }
+  ]
+}
+```
+
+**Benefits:**
+- ✅ User can switch patches without losing previous patch settings
+- ✅ States can reference different patches
+- ✅ One preset becomes a "project file" with multiple configurations
+
+**When switching patches:**
+```javascript
+async function switchPatch(newPatchName) {
+  // Save current patch parameters
+  const currentParams = captureCurrentPatchParams();
+  presetData.patches[SpaceFlow.currentPatch.name].parameters = currentParams;
+  
+  // Load new patch
+  await PatchLoader.load(newPatchName);
+  
+  // Restore parameters for new patch (if stored)
+  const storedParams = presetData.patches[newPatchName]?.parameters;
+  if (storedParams) {
+    applyPatchParams(storedParams);
+  } else {
+    // Use defaults from new patch manifest
+    applyDefaultParams(SpaceFlow.currentPatch.getManifest());
+  }
+}
+```
+
+---
+
+### Handling Parameter Schema Evolution
+
+**What if a patch adds new parameters in v2.0?**
+
+```javascript
+// Patch v1.0 manifest
+{
+  "parameters": [
+    { "key": "particleCount", "default": 100 },
+    { "key": "gravity", "default": 10 }
+  ]
+}
+
+// Patch v2.0 manifest (added turbulence)
+{
+  "parameters": [
+    { "key": "particleCount", "default": 100 },
+    { "key": "gravity", "default": 10 },
+    { "key": "turbulence", "default": 5 }  // ← NEW
+  ]
+}
+
+// Old preset (created with v1.0)
+{
+  "patches": {
+    "particle-system": {
+      "version": "1.0.0",
+      "parameters": {
+        "particleCount": 150,
+        "gravity": 15
+        // ← Missing turbulence
+      }
+    }
+  }
+}
+```
+
+**Framework handles gracefully:**
+
+```javascript
+function applyPatchParams(manifest, storedParams) {
+  // Start with defaults from current manifest
+  const params = {};
+  manifest.parameters.forEach(paramDef => {
+    params[paramDef.key] = paramDef.default;
+  });
+  
+  // Override with stored values (if they exist)
+  Object.keys(storedParams).forEach(key => {
+    if (params.hasOwnProperty(key)) {
+      params[key] = storedParams[key];
+    } else {
+      console.warn(`Parameter "${key}" no longer exists in ${manifest.name} v${manifest.version}`);
+    }
+  });
+  
+  // Result: turbulence = 5 (default), others = stored values
+  return params;
+}
+```
+
+---
+
+### Framework Contract: Parameter Agnostic
+
+**CRITICAL PRINCIPLE:** The framework NEVER hardcodes patch parameter names.
+
+**❌ BAD (Hardcoded):**
+```javascript
+function saveState() {
+  return {
+    segmentLength: params.segmentLength,
+    lineThickness: params.lineThickness,
+    emitterRotation: params.emitterRotation
+    // ... hardcoded zigzag params
+  };
+}
+```
+
+**✅ GOOD (Dynamic):**
+```javascript
+function saveState() {
+  const manifest = currentPatch.getManifest();
+  const patchParams = {};
+  
+  manifest.parameters.forEach(paramDef => {
+    if (paramDef.scope === 'patch') {
+      patchParams[paramDef.key] = params[paramDef.key];
+    }
+  });
+  
+  return patchParams;  // Works for ANY patch
+}
+```
+
+**This means:**
+- ✅ Framework works with zigzag patch
+- ✅ Framework works with particle patch
+- ✅ Framework works with ANY future patch
+- ✅ No framework code changes needed when adding new patches
+
+---
+
+### UI Generation from Arbitrary Parameters
+
+**When switching patches, UI rebuilds dynamically:**
+
+```javascript
+async function loadPatch(patchName) {
+  // 1. Load patch code
+  const patch = await PatchLoader.load(patchName);
+  
+  // 2. Get manifest
+  const manifest = patch.getManifest();
+  
+  // 3. Clear old UI
+  DynamicUI.clear();
+  
+  // 4. Generate new UI from manifest
+  DynamicUI.generate(manifest, currentParams);
+  
+  // Result: UI shows parameters specific to this patch
+  // - Zigzag patch → shows segmentLength, lineThickness, etc.
+  // - Particle patch → shows particleCount, gravity, etc.
+  // - Framework doesn't care - it just reads manifest
+}
+```
+
+---
+
+### Summary: Storage is Manifest-Driven
+
+| Aspect | Traditional Approach | SpaceFlow Approach |
+|--------|---------------------|-------------------|
+| **Parameter definition** | Hardcoded in framework | Defined in patch manifest |
+| **Preset format** | Fixed schema | Dynamic schema per patch |
+| **Adding new params** | Update framework code | Update patch manifest only |
+| **Switching patches** | Not supported | Seamless (stores/restores per-patch) |
+| **State compatibility** | Implicit | Explicit (stores patch name/version) |
+| **UI generation** | Manual HTML | Auto-generated from manifest |
+| **Parameter storage** | Hardcoded keys | Dynamic iteration over manifest |
+| **Future extensibility** | Requires refactoring | Works with any patch |
+
+**Key Insight:** By making the manifest the **source of truth**, the framework becomes **parameter-agnostic**. It can store, load, and manage parameters for ANY patch without knowing their names in advance.
+
+Your new patches with arbitrary parameters will work seamlessly! The framework just reads the manifest and stores whatever parameters you define. 🎯
+
+---
+
+
+
 # Part III: Dynamic Parameters
 
 ## 7. Parameter Manifest
@@ -2231,6 +2811,503 @@ export class DynamicUI {
 
 ---
 
+### How Manifest Defines UI Structure 🎛️
+
+**THE KEY QUESTION:** How does the manifest translate into actual control panes?
+
+**THE ANSWER:** Categories define panes, parameters define controls within panes.
+
+---
+
+#### Manifest → UI Mapping
+
+**1. Categories Array = UI Panes**
+
+```json
+{
+  "categories": [
+    {
+      "id": "geometry",
+      "label": "Geometry",
+      "icon": "📐",
+      "scope": "patch",
+      "order": 1,
+      "collapsible": true,
+      "defaultCollapsed": false
+    },
+    {
+      "id": "behavior",
+      "label": "Behavior",
+      "icon": "🎬",
+      "scope": "patch",
+      "order": 2,
+      "collapsible": true,
+      "defaultCollapsed": false
+    },
+    {
+      "id": "modulation",
+      "label": "Modulation",
+      "icon": "📊",
+      "scope": "patch",
+      "order": 3,
+      "collapsible": true,
+      "defaultCollapsed": true
+    }
+  ]
+}
+```
+
+**Generates:**
+
+```
+┌─────────────────────────────────────┐
+│ PATCH: Zigzag Emitter               │
+├─────────────────────────────────────┤
+│                                     │
+│ ▼ GEOMETRY 📐                       │ ← category with order=1
+│   [controls appear here]            │
+│                                     │
+│ ▼ BEHAVIOR 🎬                       │ ← category with order=2
+│   [controls appear here]            │
+│                                     │
+│ ▶ MODULATION 📊                     │ ← category with order=3, collapsed
+│                                     │
+└─────────────────────────────────────┘
+```
+
+**Key Properties:**
+
+| Manifest Property | UI Effect | Example |
+|------------------|-----------|---------|
+| `label` | Section header text | "Geometry" |
+| `icon` | Visual indicator | 📐 |
+| `order` | Display sequence (ascending) | 1, 2, 3... |
+| `collapsible` | Can user collapse? | ▼/▶ toggle |
+| `defaultCollapsed` | Initial state | Open or closed |
+| `scope` | Universal or Patch | "patch" |
+
+---
+
+#### 2. Parameters Reference Categories
+
+```json
+{
+  "parameters": [
+    {
+      "key": "segmentLength",
+      "label": "Segment Length",
+      "type": "slider",
+      "category": "geometry",  // ← Goes in GEOMETRY pane
+      "default": 50
+    },
+    {
+      "key": "lineThickness",
+      "label": "Line Thickness",
+      "type": "slider",
+      "category": "geometry",  // ← Goes in GEOMETRY pane
+      "default": 20
+    },
+    {
+      "key": "emitRate",
+      "label": "Emit Rate",
+      "type": "slider",
+      "category": "behavior",  // ← Goes in BEHAVIOR pane
+      "default": 2.0
+    },
+    {
+      "key": "speed",
+      "label": "Speed",
+      "type": "slider",
+      "category": "behavior",  // ← Goes in BEHAVIOR pane
+      "default": 100
+    }
+  ]
+}
+```
+
+**Generates:**
+
+```
+▼ GEOMETRY 📐
+  Segment Length    [50        ]
+  Line Thickness    [20        ]
+
+▼ BEHAVIOR 🎬
+  Emit Rate         [2.0       ]
+  Speed             [100       ]
+```
+
+---
+
+#### 3. Complete Example: Manifest → UI
+
+**Manifest:**
+
+```json
+{
+  "name": "Simple Particle System",
+  "version": "1.0.0",
+  
+  "parameters": [
+    {
+      "key": "particleCount",
+      "label": "Particle Count",
+      "type": "slider",
+      "category": "particles",
+      "min": 10,
+      "max": 1000,
+      "default": 200,
+      "unit": ""
+    },
+    {
+      "key": "particleSize",
+      "label": "Particle Size",
+      "type": "slider",
+      "category": "particles",
+      "min": 1,
+      "max": 20,
+      "default": 5,
+      "unit": "px"
+    },
+    {
+      "key": "gravity",
+      "label": "Gravity",
+      "type": "slider",
+      "category": "physics",
+      "min": 0,
+      "max": 50,
+      "default": 10,
+      "unit": ""
+    },
+    {
+      "key": "friction",
+      "label": "Friction",
+      "type": "slider",
+      "category": "physics",
+      "min": 0,
+      "max": 1,
+      "default": 0.95,
+      "step": 0.01,
+      "unit": ""
+    },
+    {
+      "key": "trailsEnabled",
+      "label": "Show Trails",
+      "type": "checkbox",
+      "category": "rendering",
+      "default": true
+    },
+    {
+      "key": "trailLength",
+      "label": "Trail Length",
+      "type": "slider",
+      "category": "rendering",
+      "min": 5,
+      "max": 50,
+      "default": 20,
+      "unit": "frames",
+      "dependsOn": "trailsEnabled",
+      "visibleWhen": { "trailsEnabled": true }
+    }
+  ],
+  
+  "categories": [
+    {
+      "id": "particles",
+      "label": "Particles",
+      "icon": "✨",
+      "scope": "patch",
+      "order": 1,
+      "collapsible": true,
+      "defaultCollapsed": false
+    },
+    {
+      "id": "physics",
+      "label": "Physics",
+      "icon": "⚛️",
+      "scope": "patch",
+      "order": 2,
+      "collapsible": true,
+      "defaultCollapsed": false
+    },
+    {
+      "id": "rendering",
+      "label": "Rendering",
+      "icon": "🎨",
+      "scope": "patch",
+      "order": 3,
+      "collapsible": true,
+      "defaultCollapsed": true
+    }
+  ]
+}
+```
+
+**Generated UI:**
+
+```
+┌───────────────────────────────────────────┐
+│ PATCH: Simple Particle System             │
+├───────────────────────────────────────────┤
+│                                           │
+│ ▼ PARTICLES ✨                            │
+│   Particle Count    [200       ]          │
+│   Particle Size     [5 px      ]          │
+│                                           │
+│ ▼ PHYSICS ⚛️                              │
+│   Gravity           [10        ]          │
+│   Friction          [0.95      ]          │
+│                                           │
+│ ▶ RENDERING 🎨 — 2 controls               │
+│                                           │
+└───────────────────────────────────────────┘
+```
+
+**When user expands "RENDERING" section:**
+
+```
+▼ RENDERING 🎨
+  Show Trails         ☑️
+  Trail Length        [20 frames ]
+```
+
+**When user unchecks "Show Trails":**
+
+```
+▼ RENDERING 🎨
+  Show Trails         ☐
+  // Trail Length disappears (visibleWhen condition)
+```
+
+---
+
+#### 4. Subcategories (Nested Panes)
+
+**For complex patches with many parameters, subcategories provide deeper organization:**
+
+```json
+{
+  "categories": [
+    {
+      "id": "geometry",
+      "label": "Geometry",
+      "icon": "📐",
+      "scope": "patch",
+      "order": 1,
+      "collapsible": true,
+      "defaultCollapsed": false,
+      "subcategories": [
+        {
+          "id": "shape",
+          "label": "Shape",
+          "order": 1
+        },
+        {
+          "id": "transform",
+          "label": "Transform",
+          "order": 2
+        }
+      ]
+    }
+  ],
+  
+  "parameters": [
+    {
+      "key": "segmentLength",
+      "category": "geometry",
+      "subcategory": "shape"  // ← Goes in Geometry > Shape
+    },
+    {
+      "key": "emitterRotation",
+      "category": "geometry",
+      "subcategory": "transform"  // ← Goes in Geometry > Transform
+    }
+  ]
+}
+```
+
+**Generated UI:**
+
+```
+▼ GEOMETRY 📐
+  
+  Shape:
+    Segment Length      [50        ]
+    Thickness           [20        ]
+  
+  Transform:
+    Emitter Rotation    [180°      ]
+    Geometry Scale      [100%      ]
+```
+
+---
+
+#### 5. Framework Implementation
+
+**How DynamicUI generates panes from manifest:**
+
+```javascript
+class DynamicUI {
+  generate(manifest, currentValues) {
+    this.clear();
+    
+    // 1. Sort categories by order
+    const sortedCategories = [...manifest.categories].sort((a, b) => a.order - b.order);
+    
+    // 2. Group parameters by category
+    const paramsByCategory = new Map();
+    manifest.parameters.forEach(param => {
+      if (!paramsByCategory.has(param.category)) {
+        paramsByCategory.set(param.category, []);
+      }
+      paramsByCategory.get(param.category).push(param);
+    });
+    
+    // 3. Create each category pane
+    for (const category of sortedCategories) {
+      const pane = this._createCategoryPane(category);
+      const params = paramsByCategory.get(category.id) || [];
+      
+      // 4. If subcategories exist, group parameters further
+      if (category.subcategories) {
+        const paramsBySubcategory = this._groupBySubcategory(params);
+        
+        for (const subcategory of category.subcategories) {
+          const subPane = this._createSubcategoryPane(subcategory);
+          const subParams = paramsBySubcategory.get(subcategory.id) || [];
+          
+          for (const param of subParams) {
+            const control = this._createControl(param, currentValues);
+            subPane.appendChild(control);
+          }
+          
+          pane.body.appendChild(subPane);
+        }
+      } else {
+        // 5. No subcategories: add controls directly
+        for (const param of params) {
+          const control = this._createControl(param, currentValues);
+          pane.body.appendChild(control);
+        }
+      }
+      
+      // 6. Apply collapsed state
+      if (category.defaultCollapsed) {
+        pane.body.style.display = 'none';
+        pane.toggle.classList.add('collapsed');
+      }
+      
+      this.container.appendChild(pane.element);
+    }
+  }
+  
+  _createCategoryPane(category) {
+    const pane = document.createElement('div');
+    pane.className = `category-pane category-${category.scope}`;
+    pane.dataset.categoryId = category.id;
+    
+    // Header
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    
+    if (category.collapsible) {
+      const toggle = document.createElement('span');
+      toggle.className = 'collapse-toggle';
+      toggle.textContent = '▼';
+      header.appendChild(toggle);
+      
+      header.addEventListener('click', () => {
+        const body = pane.querySelector('.category-body');
+        const isCollapsed = body.style.display === 'none';
+        body.style.display = isCollapsed ? 'block' : 'none';
+        toggle.textContent = isCollapsed ? '▼' : '▶';
+      });
+    }
+    
+    const label = document.createElement('span');
+    label.className = 'category-label';
+    label.textContent = `${category.icon || ''} ${category.label}`;
+    header.appendChild(label);
+    
+    // Body
+    const body = document.createElement('div');
+    body.className = 'category-body';
+    
+    pane.appendChild(header);
+    pane.appendChild(body);
+    
+    return {
+      element: pane,
+      body: body,
+      toggle: toggle
+    };
+  }
+}
+```
+
+---
+
+#### 6. Universal vs Patch Panes
+
+**Universal categories (scope: "universal") render in a separate panel:**
+
+```json
+{
+  "categories": [
+    {
+      "id": "camera",
+      "label": "Camera",
+      "icon": "🎥",
+      "scope": "universal",  // ← Goes in Universal panel
+      "order": 1
+    },
+    {
+      "id": "geometry",
+      "label": "Geometry",
+      "icon": "📐",
+      "scope": "patch",  // ← Goes in Patch panel
+      "order": 1
+    }
+  ]
+}
+```
+
+**Generated Layout (Moderate/Complex modes):**
+
+```
+┌─────────────────┬──────────────────────────┐
+│ UNIVERSAL       │ PATCH: Zigzag Emitter    │
+│                 │                          │
+│ ▼ CAMERA 🎥     │ ▼ GEOMETRY 📐            │
+│   (controls)    │   (controls)             │
+│                 │                          │
+└─────────────────┴──────────────────────────┘
+```
+
+---
+
+#### 7. Summary: Manifest Properties Control UI
+
+| Manifest Element | UI Effect | Examples |
+|-----------------|-----------|----------|
+| **categories array** | Defines panes | Geometry, Behavior, Physics |
+| **category.order** | Pane sequence | 1, 2, 3... (ascending) |
+| **category.label** | Pane title | "Geometry", "Particles" |
+| **category.icon** | Pane icon | 📐, ✨, 🎬 |
+| **category.collapsible** | User can collapse? | true/false |
+| **category.defaultCollapsed** | Initial state | Open (false) or closed (true) |
+| **category.scope** | Universal or Patch panel | "universal" / "patch" |
+| **category.subcategories** | Nested sections | Shape, Transform |
+| **parameter.category** | Which pane? | "geometry" |
+| **parameter.subcategory** | Which nested section? | "shape" |
+| **parameter.order** | Control sequence within pane | 1, 2, 3... |
+
+**Key Insight:** The manifest is a **declarative UI definition**. You define WHAT you want (categories, parameters, structure), the framework handles HOW to render it.
+
+**Result:** Adding a new parameter is ONE line in the manifest. The UI, storage, validation, and sync happen automatically. 🎯
+
+---
+
 # Part IV: User Interface
 
 ## 10. UI Layout Strategy
@@ -2797,6 +3874,494 @@ function exportSVG(framework) {
 ### State File Migration
 
 **Automatic Conversion:**
+
+SpaceFlow ensures **100% backward compatibility** with existing preset files. Here's how:
+
+---
+
+### Preset File Compatibility Matrix
+
+| Preset Version | ZigMap26 (Current) | SpaceFlow (Future) | Action Required |
+|----------------|--------------------|--------------------|-----------------|
+| **2.0** (Current) | ✅ Works | ✅ Works (auto-migrated) | None — transparent |
+| **3.0** (Future) | ❌ Won't load | ✅ Native format | Manual migration tool |
+
+---
+
+### Version 2.0 → SpaceFlow Compatibility
+
+**Existing preset files (version 2.0) will work WITHOUT modification:**
+
+```json
+{
+  "version": "2.0",
+  "params": {
+    "segmentLength": 120,
+    "lineThickness": 26.8,
+    "emitterRotation": 222,
+    "geometryScale": 158,
+    "fadeDuration": 1,
+    "palettes": [ /* ... */ ],
+    "activePaletteIndex": 0,
+    "fov": 99.01,
+    "cameraRotationX": -2.53,
+    // ... all current parameters
+  },
+  "states": [ /* ... */ ],
+  "activeStateId": "state_1773371830542_jrv4aki30"
+}
+```
+
+**Framework loads this as:**
+
+```javascript
+// 1. DETECT FORMAT VERSION
+const presetVersion = preset.version || "1.0";
+
+if (presetVersion === "2.0") {
+  // 2. AUTO-MIGRATION TO SPACEFLOW FORMAT
+  const migratedPreset = {
+    version: "3.0",
+    metadata: {
+      sourceVersion: "2.0",
+      migratedAt: Date.now(),
+      sourceFile: presetFileName
+    },
+    
+    // 3. SPLIT PARAMETERS BY SCOPE
+    universal: {
+      // Extract universal params
+      camera: {
+        fov: preset.params.fov,
+        near: preset.params.near,
+        far: preset.params.far,
+        rotationX: preset.params.cameraRotationX,
+        rotationY: preset.params.cameraRotationY,
+        distance: preset.params.cameraDistance,
+        offsetX: preset.params.cameraOffsetX,
+        offsetY: preset.params.cameraOffsetY
+      },
+      palette: {
+        palettes: preset.params.palettes,
+        activeIndex: preset.params.activePaletteIndex,
+        colorTransitionDuration: preset.params.colorTransitionDuration,
+        colorSlotZOffset: preset.params.colorSlotZOffset
+      },
+      stateManagement: {
+        stateTransitionDuration: preset.params.stateTransitionDuration,
+        autoTriggerStates: preset.params.autoTriggerStates,
+        autoTriggerFrequency: preset.params.autoTriggerFrequency,
+        ambientSpeedMaster: preset.params.ambientSpeedMaster
+      },
+      framebuffer: {
+        mode: preset.params.framebufferMode,
+        preset: preset.params.framebufferPreset,
+        width: preset.params.framebufferWidth,
+        height: preset.params.framebufferHeight
+      },
+      stereoscopic: {
+        mode: preset.params.stereoscopicMode,
+        eyeSeparation: preset.params.eyeSeparation
+      },
+      overlay: {
+        imageSrc: preset.params.overlayImageSrc,
+        visible: preset.params.overlayVisible,
+        scale: preset.params.overlayScale,
+        opacity: preset.params.overlayOpacity,
+        x: preset.params.overlayX,
+        y: preset.params.overlayY
+      },
+      export: {
+        videoDuration: preset.params.videoDuration,
+        videoFPS: preset.params.videoFPS,
+        videoFormat: preset.params.videoFormat,
+        depthInvert: preset.params.depthInvert
+      }
+    },
+    
+    // 4. DETERMINE PATCH TYPE
+    patch: {
+      name: "zigzag-emitter",  // Auto-detected from parameters
+      version: "1.0.0",
+      
+      // Extract patch-specific params
+      parameters: {
+        segmentLength: preset.params.segmentLength,
+        lineThickness: preset.params.lineThickness,
+        emitterRotation: preset.params.emitterRotation,
+        geometryScale: preset.params.geometryScale,
+        fadeDuration: preset.params.fadeDuration,
+        emitRate: preset.params.emitRate,
+        speed: preset.params.speed,
+        randomThickness: preset.params.randomThickness,
+        randomSpeed: preset.params.randomSpeed,
+        thicknessRangeMin: preset.params.thicknessRangeMin,
+        thicknessRangeMax: preset.params.thicknessRangeMax,
+        speedRangeMin: preset.params.speedRangeMin,
+        speedRangeMax: preset.params.speedRangeMax
+      }
+    },
+    
+    // 5. MIGRATE STATES
+    states: preset.states.map(state => ({
+      id: state.id,
+      name: state.name,
+      timestamp: state.timestamp,
+      universal: {
+        camera: state.camera,
+        palette: {
+          palettes: state.params.palettes,
+          activeIndex: state.params.activePaletteIndex
+        }
+      },
+      patch: {
+        parameters: {
+          segmentLength: state.params.segmentLength,
+          lineThickness: state.params.lineThickness,
+          emitterRotation: state.params.emitterRotation,
+          geometryScale: state.params.geometryScale,
+          fadeDuration: state.params.fadeDuration,
+          emitRate: state.params.emitRate,
+          speed: state.params.speed,
+          randomThickness: state.params.randomThickness,
+          randomSpeed: state.params.randomSpeed,
+          thicknessRangeMin: state.params.thicknessRangeMin,
+          thicknessRangeMax: state.params.thicknessRangeMax,
+          speedRangeMin: state.params.speedRangeMin,
+          speedRangeMax: state.params.speedRangeMax
+        }
+      },
+      metadata: state.metadata
+    })),
+    
+    activeStateId: preset.activeStateId
+  };
+  
+  // 6. LOAD ZIGZAG PATCH (LEGACY WRAPPER)
+  const patch = await PatchLoader.load('zigzag-emitter');
+  
+  // 7. APPLY PARAMETERS
+  SpaceFlow.applyPreset(migratedPreset);
+}
+```
+
+---
+
+### Legacy Patch Wrapper
+
+**Current monolithic code is wrapped as a patch:**
+
+```javascript
+// js/patches/zigzag-emitter/LegacyZigzagPatch.js
+
+/**
+ * Wrapper for existing ZigMap26 Zigzag code
+ * Allows current implementation to work with SpaceFlow interface
+ */
+export class LegacyZigzagPatch {
+  constructor() {
+    this.name = "zigzag-emitter";
+    this.version = "1.0.0";
+    this.emitter = null;
+  }
+  
+  setup(config) {
+    // Import existing Emitter/ZigzagLine classes
+    const { Emitter } = await import('../../core/Emitter.js');
+    const { ZigzagLine } = await import('../../core/ZigzagLine.js');
+    
+    // Create emitter using existing code (ZERO changes needed)
+    this.emitter = new Emitter({
+      p: config.p5Instance,
+      x: config.width / 2,
+      y: config.height,
+      params: config.params,
+      noiseOffsetGetter: () => config.noiseOffset,
+      canvasWidth: config.width,
+      canvasHeight: config.height,
+      getSpawnDistanceFn: config.getSpawnDistance,
+      buildRibbonSidesFn: config.buildRibbonSides
+    });
+  }
+  
+  update(dt, params) {
+    // Pass through to existing emitter (ZERO changes)
+    this.emitter.update(dt);
+  }
+  
+  draw(p, camera, params) {
+    // Pass through to existing emitter (ZERO changes)
+    this.emitter.draw(p);
+  }
+  
+  getManifest() {
+    // Return null to use external manifest.json
+    // This contains parameter definitions extracted from defaults.js
+    return null;
+  }
+  
+  getGeometry() {
+    // Adapter: convert existing internal format to SpaceFlow format
+    return {
+      type: 'ribbons',
+      items: this.emitter.lines
+        .filter(line => line._alpha() > 0)
+        .map(line => ({
+          type: 'ribbon',
+          vertices: line._buildVertices(),
+          thickness: line.lineThickness,
+          color: {
+            r: line.currentColor[0],
+            g: line.currentColor[1],
+            b: line.currentColor[2]
+          },
+          opacity: line._alpha(),
+          zOffset: line.zOffset
+        }))
+    };
+  }
+  
+  destroy() {
+    if (this.emitter) {
+      this.emitter.lines = [];
+      this.emitter = null;
+    }
+  }
+}
+```
+
+**Key insight:** Existing `Emitter` and `ZigzagLine` classes **don't need ANY changes**. The wrapper just calls them!
+
+---
+
+### Parameter Name Compatibility
+
+**All existing parameter names preserved:**
+
+| Current Name (v2.0) | SpaceFlow Scope | Still Valid? |
+|---------------------|-----------------|--------------|
+| `segmentLength` | patch | ✅ Yes |
+| `lineThickness` | patch | ✅ Yes |
+| `emitterRotation` | patch | ✅ Yes |
+| `geometryScale` | patch | ✅ Yes |
+| `fadeDuration` | patch | ✅ Yes |
+| `emitRate` | patch | ✅ Yes |
+| `speed` | patch | ✅ Yes |
+| `randomThickness` | patch | ✅ Yes |
+| `randomSpeed` | patch | ✅ Yes |
+| `fov` | universal.camera | ✅ Yes |
+| `cameraRotationX` | universal.camera | ✅ Yes |
+| `palettes` | universal.palette | ✅ Yes |
+| `activePaletteIndex` | universal.palette | ✅ Yes |
+| `autoTriggerStates` | universal.stateManagement | ✅ Yes |
+| `framebufferMode` | universal.framebuffer | ✅ Yes |
+| `overlayImageSrc` | universal.overlay | ✅ Yes |
+
+**Migration strategy:** Framework reads flat parameter list from v2.0, automatically reorganizes into scoped structure. Code accesses params the same way:
+
+```javascript
+// Both work:
+const thickness = params.lineThickness;           // Direct access (works in both versions)
+const thickness = params.patch.lineThickness;     // Scoped access (new style)
+
+// Framework provides compatibility layer
+```
+
+---
+
+### Migration Timeline
+
+**Phase 1: Transparent Compatibility (Weeks 1-4)**
+- ✅ Load v2.0 presets without modification
+- ✅ Existing zigzag code wrapped as patch
+- ✅ All features work identically
+- ✅ Users see zero changes
+- ✅ SVG export works perfectly
+
+**Phase 2: Dual Format Support (Weeks 5-8)**
+- ✅ Can load v2.0 OR v3.0 presets
+- ✅ Save new presets as v3.0
+- ✅ Existing presets still load as v2.0
+- ✅ Manual migration tool available
+
+**Phase 3: Encourage Migration (Weeks 9-12)**
+- 💬 Prompt users to migrate old presets
+- 🛠️ One-click migration button
+- ✅ v2.0 still fully supported
+- 📊 Track adoption rate
+
+**Phase 4: Full SpaceFlow (Weeks 13+)**
+- ✅ v3.0 is default format
+- ✅ v2.0 still loads (backward compatibility forever)
+- ✅ New patches only understand v3.0
+- ✅ Zigzag patch refactored (but wrapper remains for v2.0 presets)
+
+---
+
+### User Experience During Migration
+
+**Scenario 1: User loads existing preset**
+```
+1. User clicks "Load Preset" → selects Init.json (version 2.0)
+2. Framework detects version 2.0
+3. Framework auto-migrates to v3.0 in memory
+4. Framework loads zigzag patch (legacy wrapper)
+5. Everything works identically
+6. User sees: "✓ Loaded Init (auto-upgraded from v2.0)"
+```
+
+**Scenario 2: User saves new preset**
+```
+1. User modifies parameters
+2. User clicks "Save Preset"
+3. Framework saves as version 3.0 format
+4. New file includes patch metadata
+5. File is future-proof for multi-patch support
+```
+
+**Scenario 3: User exports SVG**
+```
+1. User clicks "Export SVG"
+2. Framework calls patch.getGeometry()
+3. Legacy wrapper converts emitter.lines → standard format
+4. Framework generates SVG (same projection code)
+5. Result: IDENTICAL to current SVG exports
+6. User sees no difference
+```
+
+---
+
+### Breaking Changes Policy
+
+**NEVER allowed:**
+- ❌ Removing support for v2.0 presets
+- ❌ Breaking SVG export
+- ❌ Changing parameter names without aliases
+- ❌ Removing existing features
+
+**Allowed with deprecation notice:**
+- ⚠️ Adding new optional fields
+- ⚠️ Reorganizing internal structure (with compatibility layer)
+- ⚠️ Adding new patch types
+
+**Version compatibility guarantee:**
+```javascript
+// This MUST work forever:
+fetch('config/presets/Init.json')  // Any version from 1.0+
+  .then(r => r.json())
+  .then(preset => SpaceFlow.loadPreset(preset))  // Auto-detects and migrates
+  .then(() => console.log('Preset loaded successfully'));
+```
+
+---
+
+### Testing Backward Compatibility
+
+**Mandatory test suite:**
+
+```javascript
+describe('Preset Backward Compatibility', () => {
+  test('Load v2.0 preset (Init.json)', async () => {
+    const preset = await loadPreset('Init.json');
+    expect(preset.version).toBe('2.0');
+    
+    const migrated = migrateToV3(preset);
+    expect(migrated.version).toBe('3.0');
+    expect(migrated.patch.name).toBe('zigzag-emitter');
+    expect(migrated.patch.parameters.segmentLength).toBe(preset.params.segmentLength);
+  });
+  
+  test('All v2.0 parameters map correctly', async () => {
+    const preset = await loadPreset('Horizon26.json');
+    const migrated = migrateToV3(preset);
+    
+    // Verify EVERY parameter mapped
+    expect(migrated.patch.parameters).toBeDefined();
+    expect(migrated.universal.camera).toBeDefined();
+    expect(migrated.universal.palette).toBeDefined();
+    
+    // Verify values preserved
+    expect(migrated.patch.parameters.lineThickness).toBe(preset.params.lineThickness);
+    expect(migrated.universal.camera.fov).toBe(preset.params.fov);
+  });
+  
+  test('Load and render with legacy patch wrapper', async () => {
+    const preset = await loadPreset('GeekSpaceOne.json');
+    const patch = await PatchLoader.load('zigzag-emitter');
+    
+    // Setup patch
+    patch.setup({ params: preset.params, /* ... */ });
+    
+    // Simulate frame render
+    patch.update(0.016, preset.params);
+    patch.draw(p5Instance, camera, preset.params);
+    
+    // Should render without errors
+    expect(patch.emitter).toBeDefined();
+    expect(patch.emitter.lines.length).toBeGreaterThan(0);
+  });
+  
+  test('SVG export with legacy patch', async () => {
+    const preset = await loadPreset('FashionLedShow.json');
+    const patch = await PatchLoader.load('zigzag-emitter');
+    patch.setup({ params: preset.params, /* ... */ });
+    
+    // Get geometry
+    const geometry = patch.getGeometry();
+    
+    expect(geometry.type).toBe('ribbons');
+    expect(geometry.items).toBeInstanceOf(Array);
+    expect(geometry.items[0].vertices).toBeDefined();
+    
+    // Export to SVG
+    const svg = SVGExporter.export(geometry, camera, params);
+    expect(svg).toContain('<svg');
+    expect(svg).toContain('<polygon');
+  });
+  
+  test('State transitions with v2.0 states', async () => {
+    const preset = await loadPreset('TransitionUniverse.json');
+    expect(preset.states).toBeDefined();
+    expect(preset.states.length).toBeGreaterThan(1);
+    
+    // Load first state
+    StateManager.load(preset.states[0].id);
+    
+    // Transition to second state
+    StateManager.load(preset.states[1].id);
+    
+    // Should transition smoothly
+    expect(camera.transition.isActive).toBe(true);
+  });
+});
+```
+
+---
+
+### Summary: Zero-Disruption Migration
+
+**✅ Users will NOT notice:**
+- Existing presets load and work identically
+- All features function the same
+- SVG exports are pixel-perfect
+- Performance is unchanged
+- States and transitions work
+
+**✅ Developers benefit from:**
+- Cleaner code organization
+- Easier to add new patches
+- Better testing
+- Future-proof architecture
+
+**✅ Framework provides:**
+- Automatic format detection
+- Transparent migration
+- Legacy wrapper for current code
+- 100% backward compatibility
+
+**Key principle:** Migration happens **behind the scenes**. The user experience is **seamless**.
+
+---
 
 ```javascript
 function migrateState(oldState) {
