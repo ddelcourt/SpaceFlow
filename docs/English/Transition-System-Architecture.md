@@ -1,4 +1,4 @@
-# ZigMap26 Transition System Architecture
+# SpaceFlow Transition System Architecture
 
 ## Table of Contents
 1. [Overview](#overview)
@@ -14,7 +14,7 @@
 
 ## Overview
 
-ZigMap26 implements a sophisticated dual-transition system that allows smooth animated changes between:
+SpaceFlow implements a sophisticated dual-transition system that allows smooth animated changes between:
 - **Color palettes** (per-line color transitions + background)
 - **State parameters** (camera, FOV, geometry scale, emitter rotation)
 
@@ -336,7 +336,7 @@ const easeInOutCubic = (t) => {
 
 ### Synchronization Strategy
 
-ZigMap26 uses a **broadcast-once, animate-locally** approach:
+SpaceFlow uses a **broadcast-once, animate-locally** approach:
 
 1. **Main window** loads state → sets up transitions → broadcasts `state-load` message
 2. **Display windows** receive message → call same `restoreState()` → set up identical transitions
@@ -764,7 +764,7 @@ if (ZM.geometryScaleTransition.isTransitioning) { ... }
 
 ## Summary
 
-The ZigMap26 transition system achieves **perfect multi-window synchronization** through:
+The SpaceFlow transition system achieves **perfect multi-window synchronization** through:
 
 1. **Shared Parameters**: All windows read from identically structured `ZM.params`
 2. **Distributed Animation**: Lines animate themselves using shared timing

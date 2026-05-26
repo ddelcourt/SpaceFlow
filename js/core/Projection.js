@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Projection Module
+// SPACEFLOW - Projection Module
 // 3D to 2D projection mathematics for SVG/depth map export
 // Rotation order: Z → Y → X (matches p5.js WEBGL)
 // ═══════════════════════════════════════════════════════════════════════════

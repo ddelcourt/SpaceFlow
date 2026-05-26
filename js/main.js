@@ -1,5 +1,5 @@
 /**
- * ZigMap26 — Main Application Entry Point
+ * SpaceFlow — Main Application Entry Point
  * Orchestrates all modules and initializes the application
  */
 
@@ -41,8 +41,8 @@ import { initializePrimarySync } from './sync/WindowSync.js';
 // GLOBAL APPLICATION STATE
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Create global ZigMap26 namespace
-window.ZigMap26 = {
+// Create global SpaceFlow namespace
+window.SpaceFlow = {
   // Parameters
   params: { ...DEFAULT_PARAMS },
   
@@ -71,87 +71,94 @@ window.ZigMap26 = {
   Camera,
   
   // Storage functions
-  saveToLocalStorage: () => saveToLocalStorage(window.ZigMap26.params),
+  saveToLocalStorage: () => saveToLocalStorage(window.SpaceFlow.params, window.SpaceFlow._projectName),
   loadFromLocalStorage: () => {
-    const loaded = loadFromLocalStorage(DEFAULT_PARAMS);
-    if (loaded) {
-      Object.assign(window.ZigMap26.params, loaded);
+    const data = loadFromLocalStorage(DEFAULT_PARAMS);
+    if (data) {
+      Object.assign(window.SpaceFlow.params, data.params);
+      if (data.projectName) {
+        window.SpaceFlow._projectName = data.projectName;
+      }
       return true;
     }
     return false;
   },
-  downloadJSON: (format) => downloadJSON(window.ZigMap26, format),
+  downloadJSON: (format, filename) => downloadJSON(window.SpaceFlow, format, filename),
   loadJSON: (file) => loadJSON(file, (loadedData) => {
     // Clear localStorage to avoid loading ancient states
     clearLocalStorage();
     console.log('📂 Loading project file (localStorage cleared)');
+    console.log(`✓ Project loaded: ${loadedData.projectName || file.name}`);
+    console.log('   File activePaletteIndex:', loadedData.params.activePaletteIndex);
+    console.log('   Current ZM.params.activePaletteIndex:', window.SpaceFlow.params.activePaletteIndex);
     
     // Update params
-    Object.assign(window.ZigMap26.params, loadedData.params);
+    Object.assign(window.SpaceFlow.params, loadedData.params);
+    console.log('   After Object.assign, activePaletteIndex:', window.SpaceFlow.params.activePaletteIndex);
     
     // Reset auto-trigger timer to prevent weird values
-    if (window.ZigMap26.autoTriggerTimer) {
-      window.ZigMap26.autoTriggerTimer.elapsed = 0;
-      window.ZigMap26.autoTriggerTimer.pausedAt = 0;
-      window.ZigMap26.autoTriggerTimer.paused = false;
+    if (window.SpaceFlow.autoTriggerTimer) {
+      window.SpaceFlow.autoTriggerTimer.elapsed = 0;
+      window.SpaceFlow.autoTriggerTimer.pausedAt = 0;
+      window.SpaceFlow.autoTriggerTimer.paused = false;
     }
 
     // Reset state history so previous/next navigation starts fresh
-    if (window.ZigMap26.stateHistory) {
-      window.ZigMap26.stateHistory.stack = [];
-      window.ZigMap26.stateHistory.currentIndex = -1;
+    if (window.SpaceFlow.stateHistory) {
+      window.SpaceFlow.stateHistory.stack = [];
+      window.SpaceFlow.stateHistory.currentIndex = -1;
     }
 
     // Cancel any active camera transition
-    if (window.ZigMap26.camera && window.ZigMap26.camera.transition) {
-      window.ZigMap26.camera.transition.isActive = false;
+    if (window.SpaceFlow.camera && window.SpaceFlow.camera.transition) {
+      window.SpaceFlow.camera.transition.isActive = false;
     }
     
     // Restore states if present (v2 format)
     if (loadedData.states && Array.isArray(loadedData.states)) {
-      window.ZigMap26.stateManager.states = loadedData.states;
-      window.ZigMap26.stateManager.activeStateId = loadedData.activeStateId;
-      window.ZigMap26.stateManager.saveToStorage();
+      window.SpaceFlow.stateManager.states = loadedData.states;
+      window.SpaceFlow.stateManager.activeStateId = loadedData.activeStateId;
+      window.SpaceFlow.stateManager.saveToStorage();
       
       // Clear shuffle pool so it regenerates with new state IDs
-      if (window.ZigMap26.shufflePool) {
-        window.ZigMap26.shufflePool = [];
+      if (window.SpaceFlow.shufflePool) {
+        window.SpaceFlow.shufflePool = [];
       }
       
       // Update state UI
-      if (window.ZigMap26.updateStatePanel) {
-        window.ZigMap26.updateStatePanel();
+      if (window.SpaceFlow.updateStatePanel) {
+        window.SpaceFlow.updateStatePanel();
       }
       
       // Load the first state INSTANTLY (no transitions) to match exact parameters from JSON
       if (loadedData.states.length > 0) {
         const firstState = loadedData.states[0];
         console.log('🎯 Loading first state instantly:', firstState.name);
-        window.ZigMap26.stateManager.load(firstState.id, true); // instant = true
+        window.SpaceFlow.stateManager.load(firstState.id, true); // instant = true
       }
       
       // Sync UI to reflect loaded params (including project-wide settings like ambientSpeedMaster)
-      window.ZigMap26.syncUIFromParams();
+      window.SpaceFlow.syncUIFromParams();
     } else {
       // No states in project - sync camera from loaded params
-      window.ZigMap26.camera.syncFromParams(window.ZigMap26.params);
+      window.SpaceFlow.camera.syncFromParams(window.SpaceFlow.params);
       
       // Sync main UI
-      window.ZigMap26.syncUIFromParams();
+      window.SpaceFlow.syncUIFromParams();
     }
     
     // Broadcast full state to display window after project load
-    if (window.ZigMap26.windowSync && window.ZigMap26.windowSync.broadcastFullState) {
-      window.ZigMap26.windowSync.broadcastFullState();
+    if (window.SpaceFlow.windowSync && window.SpaceFlow.windowSync.broadcastFullState) {
+      window.SpaceFlow.windowSync.broadcastFullState();
     }
   }),
   
   // Export functions
-  exportSVG: () => exportSVG(window.ZigMap26),
-  exportPNG: () => exportPNG(window.ZigMap26),
-  exportDepthMap: () => exportDepthMap(window.ZigMap26),
-  startVideoRecording: () => startVideoRecording(window.ZigMap26),
-  stopVideoRecording: () => stopVideoRecording(window.ZigMap26),
+  exportSVG: () => exportSVG(window.SpaceFlow),
+  exportPNG: () => exportPNG(window.SpaceFlow),
+  exportDepthMap: () => exportDepthMap(window.SpaceFlow),
+  startVideoRecording: () => startVideoRecording(window.SpaceFlow),
+  stopVideoRecording: () => stopVideoRecording(window.SpaceFlow),
   isVideoRecording: () => getVideoRecordingStatus(),
   
   // UI sync function (will be set by UIController)
@@ -166,8 +173,8 @@ window.ZigMap26 = {
 
 // Add wrapper method to properly bind ZM context
 // This ensures ONE function controls palette transitions across ALL windows (main + display)
-window.ZigMap26.triggerPaletteChange = function() {
-  triggerPaletteChange(window.ZigMap26);
+window.SpaceFlow.triggerPaletteChange = function() {
+  triggerPaletteChange(window.SpaceFlow);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -248,7 +255,7 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init') {
     // Save to localStorage so this only happens once
     ZM.saveToLocalStorage();
     
-    console.log(`✓ Loaded preset from config/presets/${presetName}.json`);
+    console.log(`✓ Preset loaded: ${presetName}`);
     return true;
   } catch (err) {
     console.warn(`Could not load preset "${presetName}":`, err);
@@ -264,7 +271,7 @@ async function loadInitialPreset(ZM) {
 }
 
 async function init() {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   // Initialize camera
   ZM.camera = new Camera(ZM.params);
@@ -283,12 +290,23 @@ async function init() {
   if (presetParam) {
     // Load preset from URL parameter (overrides localStorage)
     console.log(`Loading preset from URL: ${presetParam}`);
+    ZM._projectName = `${presetParam}.json`;
     await loadPresetFile(ZM, presetParam);
     
     // Broadcast full state to display window after preset load
     if (ZM.windowSync && ZM.windowSync.broadcastFullState) {
       ZM.windowSync.broadcastFullState();
     }
+    
+    // Update project name display after UI is ready (poll for function availability)
+    const updateProjectName = () => {
+      if (ZM.updateProjectNameDisplay) {
+        ZM.updateProjectNameDisplay(ZM._projectName);
+      } else {
+        setTimeout(updateProjectName, 50);
+      }
+    };
+    updateProjectName();
   } else {
     // Load saved settings or initial preset
     hadSavedSettings = ZM.loadFromLocalStorage();
@@ -298,41 +316,66 @@ async function init() {
     
     // Load initial preset for first-time users
     if (!hadSavedSettings) {
+      ZM._projectName = 'Init.json';
       await loadInitialPreset(ZM);
-    } else if (ZM.stateManager.activeStateId) {
-      // If we loaded from localStorage and there's an active state,
-      // ensure params match the active state (not stale localStorage params)
-      console.log('🔄 Syncing params with active state:', ZM.stateManager.activeStateId);
-      const activeState = ZM.stateManager.getStateById(ZM.stateManager.activeStateId);
-      if (activeState) {
-        // Preserve camera params (they're not stored in state.params, but in state.camera)
-        const preservedCameraParams = {
-          cameraRotationX: ZM.params.cameraRotationX,
-          cameraRotationY: ZM.params.cameraRotationY,
-          cameraDistance: ZM.params.cameraDistance,
-          cameraOffsetX: ZM.params.cameraOffsetX,
-          cameraOffsetY: ZM.params.cameraOffsetY
-        };
-        
-        // Restore state params to ensure palettes are in sync
-        Object.assign(ZM.params, JSON.parse(JSON.stringify(activeState.params)));
-        
-        // Restore preserved camera params (use state's camera if available, otherwise localStorage)
-        if (activeState.camera) {
-          ZM.params.cameraRotationX = activeState.camera.rotationX;
-          ZM.params.cameraRotationY = activeState.camera.rotationY;
-          ZM.params.cameraDistance = activeState.camera.distance;
-          ZM.params.cameraOffsetX = activeState.camera.offsetX || 0;
-          ZM.params.cameraOffsetY = activeState.camera.offsetY || 0;
-          // Sync camera object to match state
-          ZM.camera.syncFromParams(ZM.params);
+      
+      // Update project name display after UI is ready (poll for function availability)
+      const updateProjectName = () => {
+        if (ZM.updateProjectNameDisplay) {
+          ZM.updateProjectNameDisplay(ZM._projectName);
         } else {
-          // Fallback to localStorage camera params if state doesn't have camera data
-          Object.assign(ZM.params, preservedCameraParams);
+          setTimeout(updateProjectName, 50);
         }
-        
-        // Save back to localStorage to update stale data
-        ZM.saveToLocalStorage();
+      };
+      updateProjectName();
+    } else {
+      // Had saved settings - display project name if available
+      if (ZM._projectName) {
+        const updateProjectName = () => {
+          if (ZM.updateProjectNameDisplay) {
+            ZM.updateProjectNameDisplay(ZM._projectName);
+          } else {
+            setTimeout(updateProjectName, 50);
+          }
+        };
+        updateProjectName();
+      }
+      
+      if (ZM.stateManager.activeStateId) {
+        // If we loaded from localStorage and there's an active state,
+        // ensure params match the active state (not stale localStorage params)
+        console.log('🔄 Syncing params with active state:', ZM.stateManager.activeStateId);
+        const activeState = ZM.stateManager.getStateById(ZM.stateManager.activeStateId);
+        if (activeState) {
+          // Preserve camera params (they're not stored in state.params, but in state.camera)
+          const preservedCameraParams = {
+            cameraRotationX: ZM.params.cameraRotationX,
+            cameraRotationY: ZM.params.cameraRotationY,
+            cameraDistance: ZM.params.cameraDistance,
+            cameraOffsetX: ZM.params.cameraOffsetX,
+            cameraOffsetY: ZM.params.cameraOffsetY
+          };
+          
+          // Restore state params to ensure palettes are in sync
+          Object.assign(ZM.params, JSON.parse(JSON.stringify(activeState.params)));
+          
+          // Restore preserved camera params (use state's camera if available, otherwise localStorage)
+          if (activeState.camera) {
+            ZM.params.cameraRotationX = activeState.camera.rotationX;
+            ZM.params.cameraRotationY = activeState.camera.rotationY;
+            ZM.params.cameraDistance = activeState.camera.distance;
+            ZM.params.cameraOffsetX = activeState.camera.offsetX || 0;
+            ZM.params.cameraOffsetY = activeState.camera.offsetY || 0;
+            // Sync camera object to match state
+            ZM.camera.syncFromParams(ZM.params);
+          } else {
+            // Fallback to localStorage camera params if state doesn't have camera data
+            Object.assign(ZM.params, preservedCameraParams);
+          }
+          
+          // Save back to localStorage to update stale data
+          ZM.saveToLocalStorage();
+        }
       }
     }
   }
@@ -460,7 +503,7 @@ async function init() {
     if (ZM.updateCanvasSize) ZM.updateCanvasSize();
   });
   
-  console.log('ZigMap26 initialized ✓');
+  console.log('SpaceFlow initialized ✓');
 
   // Show keyboard shortcuts toast on startup
   showShortcutsToast(true);
@@ -520,7 +563,7 @@ function toggleShortcutsToast() {
 }
 
 // Expose on ZM so KeyboardHandler can call it
-window.ZigMap26.toggleShortcutsToast = toggleShortcutsToast;
+window.SpaceFlow.toggleShortcutsToast = toggleShortcutsToast;
 
 /**
  * Show a mini notification toast at the bottom of the screen.
@@ -574,7 +617,7 @@ function showMiniToast(message, type = '', duration = 4400, node = null) {
 }
 
 // Expose showToast on ZM
-window.ZigMap26.showToast = showMiniToast;
+window.SpaceFlow.showToast = showMiniToast;
 
 // Start application when DOM is ready
 if (document.readyState === 'loading') {

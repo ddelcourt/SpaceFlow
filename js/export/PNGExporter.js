@@ -152,7 +152,7 @@ export function exportPNG(ZM) {
     const suffix = ZM.params.stereoscopicMode ? '-SBS' : '';
     const a = document.createElement('a');
     a.href = url;
-    a.download = `zigmap26-${ts}${suffix}.png`;
+    a.download = `spaceflow-${ts}${suffix}.png`;
     a.click();
     console.log('✅ PNG download triggered:', a.download);
     URL.revokeObjectURL(url);

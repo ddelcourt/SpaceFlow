@@ -210,7 +210,7 @@ export function exportSVG(ZM) {
   const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `zigmap26-${ts}.svg`;
+  a.download = `spaceflow-${ts}.svg`;
   a.click();
   URL.revokeObjectURL(url);
   

@@ -424,12 +424,12 @@ export const SEGMENTS = 16;                // Sommets zigzag par ligne
 export const STORAGE_KEY = 'zigmap26Settings';  // Clé LocalStorage
 ```
 
-### État Global de l'Application (`window.ZigMap26`)
+### État Global de l'Application (`window.SpaceFlow`)
 
-Tout l'état partagé réside dans le namespace `window.ZigMap26`, initialisé dans `js/main.js` :
+Tout l'état partagé réside dans le namespace `window.SpaceFlow`, initialisé dans `js/main.js` :
 
 ```javascript
-window.ZigMap26 = {
+window.SpaceFlow = {
   params: { ...DEFAULT_PARAMS },   // Tous les paramètres ajustables
   SEGMENTS,                         // Sommets zigzag par ligne
   STORAGE_KEY,                      // Clé LocalStorage
@@ -699,7 +699,7 @@ Convertit une polyligne en chemins décalés pour le rendu de ruban.
 Fonction factory qui retourne une fonction de sketch p5.js.
 
 **Paramètres :**
-- `ZM` (Object) : L'objet d'état global `window.ZigMap26`
+- `ZM` (Object) : L'objet d'état global `window.SpaceFlow`
 - `eyeOffset` (Number) : Décalage caméra axe X pour stéréo (0 pour mono, ±eyeSeparation pour stéréo)
 - `canvasId` (String) : ID d'élément DOM pour attacher le canevas (`'mono-canvas'`, `'left-canvas'`, `'right-canvas'`)
 
@@ -2350,7 +2350,7 @@ Pour questions ou contributions, veuillez contacter [vos informations de contact
 
 ---
 
-# ZigMap26 — Architecture Modulaire
+# SpaceFlow — Architecture Modulaire
 
 ## Vue d'Ensemble
 
@@ -2359,7 +2359,7 @@ ZigMap26 est une modularisation complète de l'application ZigzagEmitter origina
 ## Structure du Projet
 
 ```
-ZigMap26/
+SpaceFlow/
 ├── index.html                    # Point d'entrée HTML principal
 ├── css/                          # Feuilles de style
 │   ├── main.css                  # Styles de base et mise en page
@@ -2434,9 +2434,9 @@ export function exportSVG(ZM) { /* ... */ }
 ```
 
 ### 4. **Espace de Noms Global**
-Un seul objet `window.ZigMap26` fournit un accès global organisé :
+Un seul objet `window.SpaceFlow` fournit un accès global organisé :
 ```javascript
-window.ZigMap26 = {
+window.SpaceFlow = {
   params,        // Paramètres de l'application
   camera,        // État de la caméra
   emitterInstance, // Référence de l'émetteur principal
@@ -2601,7 +2601,7 @@ Le `ZigzagEmitter_12.html` monolithique original (2 334 lignes) a été refactor
 #### Nouveau Format d'Export
 1. Créer `js/export/NouveauExporteur.js`
 2. Exporter une fonction : `export function exportNouveau(ZM) { ... }`
-3. Importer dans `main.js` et ajouter à `window.ZigMap26`
+3. Importer dans `main.js` et ajouter à `window.SpaceFlow`
 4. Connecter au bouton UI dans `UIController.js`
 
 #### Nouveau Paramètre
@@ -2635,7 +2635,7 @@ Identique au projet original.
 
 Lors de l'ajout de nouveaux modules :
 1. Utiliser la syntaxe `import`/`export` ES6
-2. Passer les dépendances comme paramètres (pas de globales sauf `window.ZigMap26`)
+2. Passer les dépendances comme paramètres (pas de globales sauf `window.SpaceFlow`)
 3. Suivre la convention camelCase pour le nommage
 4. Documenter les fonctions complexes avec des commentaires JSDoc
 5. Tester avec un serveur HTTP avant de committer

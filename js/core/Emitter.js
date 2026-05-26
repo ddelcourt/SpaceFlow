@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Emitter Class
+// SPACEFLOW - Emitter Class
 // Manages emission and lifecycle of zigzag lines
 // ═══════════════════════════════════════════════════════════════════════════
 

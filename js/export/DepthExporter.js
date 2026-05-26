@@ -339,7 +339,7 @@ function renderDepthMap(ZM) {
     const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `zigmap26-depthmap-${ts}.png`;
+    a.download = `spaceflow-depthmap-${ts}.png`;
     a.click();
     URL.revokeObjectURL(url);
     if (ZM && ZM.showToast) ZM.showToast('✓ Depth map exported', 'success');

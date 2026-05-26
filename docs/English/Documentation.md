@@ -421,12 +421,12 @@ export const SEGMENTS = 16;                // Zigzag vertices per line
 export const STORAGE_KEY = 'zigmap26Settings';  // LocalStorage key
 ```
 
-### Global Application State (`window.ZigMap26`)
+### Global Application State (`window.SpaceFlow`)
 
-All shared state lives in the `window.ZigMap26` namespace, populated in `js/main.js`:
+All shared state lives in the `window.SpaceFlow` namespace, populated in `js/main.js`:
 
 ```javascript
-window.ZigMap26 = {
+window.SpaceFlow = {
   params: { ...DEFAULT_PARAMS },   // All adjustable parameters
   SEGMENTS,                         // Zigzag vertices per line
   STORAGE_KEY,                      // LocalStorage key
@@ -693,7 +693,7 @@ Converts a polyline into offset paths for ribbon rendering.
 Factory function that returns a p5.js sketch function.
 
 **Parameters:**
-- `ZM` (Object): The global `window.ZigMap26` application state object
+- `ZM` (Object): The global `window.SpaceFlow` application state object
 - `eyeOffset` (Number): X-axis camera offset for stereo (0 for mono, ±eyeSeparation for stereo)
 - `canvasId` (String): DOM element ID to attach canvas (`'mono-canvas'`, `'left-canvas'`, `'right-canvas'`)
 
@@ -2643,16 +2643,16 @@ mouseWheel: camera.distance = 720
 
 ---
 
-# ZigMap26 — Modular Architecture
+# SpaceFlow — Modular Architecture
 
 ## Overview
 
-ZigMap26 is a complete modularization of the original ZigzagEmitter application. The monolithic HTML file has been transformed into a modern ES6 module-based architecture with proper separation of concerns.
+SpaceFlow is a complete modularization of the original ZigzagEmitter application. The monolithic HTML file has been transformed into a modern ES6 module-based architecture with proper separation of concerns.
 
 ## Project Structure
 
 ```
-ZigMap26/
+SpaceFlow/
 ├── index.html                    # Main HTML entry point
 ├── css/                          # Stylesheets
 │   ├── main.css                  # Base styles and layout
@@ -2723,9 +2723,9 @@ export function exportSVG(ZM) { /* ... */ }
 ```
 
 ### 4. **Global Namespace**
-A single `window.ZigMap26` object provides organized global access:
+A single `window.SpaceFlow` object provides organized global access:
 ```javascript
-window.ZigMap26 = {
+window.SpaceFlow = {
   params,        // Application parameters
   camera,        // Camera state
   emitterInstance, // Main emitter reference
@@ -2890,7 +2890,7 @@ The original monolithic `ZigzagEmitter_12.html` (2,334 lines) has been refactore
 #### New Export Format
 1. Create `js/export/NewExporter.js`
 2. Export a function: `export function exportNew(ZM) { ... }`
-3. Import in `main.js` and add to `window.ZigMap26`
+3. Import in `main.js` and add to `window.SpaceFlow`
 4. Wire to UI button in `UIController.js`
 
 #### New Parameter
@@ -2924,7 +2924,7 @@ Same as original project.
 
 When adding new modules:
 1. Use ES6 `import`/`export` syntax
-2. Pass dependencies via parameters (no globals except `window.ZigMap26`)
+2. Pass dependencies via parameters (no globals except `window.SpaceFlow`)
 3. Follow camelCase naming convention
 4. Document complex functions with JSDoc comments
 5. Test with HTTP server before committing

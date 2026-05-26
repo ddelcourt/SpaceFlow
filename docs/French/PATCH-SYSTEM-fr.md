@@ -1095,7 +1095,7 @@ import { Emitter } from './core/Emitter.js';
 import { ZigzagLine } from './core/ZigzagLine.js';
 
 // Charge le preset JSON → applique les params → rend
-window.ZigMap26 = {
+window.SpaceFlow = {
   params: { ...DEFAULT_PARAMS },
   emitterInstance: new Emitter()
 };
@@ -1133,7 +1133,7 @@ import { PatchLoader } from './core/PatchLoader.js';
 import { ParameterManager } from './core/ParameterManager.js';
 import { universalDefaults } from './config/universalDefaults.json';
 
-window.ZigMap26 = {
+window.SpaceFlow = {
   // NOUVEAU : Système de patches
   patchId: null,
   patch: null,
@@ -1153,7 +1153,7 @@ window.ZigMap26 = {
 
 ```javascript
 async function loadPreset(jsonData) {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   // 1. Déterminer l'ID du patch (avec fallback pour presets legacy)
   const patchId = jsonData.patchId || 'zigzag-emitter-v1';
@@ -1209,7 +1209,7 @@ async function loadPreset(jsonData) {
 ```javascript
 // Dans le sketch p5
 function draw() {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   if (!ZM.patch) return;
   
@@ -1228,7 +1228,7 @@ function draw() {
 import { PatchLoader } from './core/PatchLoader.js';
 import { ParameterManager } from './core/ParameterManager.js';
 
-window.ZigMap26 = {
+window.SpaceFlow = {
   displayId: urlParams.get('id') || 'display-unknown',
   patchId: null,
   patch: null,

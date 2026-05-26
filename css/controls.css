@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   ZIGMAP26 - Controls Panel Styles
+   SPACEFLOW - Controls Panel Styles
    All UI control elements, sliders, buttons, sections
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -58,14 +58,14 @@
   pointer-events: none;
 }
 
-/* Middle panel positioning */
+/* Middle panel positioning - State-specific parameters on the right, left of Project panel */
 .controls-middle {
-  left: 300px;
-  border-right: 1px solid rgba(34, 34, 34, 0.3);
+  right: 300px;
+  border-left: 1px solid rgba(34, 34, 34, 0.3);
 }
 
 .controls-middle.hidden {
-  transform: translateX(-100%);
+  transform: translateX(100%);
   opacity: 0;
   pointer-events: none;
 }

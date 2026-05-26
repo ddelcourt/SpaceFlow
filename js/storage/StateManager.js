@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - State Manager Module
+// SPACEFLOW - State Manager Module
 // Manage multiple states/states of the application
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -149,10 +149,12 @@ function captureCurrentState(ZM, name) {
   };
   
   // Create state object
+  const now = Date.now();
   const state = {
-    id: `state_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    name: name || `State ${Date.now()}`,
-    timestamp: Date.now(),
+    id: `state_${now}_${Math.random().toString(36).substr(2, 9)}`,
+    name: name || `State ${now}`,
+    createdAt: now,
+    timestamp: now,  // Last updated time
     params: params,
     camera: camera,
     metadata: {
@@ -233,10 +235,15 @@ function restoreState(ZM, state, instant = false) {
   };
   
   // Update params with deep cloned values
+  console.log('[StateManager] About to assign state params, restoredParams.activePaletteIndex:', restoredParams.activePaletteIndex);
+  console.log('[StateManager] Current ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
   Object.assign(ZM.params, restoredParams);
+  console.log('[StateManager] After Object.assign, ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
   
   // Restore preserved project-wide settings
+  console.log('[StateManager] About to restore preserved settings, preservedSettings.activePaletteIndex:', preservedSettings.activePaletteIndex);
   Object.assign(ZM.params, preservedSettings);
+  console.log('[StateManager] After restoring preserved settings, ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
   
   // Clear emitter in these cases:
   // 1. Instant mode (loading project file / initial preset - want fresh start)
@@ -410,6 +417,7 @@ function restoreState(ZM, state, instant = false) {
     syncUIWithoutRestart(ZM);
     
     // Save to main localStorage
+    console.log('[StateManager] About to save to localStorage, activePaletteIndex:', ZM.params.activePaletteIndex);
     if (ZM.saveToLocalStorage) {
       ZM.saveToLocalStorage();
     }
@@ -703,9 +711,10 @@ function updateState(ZM, id) {
     palettesCount: updatedState.params.palettes?.length
   });
   
-  // Keep the original ID and creation timestamp
+  // Keep the original ID and creation timestamp, but update the modification timestamp
   updatedState.id = existingState.id;
-  updatedState.timestamp = Date.now(); // Update timestamp to show it was modified
+  updatedState.createdAt = existingState.createdAt || existingState.timestamp || Date.now(); // Preserve creation time
+  updatedState.timestamp = Date.now(); // Update to show when it was last modified
   
   // Replace the state
   ZM.stateManager.states[stateIndex] = updatedState;
@@ -805,11 +814,13 @@ function duplicateState(ZM, id) {
     return null;
   }
   
+  const now = Date.now();
   const newState = {
     ...JSON.parse(JSON.stringify(state)),
-    id: `state_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    id: `state_${now}_${Math.random().toString(36).substr(2, 9)}`,
     name: `${state.name} (Copy)`,
-    timestamp: Date.now()
+    createdAt: now,  // New creation time for the copy
+    timestamp: now   // Last updated time
   };
   
   ZM.stateManager.states.push(newState);
@@ -877,7 +888,7 @@ function exportStateToFile(ZM, id) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `zigmap26-state-${state.name.replace(/[^a-z0-9]/gi, '_')}.json`;
+  a.download = `spaceflow-state-${state.name.replace(/[^a-z0-9]/gi, '_')}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -900,7 +911,7 @@ function exportAllStates(ZM) {
   const timestamp = new Date().toISOString().slice(0, 10);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `zigmap26-states-bank-${timestamp}.json`;
+  a.download = `spaceflow-states-bank-${timestamp}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }

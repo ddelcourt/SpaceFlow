@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Camera State
+// SPACEFLOW - Camera State
 // Camera position, rotation, and interaction state
 // ═══════════════════════════════════════════════════════════════════════════
 

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Color Utilities
+// SPACEFLOW - Color Utilities
 // Helper functions for palette and color management
 // ═══════════════════════════════════════════════════════════════════════════
 

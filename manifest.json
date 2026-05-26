@@ -1,7 +1,7 @@
 {
   "name": "Mapping26",
   "short_name": "Mapping26",
-  "description": "ZigMap26 generative zigzag space emitter",
+  "description": "SpaceFlow generative art framework",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

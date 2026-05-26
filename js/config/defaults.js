@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Default Parameters
+// SPACEFLOW - Default Parameters
 // Default runtime parameters for the application
 // ═══════════════════════════════════════════════════════════════════════════
 

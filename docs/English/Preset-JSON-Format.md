@@ -1,6 +1,6 @@
 # Preset JSON Format
 
-Documentation for ZigMap26 preset file structure.
+Documentation for SpaceFlow preset file structure.
 
 ---
 

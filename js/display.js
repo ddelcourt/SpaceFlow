@@ -1,5 +1,5 @@
 /**
- * ZigMap26 — Display Window (Renderer Only)
+ * SpaceFlow — Display Window (Renderer Only)
  * Minimal version with no controls, syncs with primary window via BroadcastChannel
  */
 
@@ -32,12 +32,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const displayId = urlParams.get('id') || 'display-unknown';
 
 // Update document title with display ID
-document.title = `ZigMap26 — ${displayId}`;
+document.title = `SpaceFlow — ${displayId}`;
 
 console.log(`🖥️ Display window ID: ${displayId}`);
 
-// Create global ZigMap26 namespace
-window.ZigMap26 = {
+// Create global SpaceFlow namespace
+window.SpaceFlow = {
   // Display identification
   displayId: displayId,
   
@@ -81,8 +81,8 @@ window.ZigMap26 = {
 
 // Add wrapper method to properly bind ZM context
 // This ensures ONE function controls palette transitions across ALL windows (main + display)
-window.ZigMap26.triggerPaletteChange = function() {
-  triggerPaletteChange(window.ZigMap26);
+window.SpaceFlow.triggerPaletteChange = function() {
+  triggerPaletteChange(window.SpaceFlow);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -98,7 +98,7 @@ function updateConnectionStatus(connected) {
   
   if (connected) {
     statusEl.classList.add('connected');
-    textEl.textContent = `${window.ZigMap26.displayId} — Connected`;
+    textEl.textContent = `${window.SpaceFlow.displayId} — Connected`;
     
     // Hide status after 2 seconds
     setTimeout(() => {
@@ -106,7 +106,7 @@ function updateConnectionStatus(connected) {
     }, 2000);
   } else {
     statusEl.classList.remove('connected');
-    textEl.textContent = `${window.ZigMap26.displayId} — Waiting...`;
+    textEl.textContent = `${window.SpaceFlow.displayId} — Waiting...`;
   }
 }
 
@@ -157,7 +157,7 @@ function initializeOverlay(ZM) {
  * Initialize display window
  */
 async function init() {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   console.log('🖥️ Initializing display window...');
   
@@ -336,8 +336,8 @@ function setupKeyboardShortcuts() {
     
     // Forward keyboard command to main window
     // Main window will process the command and broadcast the result to all displays
-    if (shouldForward && window.ZigMap26.windowSync && window.ZigMap26.windowSync.channel) {
-      window.ZigMap26.windowSync.channel.postMessage({
+    if (shouldForward && window.SpaceFlow.windowSync && window.SpaceFlow.windowSync.channel) {
+      window.SpaceFlow.windowSync.channel.postMessage({
         type: 'keyboard-command',
         key: e.key,
         ctrlKey: e.ctrlKey,
@@ -413,8 +413,8 @@ function setupMouseHandlers() {
   
   // Helper to forward mouse commands to main window
   function forwardMouseCommand(command) {
-    if (window.ZigMap26.windowSync && window.ZigMap26.windowSync.channel) {
-      window.ZigMap26.windowSync.channel.postMessage({
+    if (window.SpaceFlow.windowSync && window.SpaceFlow.windowSync.channel) {
+      window.SpaceFlow.windowSync.channel.postMessage({
         type: 'mouse-command',
         command: command,
         timestamp: Date.now()
@@ -575,7 +575,7 @@ function showMiniToast(message, type = '', duration = 4400, node = null) {
 }
 
 // Assign showToast to the ZM object
-window.ZigMap26.showToast = showMiniToast;
+window.SpaceFlow.showToast = showMiniToast;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // START APPLICATION
@@ -590,7 +590,7 @@ if (typeof p5 !== 'undefined') {
 
 // Cleanup on window close
 window.addEventListener('beforeunload', () => {
-  if (window.ZigMap26.windowSync) {
-    window.ZigMap26.windowSync.close();
+  if (window.SpaceFlow.windowSync) {
+    window.SpaceFlow.windowSync.close();
   }
 });

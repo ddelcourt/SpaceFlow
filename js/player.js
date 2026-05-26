@@ -1,5 +1,5 @@
 /**
- * ZigMap26 Player — Minimal player mode for distribution
+ * SpaceFlow Player — Minimal player mode for distribution
  * Load and display ZigMap26 presets without editor controls
  */
 
@@ -33,7 +33,7 @@ import { exportSVG } from './export/SVGExporter.js';
 // GLOBAL APPLICATION STATE
 // ═══════════════════════════════════════════════════════════════════════════
 
-window.ZigMap26 = {
+window.SpaceFlow = {
   // Parameters
   params: { 
     ...DEFAULT_PARAMS
@@ -64,8 +64,8 @@ window.ZigMap26 = {
   isPlayerMode: true,
   
   // Export functions (enabled in player mode)
-  exportPNG: () => exportPNG(window.ZigMap26),
-  exportSVG: () => exportSVG(window.ZigMap26),
+  exportPNG: () => exportPNG(window.SpaceFlow),
+  exportSVG: () => exportSVG(window.SpaceFlow),
   
   // Placeholder functions for player mode
   saveToLocalStorage: () => {}, // No saving in player mode
@@ -224,7 +224,7 @@ function handleDrop(e) {
     if (file.type === 'application/json' || file.name.endsWith('.json')) {
       loadJSONFile(file);
     } else {
-      showError('Invalid file type. Please drop a .json file created with ZigMap26 Editor.');
+      showError('Invalid file type. Please drop a .json file created with SpaceFlow Editor.');
     }
   }
 }
@@ -247,7 +247,7 @@ function loadJSONFile(file) {
       
       // Validate JSON structure
       if (!jsonData.params) {
-        throw new Error('Invalid ZigMap26 preset file. Missing params object.');
+        throw new Error('Invalid SpaceFlow preset file. Missing params object.');
       }
       
       // Load the preset
@@ -272,7 +272,7 @@ function loadJSONFile(file) {
  * Load preset data and initialize visualization
  */
 function loadPreset(jsonData) {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   try {
     // Check if preset has states
@@ -347,7 +347,7 @@ function loadPreset(jsonData) {
  * Initialize the visualization for the first time
  */
 function initializeVisualization(jsonData) {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   // Initialize camera with params (not ZM object)
   ZM.camera = new Camera(ZM.params);
@@ -444,7 +444,7 @@ function initializeVisualization(jsonData) {
  * Update visualization with new preset data
  */
 function updateVisualization(jsonData) {
-  const ZM = window.ZigMap26;
+  const ZM = window.SpaceFlow;
   
   // Restore states if present
   if (jsonData.states && Array.isArray(jsonData.states)) {
@@ -869,7 +869,7 @@ function showMiniToast(message, type = '', duration = 4400, node = null) {
 }
 
 // Assign showToast to the ZM object
-window.ZigMap26.showToast = showMiniToast;
+window.SpaceFlow.showToast = showMiniToast;
 
 /**
  * Toggle the shortcuts toast (no countdown).

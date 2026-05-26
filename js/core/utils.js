@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Utility Functions
+// SPACEFLOW - Utility Functions
 // Helper functions used across the application
 // ═══════════════════════════════════════════════════════════════════════════
 

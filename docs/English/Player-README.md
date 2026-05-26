@@ -1,4 +1,4 @@
-# ZigMap26 Player Mode
+# SpaceFlow Player Mode
 
 ## Overview
 
@@ -18,7 +18,7 @@ The **Player Mode** is a minimal, distribution-friendly version of ZigMap26 desi
 
 ### Option 1: Drag & Drop
 1. Open `player.html` in your web browser
-2. Drag a `.json` preset file (created with ZigMap26 Editor) onto the page
+2. Drag a `.json` preset file (created with SpaceFlow Editor) onto the page
 3. The visualization will automatically load and start playing
 
 ### Option 2: File Selector
@@ -31,7 +31,7 @@ The **Player Mode** is a minimal, distribution-friendly version of ZigMap26 desi
 
 ## Creating Presets for Player Mode
 
-1. Open `index.html` (the main ZigMap26 Editor)
+1. Open `index.html` (the main SpaceFlow Editor)
 2. Create your visualization with states, colors, and transitions
 3. Enable **Auto-Trigger States** if you want automatic playback
 4. Click **Save** in the Project section to export a `.json` file
@@ -92,7 +92,7 @@ Requires a modern browser with WebGL support.
 ## Troubleshooting
 
 **"Invalid file type" error**
-- Make sure you're dropping a `.json` file created with ZigMap26 Editor
+- Make sure you're dropping a `.json` file created with SpaceFlow Editor
 - File must have `.json` extension
 
 **Visualization doesn't load**
@@ -117,4 +117,4 @@ For best performance on lower-end devices:
 
 ---
 
-Created with ZigMap26 v26 🎨
+Created with SpaceFlow v26 🎨

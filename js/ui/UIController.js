@@ -71,6 +71,7 @@ export function initializeUI(ZM) {
   ZM.cancelStateAutoUpdate = cancelStateAutoUpdate; // Expose to other modules
   ZM.rebuildOverlayDropdown = () => rebuildOverlayDropdown(ZM);
   ZM.updateOverlayDropdownSelection = () => updateOverlayDropdownSelection(ZM);
+  ZM.updateProjectNameDisplay = (fileName) => updateProjectNameDisplay(fileName);
 }
 
 /**
@@ -84,7 +85,7 @@ async function loadUIConfigs() {
       fetch('config/appInfo.json').then(r => r.json())
     ]);
     
-    window.ZigMap26.config = { keyboardShortcuts, uiPresets, appInfo };
+    window.SpaceFlow.config = { keyboardShortcuts, uiPresets, appInfo };
   } catch (err) {
     console.error('Failed to load UI configs:', err);
   }
@@ -507,8 +508,8 @@ function setupFramebufferControls(ZM) {
   if (!modeCheckbox) return;
   
   // Populate preset dropdown from config
-  if (presetSelect && window.ZigMap26.config?.uiPresets?.framebufferPresets) {
-    const presets = window.ZigMap26.config.uiPresets.framebufferPresets;
+  if (presetSelect && window.SpaceFlow.config?.uiPresets?.framebufferPresets) {
+    const presets = window.SpaceFlow.config.uiPresets.framebufferPresets;
     presetSelect.innerHTML = ''; // Clear existing options
     
     // Add all presets from config
@@ -969,7 +970,33 @@ function setupFileSaveLoad(ZM) {
       const formatSelect = document.getElementById('export-format');
       const format = formatSelect ? formatSelect.value : 'project';
       console.log('[UI] Export button clicked, format:', format);
-      ZM.downloadJSON(format);
+      
+      // Determine filename
+      let filename = null;
+      if (ZM._projectName) {
+        // Use loaded preset name (remove .json extension if present)
+        filename = ZM._projectName.replace(/\.json$/i, '');
+      } else {
+        // Prompt user for filename
+        const userInput = prompt('Enter project name:', 'SpaceFlow');
+        if (userInput) {
+          filename = userInput.trim();
+          // Store the new project name
+          ZM._projectName = `${filename}.json`;
+          if (ZM.updateProjectNameDisplay) {
+            ZM.updateProjectNameDisplay(ZM._projectName);
+          }
+        } else {
+          // User cancelled - use fallback
+          filename = 'SpaceFlow';
+          ZM._projectName = 'SpaceFlow.json';
+          if (ZM.updateProjectNameDisplay) {
+            ZM.updateProjectNameDisplay(ZM._projectName);
+          }
+        }
+      }
+      
+      ZM.downloadJSON(format, filename);
       if (ZM.showToast) ZM.showToast(`✓ JSON exported (${format})`, 'success');
     });
   }
@@ -980,6 +1007,9 @@ function setupFileSaveLoad(ZM) {
       const file = e.target.files[0];
       if (file) {
         ZM.loadJSON(file);
+        if (ZM.updateProjectNameDisplay) {
+          ZM.updateProjectNameDisplay(file.name);
+        }
       }
     });
   }
@@ -1460,6 +1490,27 @@ function setupHoverEffect(element, hoverBg, normalBg) {
 }
 
 /**
+ * Update project name display
+ */
+/**
+ * Update project name display
+ */
+function updateProjectNameDisplay(fileName) {
+  const displayContainer = document.getElementById('project-name-display');
+  const displayText = document.getElementById('project-name-text');
+  
+  if (displayContainer && displayText) {
+    if (fileName) {
+      const cleanName = fileName.replace(/\.(json|JSON)$/, '');
+      displayText.textContent = cleanName;
+      displayContainer.style.display = 'block';
+    } else {
+      displayContainer.style.display = 'none';
+    }
+  }
+}
+
+/**
  * Setup collapsible sections
  */
 function setupCollapsibleSections() {
@@ -1717,7 +1768,10 @@ function updateStatePanel(ZM) {
   stateContainer.innerHTML = states.map((state, index) => {
     const isActive = state.id === activeId;
     const date = new Date(state.timestamp);
-    const timeStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    const timeStr = `${day}.${month}.${year} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}`;
     
     return `
       <div class="state-item ${isActive ? 'active' : ''}" data-state-id="${state.id}" data-index="${index}" draggable="true">
@@ -1748,12 +1802,11 @@ function updateStatePanel(ZM) {
   stateContainer.querySelectorAll('.state-item').forEach(item => {
     const stateId = item.dataset.stateId;
     
-    // Click on item to load
+    // Click on item to load (including clicking on the state name)
     item.addEventListener('click', (e) => {
-      // Ignore if clicking on action buttons, drag handle, state name, or in edit mode
+      // Ignore if clicking on action buttons, drag handle, or in edit mode
       if (e.target.closest('.state-action-btn')) return;
       if (e.target.closest('.state-drag-handle')) return;
-      if (e.target.closest('.state-name')) return;  // Also ignore clicks on state name
       if (e.target.closest('.state-name.editing')) return;
       ZM.stateManager.load(stateId);
     });

@@ -1,8 +1,8 @@
-# Mode Lecteur ZigMap26
+# Mode Lecteur SpaceFlow
 
 ## Aperçu
 
-Le **Mode Lecteur** est une version minimale de ZigMap26, conçue pour la distribution et permettant au public de profiter de vos créations sans la complexité de l'interface d'édition.
+Le **Mode Lecteur** est une version minimale de SpaceFlow, conçue pour la distribution et permettant au public de profiter de vos créations sans la complexité de l'interface d'édition.
 
 ## Fonctionnalités
 
@@ -18,7 +18,7 @@ Le **Mode Lecteur** est une version minimale de ZigMap26, conçue pour la distri
 
 ### Option 1 : Glisser-Déposer
 1. Ouvrez `player.html` dans votre navigateur web
-2. Glissez un fichier preset `.json` (créé avec l'Éditeur ZigMap26) sur la page
+2. Glissez un fichier preset `.json` (créé avec l'Éditeur SpaceFlow) sur la page
 3. La visualisation se chargera et démarrera automatiquement
 
 ### Option 2 : Sélecteur de Fichier
@@ -92,7 +92,7 @@ Nécessite un navigateur moderne avec support WebGL.
 ## Dépannage
 
 **Erreur "Type de fichier invalide"**
-- Assurez-vous de déposer un fichier `.json` créé avec l'Éditeur ZigMap26
+- Assurez-vous de déposer un fichier `.json` créé avec l'Éditeur SpaceFlow
 - Le fichier doit avoir l'extension `.json`
 
 **La visualisation ne se charge pas**
@@ -117,4 +117,4 @@ Pour de meilleures performances sur les appareils moins puissants :
 
 ---
 
-Créé avec ZigMap26 v26 🎨
+Créé avec SpaceFlow v26 🎨

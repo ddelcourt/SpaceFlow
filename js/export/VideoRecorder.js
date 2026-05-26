@@ -55,7 +55,7 @@ export function startVideoRecording(ZM) {
   capturer = new CCapture({
     format: ZM.params.videoFormat === 'mp4' ? 'webm' : ZM.params.videoFormat,
     framerate: ZM.params.videoFPS,
-    name: 'zigmap26',
+    name: 'spaceflow',
     quality: 95,
     verbose: false,
     display: false,

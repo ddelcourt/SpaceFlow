@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ZIGMAP26 - Local Storage Module
+// SPACEFLOW - Local Storage Module
 // Save and load application settings
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -40,15 +40,23 @@ export function clearLocalStorage() {
 /**
  * Save parameters to localStorage
  * @param {Object} params - Parameters object to save
+ * @param {string} projectName - Optional project name to save
  */
-export function saveToLocalStorage(params) {
+export function saveToLocalStorage(params, projectName = null) {
   try {
     // Create a copy and remove canvas border settings (these should come from preset files only)
     const paramsToSave = { ...params };
     delete paramsToSave.canvasBorderVisible;
     delete paramsToSave.canvasBorderColor;
     
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(paramsToSave));
+    // Store params and project name together
+    const dataToSave = {
+      params: paramsToSave,
+      projectName: projectName || null
+    };
+    
+    console.log('[localStorage] Saving data:', { projectName, activePaletteIndex: paramsToSave.activePaletteIndex });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
   } catch (e) {
     console.warn('localStorage save failed:', e);
   }
@@ -57,14 +65,21 @@ export function saveToLocalStorage(params) {
 /**
  * Load parameters from localStorage
  * @param {Object} defaultParams - Default parameters to merge with
- * @returns {Object|null} Loaded parameters or null if failed
+ * @returns {Object|null} Object with params and projectName, or null if failed
  */
 export function loadFromLocalStorage(defaultParams) {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
     
-    const loaded = JSON.parse(stored);
+    const data = JSON.parse(stored);
+    console.log('[localStorage] Raw loaded data:', data);
+    
+    // Handle old format (params only) vs new format (object with params and projectName)
+    const loaded = data.params ? data.params : data;
+    const projectName = data.projectName || null;
+    console.log('[localStorage] Extracted params:', loaded);
+    console.log('[localStorage] Extracted projectName:', projectName);
     
     // Remove canvas border settings - these should come from preset file, not localStorage
     // The loaded preset file is the authority for these UI settings
@@ -114,7 +129,9 @@ export function loadFromLocalStorage(defaultParams) {
     // Ensure project-level settings exist (for backward compatibility)
     if (loaded.ambientSpeedMaster === undefined) loaded.ambientSpeedMaster = 100;
     
-    return { ...defaultParams, ...loaded };
+    const result = { params: { ...defaultParams, ...loaded }, projectName };
+    console.log('[localStorage] Returning:', { projectName, activePaletteIndex: result.params.activePaletteIndex });
+    return result;
   } catch (e) {
     console.warn('localStorage load failed:', e);
     return null;
@@ -125,8 +142,9 @@ export function loadFromLocalStorage(defaultParams) {
  * Download project (parameters + presets) as JSON file
  * @param {Object} ZM - Main application object (or just params for backward compat)
  * @param {string} format - Export format: 'project' (v2.0) or 'states' (individual files)
+ * @param {string} customFilename - Optional custom filename (without .json extension)
  */
-export function downloadJSON(ZM, format = 'project') {
+export function downloadJSON(ZM, format = 'project', customFilename = null) {
   // Only allow downloads from main window, not display windows
   if (ZM.isDisplayMode) {
     console.log('💾 downloadJSON() blocked: display windows cannot download');
@@ -187,10 +205,26 @@ export function downloadJSON(ZM, format = 'project') {
     type: 'application/json'
   });
   const url = URL.createObjectURL(blob);
-  const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
   const a = document.createElement('a');
   a.href = url;
-  a.download = `zigmap26-project-${timestamp}.json`;
+  
+  // Generate timestamp in yy-mm-dd-hh-mm-ss format
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const timestamp = `${yy}-${mm}-${dd}-${hh}-${min}-${ss}`;
+  
+  // Use custom filename with timestamp if provided, otherwise use default
+  if (customFilename) {
+    a.download = `${customFilename}-${timestamp}.json`;
+  } else {
+    a.download = `spaceflow-project-${timestamp}.json`;
+  }
+  
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -229,7 +263,7 @@ async function exportAllStatesAsFiles(ZM) {
   // Add each state to the ZIP
   states.forEach(state => {
     const safeName = state.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-    const filename = `zigmap26-state-${safeName}.json`;
+    const filename = `spaceflow-state-${safeName}.json`;
     const content = formatJSONWithCompactPalettes(state);
     zip.file(filename, content);
   });
@@ -243,7 +277,7 @@ async function exportAllStatesAsFiles(ZM) {
     const timestamp = new Date().toISOString().slice(0, 10);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `zigmap26-states-${timestamp}.zip`;
+    a.download = `spaceflow-states-${timestamp}.zip`;
     console.log('[Export] Triggering download:', a.download);
     a.click();
     URL.revokeObjectURL(url);
@@ -317,6 +351,10 @@ export function loadJSON(file, callback) {
       // Clean up project-wide settings from states (same as we do in loadPresetFile)
       if (isV2 && loaded.states && Array.isArray(loaded.states)) {
         loaded.states.forEach(state => {
+          // Ensure backward compatibility with old states that only have timestamp
+          if (state.timestamp && !state.createdAt) {
+            state.createdAt = state.timestamp;
+          }
           if (state.params) {
             delete state.params.stateTransitionDuration;
             delete state.params.colorTransitionDuration;
@@ -344,12 +382,13 @@ export function loadJSON(file, callback) {
       callback(isV2 ? {
         params: params,
         states: loaded.states || [],
-        activeStateId: loaded.activeStateId || null
-      } : { params: params });
+        activeStateId: loaded.activeStateId || null,
+        projectName: loaded.projectName || file.name // Store project name from file
+      } : { params: params, projectName: file.name });
     } catch (err) {
       console.error('JSON load failed:', err);
-      if (window.ZigMap26 && window.ZigMap26.showToast) {
-        window.ZigMap26.showToast('Error loading JSON file. Please check the file format.');
+      if (window.SpaceFlow && window.SpaceFlow.showToast) {
+        window.SpaceFlow.showToast('Error loading JSON file. Please check the file format.');
       }
     }
   };
