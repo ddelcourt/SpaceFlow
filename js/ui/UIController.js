@@ -5,6 +5,7 @@
 import { triggerPaletteChange, getBackgroundColor, initColorRNG } from '../core/colorUtils.js';
 import { OVERLAY_FILES, OVERLAY_FOLDER } from '../../config/overlayPresets.js';
 import { openDisplayWindow } from '../sync/WindowSync.js';
+import { exportAllStatesAsFiles } from '../storage/localStorage.js';
 
 // Debounce timer for auto-updating active state
 let stateAutoUpdateTimer = null;
@@ -19,7 +20,6 @@ function cancelStateAutoUpdate() {
   if (stateAutoUpdateTimer) {
     clearTimeout(stateAutoUpdateTimer);
     stateAutoUpdateTimer = null;
-    console.log('🚫 Cancelled pending state auto-update');
   }
 }
 
@@ -28,7 +28,6 @@ function cancelStateAutoUpdate() {
  */
 function scheduleStateAutoUpdate(ZM) {
   if (!ZM.stateManager?.activeStateId) {
-    console.log('⏭️  Skipping state auto-update: no active state');
     return;
   }
   
@@ -37,13 +36,9 @@ function scheduleStateAutoUpdate(ZM) {
     clearTimeout(stateAutoUpdateTimer);
   }
   
-  console.log(`⏱️  Scheduled state auto-update for ${ZM.stateManager.activeStateId} in 500ms`);
-  
   // Schedule update after 500ms of no changes
   stateAutoUpdateTimer = setTimeout(() => {
-    console.log(`🔄 Auto-updating active state ${ZM.stateManager.activeStateId}`);
     ZM.stateManager.update(ZM.stateManager.activeStateId);
-    console.log('✓ Auto-update complete');
     stateAutoUpdateTimer = null;
   }, 500);
 }
@@ -87,7 +82,7 @@ async function loadUIConfigs() {
     
     window.SpaceFlow.config = { keyboardShortcuts, uiPresets, appInfo };
   } catch (err) {
-    console.error('Failed to load UI configs:', err);
+    // Failed to load UI configs
   }
 }
 
@@ -626,7 +621,7 @@ function setupFramebufferControls(ZM) {
 function applyCanvasBorder(visible, color = '#adff2f') {
   const wrapper = document.getElementById('canvas-wrapper');
   if (!wrapper) return;
-  console.log(`[Canvas Border] Setting visibility to: ${visible}`);
+  
   wrapper.style.setProperty('--canvas-border-color', color);
   wrapper.classList.toggle('canvas-border-hidden', !visible);
 }
@@ -818,7 +813,7 @@ function setupPaletteCopyPaste(ZM) {
   const pasteBtn = document.getElementById('paste-palette-btn');
   
   if (!copyBtn || !pasteBtn) {
-    console.warn('Copy/Paste palette buttons not found');
+    
     return;
   }
   
@@ -843,13 +838,13 @@ function setupPaletteCopyPaste(ZM) {
       );
     }
     
-    console.log(`📋 Copied palette ${activePaletteIndex + 1}:`, copiedPalette);
+    
   });
   
   // Paste button
   pasteBtn.addEventListener('click', () => {
     if (!copiedPalette) {
-      console.warn('No palette copied');
+      
       return;
     }
     
@@ -887,7 +882,7 @@ function setupPaletteCopyPaste(ZM) {
       );
     }
     
-    console.log(`📄 Pasted palette to slot ${activePaletteIndex + 1}`);
+    
     
     // Auto-update active state (debounced)
     scheduleStateAutoUpdate(ZM);
@@ -901,7 +896,7 @@ function updatePaletteUI(ZM) {
   const activePaletteIndex = ZM.params.activePaletteIndex;
   const activePalette = ZM.params.palettes[activePaletteIndex];
   
-  console.log(`updatePaletteUI: Loading palette ${activePaletteIndex}`, activePalette);
+  
   
   activePalette.forEach((color, idx) => {
     // Update color picker
@@ -966,10 +961,7 @@ function setupFileSaveLoad(ZM) {
   
   if (saveBtn) {
     saveBtn.addEventListener('click', () => {
-      // Get selected export format from dropdown
-      const formatSelect = document.getElementById('export-format');
-      const format = formatSelect ? formatSelect.value : 'project';
-      console.log('[UI] Export button clicked, format:', format);
+      
       
       // Determine filename
       let filename = null;
@@ -996,8 +988,9 @@ function setupFileSaveLoad(ZM) {
         }
       }
       
-      ZM.downloadJSON(format, filename);
-      if (ZM.showToast) ZM.showToast(`✓ JSON exported (${format})`, 'success');
+      // Always save as full project (format='project')
+      ZM.downloadJSON('project', filename);
+      if (ZM.showToast) ZM.showToast('✓ Project saved', 'success');
     });
   }
   
@@ -1063,7 +1056,7 @@ async function loadOverlayPresets(ZM) {
           });
         }
       } catch (err) {
-        console.warn(`Failed to load overlay: ${file}`, err);
+        
       }
     }
     
@@ -1073,9 +1066,9 @@ async function loadOverlayPresets(ZM) {
     // Build the dropdown
     rebuildOverlayDropdown(ZM);
     
-    console.log(`✓ Loaded ${overlays.length} overlay presets`);
+    
   } catch (err) {
-    console.error('Failed to load overlay presets:', err);
+    
   }
 }
 
@@ -1303,8 +1296,6 @@ function setupOverlayControls(ZM) {
         // Apply the new scale and position
         updateOverlay();
         ZM.saveToLocalStorage();
-        
-        console.log(`📐 Auto-fit overlay: ${ZM.params.overlayScale}% at center (canvas: ${Math.round(canvasWidth)}×${Math.round(canvasHeight)}px, image: ${overlayImg.naturalWidth}×${overlayImg.naturalHeight}px)`);
         showToast(`Auto-fit: ${ZM.params.overlayScale}%`, 'success');
       });
     });
@@ -1648,7 +1639,7 @@ function syncUIFromParams(ZM) {
   // Update canvas border visibility
   const borderVisibleCheckbox = document.getElementById('canvas-border-visible');
   const borderVisible = ZM.params.canvasBorderVisible === true;
-  console.log(`[syncUIFromParams] canvasBorderVisible from ZM.params: ${ZM.params.canvasBorderVisible}, setting to: ${borderVisible}`);
+  
   if (borderVisibleCheckbox) borderVisibleCheckbox.checked = borderVisible;
   applyCanvasBorder(borderVisible);
   
@@ -1692,7 +1683,7 @@ function syncUIFromParams(ZM) {
 function setupStatePanel(ZM) {
   const stateContainer = document.getElementById('state-list-container');
   if (!stateContainer) {
-    console.warn('State container not found');
+    
     return;
   }
   
@@ -1717,7 +1708,7 @@ function setupStatePanel(ZM) {
   const exportAllBtn = document.getElementById('export-all-states-btn');
   if (exportAllBtn) {
     exportAllBtn.addEventListener('click', () => {
-      ZM.stateManager.exportAll();
+      exportAllStatesAsFiles(ZM);
     });
   }
   
@@ -1739,7 +1730,7 @@ function setupStatePanel(ZM) {
               showToast('✓ State(s) imported successfully!', 'success');
             } catch (err) {
               showToast('Failed to import state. Invalid file format.');
-              console.error(err);
+              
             }
           };
           reader.readAsText(file);

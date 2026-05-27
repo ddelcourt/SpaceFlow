@@ -233,7 +233,7 @@ export function downloadJSON(ZM, format = 'project', customFilename = null) {
  * Export all states as individual JSON files in a ZIP archive
  * @param {Object} ZM - Main application object
  */
-async function exportAllStatesAsFiles(ZM) {
+export async function exportAllStatesAsFiles(ZM) {
   console.log('[Export] exportAllStatesAsFiles called');
   console.log('[Export] StateManager:', ZM.stateManager);
   console.log('[Export] States count:', ZM.stateManager?.states?.length);

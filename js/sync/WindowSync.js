@@ -17,7 +17,7 @@ let displayWindowCounter = 0;
  */
 export function initializePrimarySync(ZM) {
   if (!('BroadcastChannel' in window)) {
-    console.warn('⚠️ BroadcastChannel API not supported. Display window sync disabled.');
+    
     ZM.windowSync = null;
     return;
   }
@@ -27,7 +27,7 @@ export function initializePrimarySync(ZM) {
   let pendingUpdates = null;
   let syncScheduled = false;
 
-  console.log('📡 Primary window sync initialized');
+  
 
   // Throttle mouse command broadcasts for real-time sync (60fps)
   let lastMouseBroadcast = 0;
@@ -48,7 +48,7 @@ export function initializePrimarySync(ZM) {
     const { type } = event.data;
     
     if (type === 'display-ready') {
-      console.log('🖥️ Display window connected, sending full state...');
+      
       sendFullState();
     } else if (type === 'keyboard-command') {
       // Bidirectional keyboard control: Display windows can send commands back to main window
@@ -56,7 +56,6 @@ export function initializePrimarySync(ZM) {
       //       → Action triggers state change → StateManager broadcasts transitions
       //       → All displays (including sender) receive and execute transitions
       const { key, ctrlKey, metaKey, shiftKey } = event.data;
-      console.log(`⌨️ Remote command: ${key}${ctrlKey || metaKey ? ' (Ctrl/Cmd)' : ''}`);
       
       // Simulate keyboard event on document.body (not window) so e.target has getAttribute()
       const keyEvent = new KeyboardEvent('keydown', {
@@ -217,9 +216,9 @@ export function initializePrimarySync(ZM) {
     
     // Log what we're sending (only on explicit broadcasts, not periodic updates)
     if (!ZM.windowSync._broadcastingTransition) {
-      console.log('📤 Sending full state to display:');
-      console.log(`   colorTransitionDuration: ${state.params.colorTransitionDuration}s`);
-      console.log(`   colorRandomSeed: ${state.params.colorRandomSeed}`);
+      
+      
+      
     }
     
     // Include transition states so display window can match ongoing transitions
@@ -296,7 +295,6 @@ export function initializePrimarySync(ZM) {
     channel.postMessage(state);
     // Only log explicitly requested broadcasts (not periodic transition updates)
     if (!ZM.windowSync._broadcastingTransition) {
-      console.log('✓ Full state sent to display window (with transitions)');
     }
   }
 
@@ -322,7 +320,6 @@ export function initializePrimarySync(ZM) {
       };
       
       channel.postMessage(updates);
-      console.log('📤 Broadcasting palette change (immediate):', Object.keys(changes).filter(k => paletteParams.includes(k)).join(', '));
       lastSyncTime = Date.now();
       return;
     }
@@ -355,9 +352,7 @@ export function initializePrimarySync(ZM) {
         const changedKeys = Object.keys(pendingUpdates);
         const paletteRelated = changedKeys.filter(k => ['activePaletteIndex', 'palettes', 'backgroundColor'].includes(k));
         if (paletteRelated.length > 0) {
-          console.log('📤 Broadcasting palette change:', paletteRelated.join(', '));
         } else {
-          console.log('📤 Synced params:', changedKeys.join(', '));
         }
         
         lastSyncTime = Date.now();
@@ -470,7 +465,7 @@ export function initializePrimarySync(ZM) {
    */
   function close() {
     channel.close();
-    console.log('📡 Primary window sync closed');
+    
   }
 
   // Store sync functions in ZM
@@ -498,7 +493,7 @@ export function initializePrimarySync(ZM) {
 export function initializeDisplaySync(ZM) {
   return new Promise((resolve, reject) => {
     if (!('BroadcastChannel' in window)) {
-      console.error('❌ BroadcastChannel API not supported');
+      
       reject(new Error('BroadcastChannel not supported'));
       return;
     }
@@ -507,7 +502,7 @@ export function initializeDisplaySync(ZM) {
     let initialSyncReceived = false;
     let previousPaletteState = null; // Track palette state to detect changes in full-sync
 
-    console.log('🖥️ Display window sync initialized');
+    
 
     // Listen for updates from primary window
     channel.onmessage = (event) => {
@@ -515,10 +510,10 @@ export function initializeDisplaySync(ZM) {
 
       if (type === 'full-sync') {
         if (!initialSyncReceived) {
-          console.log('📥 Received full state from primary window');
-          console.log(`   colorTransitionDuration: ${params.colorTransitionDuration}s`);
-          console.log(`   colorRandomSeed: ${params.colorRandomSeed}`);
-          console.log(`   ZM.params object ID: ${ZM.params}`);
+          
+          
+          
+          
         }
         
         // Update all params (modifies existing object in-place)
@@ -527,12 +522,12 @@ export function initializeDisplaySync(ZM) {
         const afterDuration = ZM.params.colorTransitionDuration;
         
         if (!initialSyncReceived && beforeDuration !== afterDuration) {
-          console.log(`   ✓ colorTransitionDuration updated: ${beforeDuration}s → ${afterDuration}s`);
+          
           
           // Verify all lines reference the same params object
           if (ZM.emitterInstance && ZM.emitterInstance.lines.length > 0) {
             const firstLine = ZM.emitterInstance.lines[0];
-            console.log(`   ✓ Line params reference: ${firstLine.params === ZM.params ? 'SAME ✓' : 'DIFFERENT ✗'}`);
+            
           }
         }
         
@@ -571,8 +566,6 @@ export function initializeDisplaySync(ZM) {
             ZM.camera.distance = camData.distance;
             ZM.camera.offsetX = camData.offsetX;
             ZM.camera.offsetY = camData.offsetY;
-            
-            console.log(`📥 Syncing camera transition: progress=${(camData.transition.progress * 100).toFixed(1)}%`);
           } else {
             // Primary is NOT transitioning - snap to current values
             ZM.camera.rotationX = camData.rotationX;
@@ -614,7 +607,6 @@ export function initializeDisplaySync(ZM) {
             ZM.geometryScaleTransition.isTransitioning = true;
             
             if (!initialSyncReceived) {
-              console.log(`📊 Syncing geometry transition: ${trans.current.toFixed(1)} → ${trans.target.toFixed(1)} (${(trans.progress * 100).toFixed(1)}%)`);
             }
           } else {
             // Primary is NOT transitioning - snap to current value
@@ -742,7 +734,7 @@ export function initializeDisplaySync(ZM) {
 
         if (!initialSyncReceived) {
           initialSyncReceived = true;
-          console.log('✓ Initial sync complete');
+          
           resolve();
         }
 
@@ -761,12 +753,11 @@ export function initializeDisplaySync(ZM) {
         
         // Debug log for color transition duration changes
         if (changes.colorTransitionDuration !== undefined) {
-          console.log(`🎨 Color transition duration synced: ${changes.colorTransitionDuration}s (was: ${ZM.params.colorTransitionDuration}s)`);
         }
         
         // Re-initialize color RNG if seed changed (ensures all windows stay in sync)
         if (changes.colorRandomSeed !== undefined) {
-          console.log(`🎲 Color RNG seed synced: ${changes.colorRandomSeed}`);
+          
           initColorRNG(changes.colorRandomSeed);
         }
 
@@ -832,9 +823,8 @@ export function initializeDisplaySync(ZM) {
       // Always update palette if palette params changed (not transition-related)
       const paletteParams = ['activePaletteIndex', 'palettes', 'backgroundColor'];
       if (paletteParams.some(param => param in changes)) {
-        console.log(`🎨 Palette params changed:`, Object.keys(changes).filter(k => paletteParams.includes(k)));
         if (ZM.triggerPaletteChange && ZM.sketchReady) {
-          console.log(`   ✓ Triggering palette change on display window`);
+          
           ZM.triggerPaletteChange();
           
           // Update previousPaletteState to track this change
@@ -843,7 +833,7 @@ export function initializeDisplaySync(ZM) {
             palettes: JSON.stringify(ZM.params.palettes)
           };
         } else if (!ZM.sketchReady) {
-          console.log(`   ⚠️ Sketch not ready yet, palette change deferred`);
+          
         }
       }
       
@@ -879,11 +869,9 @@ export function initializeDisplaySync(ZM) {
               // Adjust baseVy proportionally to speed change
               line.baseVy *= speedRatio;
             }
-            console.log(`🏃 Updated ${ZM.emitterInstance.lines.length} line base speeds (${oldSpeed} → ${changes.speed})`);
           }
           // ambientSpeedMaster is applied dynamically in line.update(), no adjustment needed
           if ('ambientSpeedMaster' in changes) {
-            console.log(`🌍 Ambient speed master synced: ${changes.ambientSpeedMaster}% (affects ${ZM.emitterInstance.lines.length} lines)`);
           }
         }
       }
@@ -905,16 +893,14 @@ export function initializeDisplaySync(ZM) {
         // NEW: Handle state load - use same restoreState() logic as main window
         const { state, instant } = event.data;
         
-        console.log(`📥 Display window: Received state-load: ${state?.name} instant: ${instant}`);
-        console.log(`   State colorTransitionDuration: ${state?.params?.colorTransitionDuration}s`);
-        console.log(`   Current ZM.params.colorTransitionDuration: ${ZM.params.colorTransitionDuration}s`);
+        
+        
+        
         
         if (ZM.stateManager && ZM.stateManager.restoreState && state) {
-          console.log('📥 Display window: Calling restoreState()...');
           // Call the exact same restoreState function as main window
           // This ensures perfect synchronization of all transitions
           ZM.stateManager.restoreState(state, instant);
-          console.log('✅ Display window: restoreState() completed');
         }
       
       } else if (type === 'cancel-transitions') {
@@ -970,7 +956,7 @@ export function initializeDisplaySync(ZM) {
     };
 
     // Request initial state from primary window (retry until we get response)
-    console.log('📡 Requesting initial state from primary window...');
+    
     
     let retryCount = 0;
     const maxRetries = 20; // 20 retries = ~10 seconds
@@ -981,12 +967,11 @@ export function initializeDisplaySync(ZM) {
       }
       
       retryCount++;
-      console.log(`📡 Requesting state (attempt ${retryCount}/${maxRetries})...`);
       channel.postMessage({ type: 'display-ready' });
       
       if (retryCount >= maxRetries) {
         clearInterval(retryInterval);
-        console.error('❌ No response from primary window. Is the primary window open?');
+        
         reject(new Error('Primary window not responding'));
       }
     }, 500); // Retry every 500ms
@@ -997,7 +982,7 @@ export function initializeDisplaySync(ZM) {
       close: () => {
         clearInterval(retryInterval);
         channel.close();
-        console.log('🖥️ Display window sync closed');
+        
       },
       isPrimary: false
     };
@@ -1022,9 +1007,8 @@ export function openDisplayWindow() {
   );
 
   if (displayWindow) {
-    console.log(`🪟 Display window opened: ${displayId}`);
+    
   } else {
-    console.error('❌ Failed to open display window (popup blocked?)');
   }
 
   return displayWindow;

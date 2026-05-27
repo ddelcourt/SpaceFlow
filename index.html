@@ -39,21 +39,24 @@
 
   <!-- Top Bar Menu for Column Toggles -->
   <div class="controls-topbar">
-    <div class="controls-topbar-item" data-target="controls">
-      <span>Image Output</span>
+    <div class="controls-topbar-item" data-target="controls-right">
+      <span>Project Control</span>
     </div>
-    <div class="controls-topbar-item" data-target="controls-middle">
-      <span>About</span>
+    <div class="controls-topbar-item" data-target="controls-states">
+      <span>Project States</span>
     </div>
     <div class="controls-topbar-item" data-target="controls-state-params">
       <span>State Control</span>
     </div>
-    <div class="controls-topbar-item" data-target="controls-right">
-      <span>Project Control</span>
+    <div class="controls-topbar-item" data-target="controls-middle">
+      <span>About</span>
+    </div>
+    <div class="controls-topbar-item" data-target="controls">
+      <span>Image Output</span>
     </div>
   </div>
 
-  <div class="controls">
+  <div class="controls startup-visible">
 
     <!-- Display -->
     <div class="section">
@@ -64,7 +67,7 @@
       <div class="section-content">
         <div class="section-body">
           <!-- Display Window -->
-          <button id="open-display-window">Add Instance</button>
+          <button id="open-display-window">Add Monitor Instance</button>
         </div>
       </div>
     </div>
@@ -204,7 +207,7 @@
 
   </div><!-- /.controls -->
 
-  <div class="controls-middle">
+  <div class="controls-middle startup-visible">
 
     <!-- About / Help -->
     <div class="section">
@@ -253,7 +256,7 @@
 
   </div><!-- /.controls-middle -->
 
-  <div class="controls-state-params">
+  <div class="controls-state-params startup-visible">
 
     <!-- Geometry -->
     <div class="section">
@@ -489,7 +492,7 @@
 
   </div><!-- /.controls-state-params -->
 
-  <div class="controls-right">
+  <div class="controls-right startup-visible">
 
     <!-- Project -->
     <div class="section">
@@ -509,15 +512,6 @@
             <button id="save-json" style="flex:1;padding:10px;background:#1a3a1a;border:1px solid #2d5f2d;color:#aaffaa;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;border-radius:4px;cursor:pointer;">Save</button>
             <button id="load-json" style="flex:1;padding:10px;background:#1a1a3a;border:1px solid #2d2d5f;color:#aaaaff;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;border-radius:4px;cursor:pointer;">Load</button>
             <input type="file" id="load-json-input" accept=".json" style="display:none;">
-          </div>
-          
-          <!-- Export Format -->
-          <div style="margin-top:12px;padding:10px;background:#1a1a1a;border:1px solid #333;">
-            <label style="display:block;font-size:0.7rem;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Export Format</label>
-            <select id="export-format" style="width:100%;padding:8px;background:#0a0a0a;border:1px solid #333;color:#ccc;font-size:0.75rem;font-family:inherit;cursor:pointer;">
-              <option value="project">Project (full v2.0 with states)</option>
-              <option value="states">States Files (individual JSON files)</option>
-            </select>
           </div>
           
 
@@ -620,13 +614,17 @@
       </div>
     </div>
 
+  </div><!-- /.controls-right -->
+
+  <div class="controls-states startup-visible">
+
     <!-- States -->
     <div class="section">
-      <div class="section-header" data-section="states">
+      <div class="section-header active" data-section="states">
         <span class="section-title">States</span>
         <span class="section-toggle">▼</span>
       </div>
-      <div class="section-content">
+      <div class="section-content expanded">
         <div class="section-body">
           <!-- State Management -->
           <div class="state-panel">
@@ -650,7 +648,7 @@
       </div>
     </div>
 
-  </div><!-- /.controls-right -->
+  </div><!-- /.controls-states -->
 
   <div id="canvas-container">
     <div id="canvas-wrapper"></div>

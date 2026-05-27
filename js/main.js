@@ -449,8 +449,9 @@ async function init() {
   // Setup control panel visibility and top bar toggles
   const controlsLeft = document.querySelector('.controls');
   const controlsMiddle = document.querySelector('.controls-middle');
+  const controlsStates = document.querySelector('.controls-states');
   const controlsStateParams = document.querySelector('.controls-state-params');
-  const controlPanels = [controlsLeft, controlsMiddle, controlsStateParams, controlsRight];
+  const controlPanels = [controlsLeft, controlsMiddle, controlsStates, controlsStateParams, controlsRight];
   
   // Keep control panels fully visible and expanded for 10 seconds at startup
   controlPanels.forEach(panel => {

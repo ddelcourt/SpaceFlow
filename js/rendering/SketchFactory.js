@@ -245,21 +245,10 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
       // Primary canvas only: Auto-trigger random state switching (only on primary canvas AND not in display mode)
         // Each trigger loads a TRULY RANDOM state (excluding current) - no sequence or pattern
         if (isPrimary && !ZM.isDisplayMode && ZM.params.autoTriggerStates && ZM.stateManager && ZM.stateManager.states.length > 1) {
-          // Debug on frame 600 (10 seconds)
-          if (p.frameCount === 600) {
-            console.log('🔄 Auto-trigger status check:');
-            console.log('  - autoTriggerStates:', ZM.params.autoTriggerStates);
-            console.log('  - states count:', ZM.stateManager.states.length);
-            console.log('  - autoTriggerTimer:', ZM.autoTriggerTimer);
-            console.log('  - frequency:', ZM.params.autoTriggerFrequency);
-            console.log('  - loadRandomState exists:', typeof ZM.stateManager.loadRandomState);
-          }
-          
           // Only increment timer if not paused
           if (!ZM.autoTriggerTimer.paused) {
             ZM.autoTriggerTimer.elapsed += dt;
             if (ZM.autoTriggerTimer.elapsed >= ZM.params.autoTriggerFrequency) {
-              console.log('⏰ Auto-trigger fired! Loading random state...');
               ZM.autoTriggerTimer.elapsed = 0;
               ZM.stateManager.loadRandomState(); // Fresh random selection each time
             }
@@ -292,23 +281,6 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
       // Apply geometry scale (use transition value)
       const scaleVal = ZM.geometryScaleTransition.current / 100;
       p.scale(scaleVal);
-      
-      // Debug: log drawing on frame 120
-      if (p.frameCount === 120 && isPrimary) {
-        console.log('🖌️ About to draw lines');
-        console.log('  - Total lines:', emitter.lines.length);
-        console.log('  - Camera distance:', ZM.camera.distance);
-        console.log('  - Camera rotation:', ZM.camera.rotationX, ZM.camera.rotationY);
-        console.log('  - Geometry scale:', scaleVal);
-        if (emitter.lines.length > 0) {
-          const firstLine = emitter.lines[0];
-          console.log('  - First line color:', firstLine.lineColor);
-          console.log('  - First line position:', firstLine.x, firstLine.y);
-          console.log('  - First line thickness:', firstLine.lineThickness);
-          console.log('  - First line alive:', firstLine.alive);
-          console.log('  - First line segments:', firstLine.segments.length);
-        }
-      }
       
       emitter.lines.forEach(line => line.draw(p, ZM));
     };
