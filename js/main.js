@@ -444,18 +444,76 @@ async function init() {
     });
   }
   
-  // Keep control panels fully visible for 10 seconds at startup
+  // Setup control panel visibility and top bar toggles
   const controlsLeft = document.querySelector('.controls');
   const controlsMiddle = document.querySelector('.controls-middle');
-  if (controlsLeft) controlsLeft.classList.add('startup-visible');
-  if (controlsMiddle) controlsMiddle.classList.add('startup-visible');
-  if (controlsRight) controlsRight.classList.add('startup-visible');
+  const controlsStateParams = document.querySelector('.controls-state-params');
+  const controlPanels = [controlsLeft, controlsMiddle, controlsStateParams, controlsRight];
+  
+  // Keep control panels fully visible and expanded for 10 seconds at startup
+  controlPanels.forEach(panel => {
+    if (panel) panel.classList.add('startup-visible');
+  });
   
   setTimeout(() => {
-    if (controlsLeft) controlsLeft.classList.remove('startup-visible');
-    if (controlsMiddle) controlsMiddle.classList.remove('startup-visible');
-    if (controlsRight) controlsRight.classList.remove('startup-visible');
+    // After 10 seconds, remove startup-visible and collapse all panels
+    controlPanels.forEach(panel => {
+      if (panel) {
+        panel.classList.remove('startup-visible');
+        panel.classList.add('hidden');
+      }
+    });
+    // Update top bar active states
+    document.querySelectorAll('.controls-topbar-item').forEach(item => {
+      item.classList.remove('active');
+    });
   }, 10000);
+  
+  // Setup top bar toggle functionality
+  document.querySelectorAll('.controls-topbar-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const targetClass = item.dataset.target;
+      const targetPanel = document.querySelector(`.${targetClass}`);
+      
+      if (targetPanel) {
+        const isHidden = targetPanel.classList.contains('hidden');
+        targetPanel.classList.toggle('hidden');
+        item.classList.toggle('active', isHidden); // active when visible
+        
+        // When showing a panel, briefly set it to full opacity
+        if (isHidden) {
+          targetPanel.classList.add('topbar-hovered');
+          setTimeout(() => {
+            targetPanel.classList.remove('topbar-hovered');
+          }, 1500); // Keep full opacity for 1.5 seconds after opening
+        }
+      }
+    });
+  });
+  
+  // Initialize top bar active states (all visible at start)
+  document.querySelectorAll('.controls-topbar-item').forEach(item => {
+    item.classList.add('active');
+  });
+  
+  // Setup top bar hover to show corresponding panel at full opacity
+  document.querySelectorAll('.controls-topbar-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      const targetClass = item.dataset.target;
+      const targetPanel = document.querySelector(`.${targetClass}`);
+      if (targetPanel && !targetPanel.classList.contains('hidden')) {
+        targetPanel.classList.add('topbar-hovered');
+      }
+    });
+    
+    item.addEventListener('mouseleave', () => {
+      const targetClass = item.dataset.target;
+      const targetPanel = document.querySelector(`.${targetClass}`);
+      if (targetPanel) {
+        targetPanel.classList.remove('topbar-hovered');
+      }
+    });
+  });
   
   // Setup cursor auto-hide in fullscreen
   let cursorTimeout = null;

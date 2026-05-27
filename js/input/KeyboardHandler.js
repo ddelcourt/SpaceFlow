@@ -77,9 +77,8 @@ function executeAction(action, ZM) {
   const actions = {
     // UI Navigation
     toggleControls: () => {
-      document.querySelector('.controls').classList.toggle('hidden');
-      document.querySelector('.controls-middle').classList.toggle('hidden');
-      document.querySelector('.controls-right').classList.toggle('hidden');
+      // Toggle global UI visibility (affects all panels + top bar)
+      document.body.classList.toggle('global-ui-hidden');
       document.body.classList.toggle('ui-hidden');
     },
     
@@ -380,7 +379,7 @@ function getToggleSuffix(action, ZM) {
         ? ` — ON (${ZM.params.framebufferWidth}×${ZM.params.framebufferHeight})`
         : off;
     case 'toggleControls':
-      return document.querySelector('.controls')?.classList.contains('hidden') ? off : on;
+      return document.body.classList.contains('global-ui-hidden') ? off : on;
     case 'toggleFullscreen':
       // requestFullscreen is async — fullscreenElement still reflects the OLD state here, so invert
       return (document.fullscreenElement || document.webkitFullscreenElement) ? off : on;

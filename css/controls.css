@@ -3,9 +3,88 @@
    All UI control elements, sliders, buttons, sections
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Top Bar Menu for Column Toggles */
+.controls-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Hide top bar when global UI is hidden */
+body.global-ui-hidden .controls-topbar {
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.controls-topbar-item {
+  position: absolute;
+  top: 0;
+  width: 300px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease, border 0.2s ease;
+  pointer-events: auto;
+  outline: none;
+  user-select: none;
+  border-top: 2px solid transparent;
+}
+
+/* Position each item to align with its column */
+.controls-topbar-item[data-target="controls"] {
+  left: 0;
+}
+
+.controls-topbar-item[data-target="controls-middle"] {
+  left: 300px;
+}
+
+.controls-topbar-item[data-target="controls-state-params"] {
+  right: 300px;
+}
+
+.controls-topbar-item[data-target="controls-right"] {
+  right: 0;
+}
+
+.controls-topbar-item:hover {
+  border-top: 2px solid #17185f;
+}
+
+.controls-topbar-item:active {
+  border-top: 2px solid #2e58ffaa;
+}
+
+.controls-topbar-item.active {
+  color: #fff;
+  background: rgba(10, 10, 10, 0.25);
+  backdrop-filter: blur(10px);
+}
+
+/* Adjust control panels height */
+.controls,
+.controls-middle,
+.controls-state-params,
+.controls-right {
+  max-height: 100vh;
+}
+
 /* Shared styles for all control panels */
 .controls,
 .controls-middle,
+.controls-state-params,
 .controls-right {
   display: flex;
   flex-direction: column;
@@ -15,7 +94,7 @@
   background: rgba(10, 10, 10, 0.25);
   backdrop-filter: blur(10px);
   padding: 20px;
-  max-height: 100vh;
+  padding-top: 60px;
   overflow-y: auto;
   transition: transform 0.3s ease, opacity 0.3s ease;
   position: fixed;
@@ -23,25 +102,20 @@
   z-index: 10;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  opacity: 1;
+}
+
+/* Reduced opacity after startup when not hovered */
+.controls:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
+.controls-middle:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
+.controls-state-params:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
+.controls-right:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered) {
   opacity: 0.24;
-}
-
-/* Full opacity on hover */
-.controls:hover,
-.controls-middle:hover,
-.controls-right:hover {
-  opacity: 1;
-}
-
-/* Full opacity at startup (first 10 seconds) */
-.controls.startup-visible,
-.controls-middle.startup-visible,
-.controls-right.startup-visible {
-  opacity: 1;
 }
 
 .controls::-webkit-scrollbar,
 .controls-middle::-webkit-scrollbar,
+.controls-state-params::-webkit-scrollbar,
 .controls-right::-webkit-scrollbar {
   display: none;
 }
@@ -53,31 +127,68 @@
 }
 
 .controls.hidden {
-  transform: translateX(-100%);
+  transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
 }
 
-/* Middle panel positioning - State-specific parameters on the right, left of Project panel */
+/* Global UI hidden - hide all panels regardless of individual state */
+body.global-ui-hidden .controls {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Left-middle panel positioning - Documentation */
 .controls-middle {
+  left: 300px;
+  border-right: 1px solid rgba(34, 34, 34, 0.3);
+}
+
+.controls-middle.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.global-ui-hidden .controls-middle {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Right-middle panel positioning - State-specific parameters */
+.controls-state-params {
   right: 300px;
   border-left: 1px solid rgba(34, 34, 34, 0.3);
 }
 
-.controls-middle.hidden {
-  transform: translateX(100%);
+.controls-state-params.hidden {
+  transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
 }
 
-/* Right panel positioning */
+body.global-ui-hidden .controls-state-params {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Right panel positioning - Project management */
 .controls-right {
   right: 0;
   border-left: 1px solid rgba(34, 34, 34, 0.3);
 }
 
 .controls-right.hidden {
-  transform: translateX(100%);
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.global-ui-hidden .controls-right {
+  transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
 }
@@ -383,6 +494,26 @@ input[type="range"]:disabled::-moz-range-thumb:hover {
 
 .depth-settings label {
   color: #5a8a6a;
+}
+
+/* ── Display Window / Add Instance button ── */
+#open-display-window {
+  width: 100%;
+  padding: 10px;
+  background: #2c489c;
+  border: 1px solid #26329d;
+  color: #aaccff;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#open-display-window:hover {
+  background: #3555b0;
+  transform: scale(1.02);
 }
 
 /* ── About/Documentation buttons ── */

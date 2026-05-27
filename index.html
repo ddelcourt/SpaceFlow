@@ -37,6 +37,22 @@
 </head>
 <body>
 
+  <!-- Top Bar Menu for Column Toggles -->
+  <div class="controls-topbar">
+    <div class="controls-topbar-item" data-target="controls">
+      <span>Image Output</span>
+    </div>
+    <div class="controls-topbar-item" data-target="controls-middle">
+      <span>About</span>
+    </div>
+    <div class="controls-topbar-item" data-target="controls-state-params">
+      <span>State Control</span>
+    </div>
+    <div class="controls-topbar-item" data-target="controls-right">
+      <span>Project Control</span>
+    </div>
+  </div>
+
   <div class="controls">
 
     <!-- Display -->
@@ -48,7 +64,7 @@
       <div class="section-content">
         <div class="section-body">
           <!-- Display Window -->
-          <button id="open-display-window" style="width:100%;padding:10px;background:#3a1a3a;border:1px solid #5f2d5f;color:#ffaaff;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;border-radius:4px;cursor:pointer;">Add Instance</button>
+          <button id="open-display-window">Add Instance</button>
         </div>
       </div>
     </div>
@@ -186,6 +202,10 @@
       </div>
     </div>
 
+  </div><!-- /.controls -->
+
+  <div class="controls-middle">
+
     <!-- About / Help -->
     <div class="section">
       <div class="section-header" data-section="about">
@@ -231,9 +251,9 @@
       </div>
     </div>
 
-  </div><!-- /.controls -->
+  </div><!-- /.controls-middle -->
 
-  <div class="controls-middle">
+  <div class="controls-state-params">
 
     <!-- Geometry -->
     <div class="section">
@@ -467,7 +487,7 @@
       </div>
     </div>
 
-  </div><!-- /.controls-middle -->
+  </div><!-- /.controls-state-params -->
 
   <div class="controls-right">
 

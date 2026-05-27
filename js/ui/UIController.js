@@ -1808,7 +1808,25 @@ function updateStatePanel(ZM) {
       if (e.target.closest('.state-action-btn')) return;
       if (e.target.closest('.state-drag-handle')) return;
       if (e.target.closest('.state-name.editing')) return;
-      ZM.stateManager.load(stateId);
+      
+      // If clicking directly on state name, delay to allow double-click to work
+      if (e.target.closest('.state-name')) {
+        const nameElement = e.target.closest('.state-name');
+        // Clear any existing timer
+        if (nameElement._clickTimer) {
+          clearTimeout(nameElement._clickTimer);
+          nameElement._clickTimer = null;
+          return; // This is the second click of a double-click
+        }
+        // Set a timer for single-click action
+        nameElement._clickTimer = setTimeout(() => {
+          nameElement._clickTimer = null;
+          ZM.stateManager.load(stateId);
+        }, 250); // 250ms delay to detect double-click
+      } else {
+        // Clicking elsewhere on the item loads immediately
+        ZM.stateManager.load(stateId);
+      }
     });
     
     // Inline editing for state name - double-click to rename
