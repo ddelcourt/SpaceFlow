@@ -1,81 +1,97 @@
-# Zigzag Emitter — Technical documentation
+# SpaceFlow Framework — Technical Documentation
 ddelcourt2026
 
 Version 26 — Code architecture and implementation guide
 
-Codebase structure, architecture patterns, and implementation details.
+**SpaceFlow** is a modular framework for real-time 3D generative art. This document covers the framework architecture and the current patch implementation.
+
+🎭 **Current Patch:** Zigzag Emitter (animated 3D ribbon patterns)
+
+🔗 **Framework Architecture:** See [SPACEFLOW-ARCHITECTURE.md](SPACEFLOW-ARCHITECTURE.md) for complete framework design
 
 ---
 
 ## Parameter Reference
 
-Complete list of all configurable parameters in the `params` object:
+Complete list of all configurable parameters in the `params` object.
 
-| Parameter | Variable | Description |
-|-----------|----------|-------------|
-| **Geometry** |||
-| Segment Length | `segmentLength` | Height of each zigzag segment in pixels |
-| Line Thickness | `lineThickness` | Width of the ribbon in pixels |
-| Emitter Rotation | `emitterRotation` | Z-axis rotation of the emitter in degrees |
-| Geometry Scale | `geometryScale` | Uniform scale multiplier in percentage (100 = normal) |
-| Fade Duration | `fadeDuration` | Fade-in/fade-out transition duration in seconds |
-| **Color Palettes** |||
-| Palettes | `palettes` | Array of 4 palettes, each containing 4 colors with RGB values and role |
-| Active Palette Index | `activePaletteIndex` | Currently selected palette (0-3) |
-| Color Transition Duration | `colorTransitionDuration` | Time in seconds for palette switch transitions |
-| State Transition Duration | `stateTransitionDuration` | Time in seconds for geometry, behavior, camera, and modulation transitions |
-| Color Slot Z-Offset | `colorSlotZOffset` | Z-axis separation multiplier per color slot to prevent z-fighting |
-| Color Random Seed | `colorRandomSeed` | Seed for deterministic color selection (1-9999) |
-| **State Auto-Trigger** |||
-| Auto-Trigger States | `autoTriggerStates` | Enable automatic state changes at specified intervals |
-| Auto-Trigger Frequency | `autoTriggerFrequency` | Time in seconds between automatic state changes (5-240) |
-| **Animation** |||
-| Emit Rate | `emitRate` | Number of lines spawned per second |
-| Speed | `speed` | Base movement speed of lines in pixels per second |
-| Ambient Speed Master | `ambientSpeedMaster` | Global speed multiplier in percentage |
-| **Modulation** |||
-| Random Thickness | `randomThickness` | Enable thickness variation for each line |
-| Random Speed | `randomSpeed` | Enable speed variation for each line |
-| Thickness Range Min | `thicknessRangeMin` | Minimum thickness multiplier in percentage |
-| Thickness Range Max | `thicknessRangeMax` | Maximum thickness multiplier in percentage |
-| Speed Range Min | `speedRangeMin` | Minimum speed multiplier in percentage |
-| Speed Range Max | `speedRangeMax` | Maximum speed multiplier in percentage |
-| **Camera** |||
-| Field of View | `fov` | Camera field of view in degrees |
-| Near Clipping Plane | `near` | Near clipping distance (0.01) |
-| Far Clipping Plane | `far` | Far clipping distance (5000) |
-| Camera Rotation X | `cameraRotationX` | X-axis rotation (pitch) in radians |
-| Camera Rotation Y | `cameraRotationY` | Y-axis rotation (yaw) in radians |
-| Camera Distance | `cameraDistance` | Distance from origin (zoom) |
-| Camera Offset X | `cameraOffsetX` | Horizontal pan offset |
-| Camera Offset Y | `cameraOffsetY` | Vertical pan offset |
-| **Stereoscopic** |||
-| Stereoscopic Mode | `stereoscopicMode` | Enable dual-camera side-by-side stereo rendering |
-| Eye Separation | `eyeSeparation` | Distance between left and right cameras |
-| **Framebuffer** |||
-| Framebuffer Mode | `framebufferMode` | Lock canvas to fixed resolution independent of window size |
-| Framebuffer Preset | `framebufferPreset` | Resolution preset name (e.g., '1920x1080') |
-| Framebuffer Width | `framebufferWidth` | Canvas width in pixels when framebuffer mode is active |
-| Framebuffer Height | `framebufferHeight` | Canvas height in pixels when framebuffer mode is active |
-| Canvas Border Visible | `canvasBorderVisible` | Show/hide canvas border |
-| Canvas Border Color | `canvasBorderColor` | Border color in hex format (e.g., '#adff2f') |
-| **Video Export** |||
-| Video Duration | `videoDuration` | Recording length in seconds |
-| Video FPS | `videoFPS` | Recording frame rate (frames per second) |
-| Video Format | `videoFormat` | Video codec format (e.g., 'webm') |
-| **Depth Map Export** |||
-| Depth Invert | `depthInvert` | Invert depth map colors (white=far, black=near) |
-| **Overlay Image** |||
-| Overlay Image Source | `overlayImageSrc` | Source URL or data URL of the overlay image |
-| Overlay Preset File | `overlayPresetFile` | Filename of selected preset overlay |
-| Overlay Custom Filename | `overlayCustomFilename` | Name of custom uploaded overlay file |
-| Overlay Custom Image Source | `overlayCustomImageSrc` | Source data URL of custom uploaded overlay |
-| Overlay Visible | `overlayVisible` | Show/hide overlay on canvas |
-| Overlay Auto-Fit | `overlayAutoFit` | Automatically fit overlay to canvas dimensions |
-| Overlay Scale | `overlayScale` | Overlay size multiplier in percentage |
-| Overlay Opacity | `overlayOpacity` | Overlay transparency in percentage (0-100) |
-| Overlay X | `overlayX` | Horizontal position in percentage (0-100) |
-| Overlay Y | `overlayY` | Vertical position in percentage (0-100) |
+### Framework Parameters (Universal)
+
+These parameters exist in **all patches**:
+
+| Parameter | Variable | Scope | Description |
+|-----------|----------|-------|-------------|
+| **Color Palettes** ||||
+| Palettes | `palettes` | Framework | Array of 4 palettes, each containing 4 colors with RGB values and role |
+| Active Palette Index | `activePaletteIndex` | Framework | Currently selected palette (0-3) |
+| Color Transition Duration | `colorTransitionDuration` | Framework | Time in seconds for palette switch transitions |
+| State Transition Duration | `stateTransitionDuration` | Framework | Time in seconds for geometry, behavior, camera, and modulation transitions |
+| **State Auto-Trigger** ||||
+| Auto-Trigger States | `autoTriggerStates` | Framework | Enable automatic state changes at specified intervals |
+| Auto-Trigger Frequency | `autoTriggerFrequency` | Framework | Time in seconds between automatic state changes (5-240) |
+| **Animation (Global)** ||||
+| Ambient Speed Master | `ambientSpeedMaster` | Framework | Global speed multiplier in percentage (affects all patches) |
+| **Camera** ||||
+| Field of View | `fov` | Framework | Camera field of view in degrees |
+| Near Clipping Plane | `near` | Framework | Near clipping distance (0.01) |
+| Far Clipping Plane | `far` | Framework | Far clipping distance (5000) |
+| Camera Rotation X | `cameraRotationX` | Framework | X-axis rotation (pitch) in radians |
+| Camera Rotation Y | `cameraRotationY` | Framework | Y-axis rotation (yaw) in radians |
+| Camera Distance | `cameraDistance` | Framework | Distance from origin (zoom) |
+| Camera Offset X | `cameraOffsetX` | Framework | Horizontal pan offset |
+| Camera Offset Y | `cameraOffsetY` | Framework | Vertical pan offset |
+| **Stereoscopic** ||||
+| Stereoscopic Mode | `stereoscopicMode` | Framework | Enable dual-camera side-by-side stereo rendering |
+| Eye Separation | `eyeSeparation` | Framework | Distance between left and right cameras |
+| **Framebuffer** ||||
+| Framebuffer Mode | `framebufferMode` | Framework | Lock canvas to fixed resolution independent of window size |
+| Framebuffer Preset | `framebufferPreset` | Framework | Resolution preset name (e.g., '1920x1080') |
+| Framebuffer Width | `framebufferWidth` | Framework | Canvas width in pixels when framebuffer mode is active |
+| Framebuffer Height | `framebufferHeight` | Framework | Canvas height in pixels when framebuffer mode is active |
+| Canvas Border Visible | `canvasBorderVisible` | Framework | Show/hide canvas border |
+| Canvas Border Color | `canvasBorderColor` | Framework | Border color in hex format (e.g., '#adff2f') |
+| **Video Export** ||||
+| Video Duration | `videoDuration` | Framework | Recording length in seconds |
+| Video FPS | `videoFPS` | Framework | Recording frame rate (frames per second) |
+| Video Format | `videoFormat` | Framework | Video codec format (e.g., 'webm') |
+| **Depth Map Export** ||||
+| Depth Invert | `depthInvert` | Framework | Invert depth map colors (white=far, black=near) |
+| **Overlay Image** ||||
+| Overlay Image Source | `overlayImageSrc` | Framework | Source URL or data URL of the overlay image |
+| Overlay Preset File | `overlayPresetFile` | Framework | Filename of selected preset overlay |
+| Overlay Custom Filename | `overlayCustomFilename` | Framework | Name of custom uploaded overlay file |
+| Overlay Custom Image Source | `overlayCustomImageSrc` | Framework | Source data URL of custom uploaded overlay |
+| Overlay Visible | `overlayVisible` | Framework | Show/hide overlay on canvas |
+| Overlay Auto-Fit | `overlayAutoFit` | Framework | Automatically fit overlay to canvas dimensions |
+| Overlay Scale | `overlayScale` | Framework | Overlay size multiplier in percentage |
+| Overlay Opacity | `overlayOpacity` | Framework | Overlay transparency in percentage (0-100) |
+| Overlay X | `overlayX` | Framework | Horizontal position in percentage (0-100) |
+| Overlay Y | `overlayY` | Framework | Vertical position in percentage (0-100) |
+
+### Patch Parameters (Zigzag-Specific)
+
+These parameters are **specific to the Zigzag Emitter patch**:
+
+| Parameter | Variable | Scope | Description |
+|-----------|----------|-------|-------------|
+| **Geometry** ||||
+| Segment Length | `segmentLength` | Patch | Height of each zigzag segment in pixels |
+| Line Thickness | `lineThickness` | Patch | Width of the ribbon in pixels |
+| Emitter Rotation | `emitterRotation` | Patch | Z-axis rotation of the emitter in degrees |
+| Geometry Scale | `geometryScale` | Patch | Uniform scale multiplier in percentage (100 = normal) |
+| Fade Duration | `fadeDuration` | Patch | Fade-in/fade-out transition duration in seconds |
+| Color Slot Z-Offset | `colorSlotZOffset` | Patch | Z-axis separation multiplier per color slot to prevent z-fighting |
+| Color Random Seed | `colorRandomSeed` | Patch | Seed for deterministic color selection (1-9999) |
+| **Animation** ||||
+| Emit Rate | `emitRate` | Patch | Number of lines spawned per second |
+| Speed | `speed` | Patch | Base movement speed of lines in pixels per second |
+| **Modulation** ||||
+| Random Thickness | `randomThickness` | Patch | Enable thickness variation for each line |
+| Random Speed | `randomSpeed` | Patch | Enable speed variation for each line |
+| Thickness Range Min | `thicknessRangeMin` | Patch | Minimum thickness multiplier in percentage |
+| Thickness Range Max | `thicknessRangeMax` | Patch | Maximum thickness multiplier in percentage |
+| Speed Range Min | `speedRangeMin` | Patch | Minimum speed multiplier in percentage |
+| Speed Range Max | `speedRangeMax` | Patch | Maximum speed multiplier in percentage |
 
 ---
 
@@ -102,7 +118,70 @@ Complete list of all configurable parameters in the `params` object:
 
 ## Architecture Overview
 
-The Zigzag Emitter follows a **modular ES6 architecture** with clear separation of concerns through dedicated files for each major component. The application is structured as follows:
+**SpaceFlow** uses a **three-layer modular architecture** separating the framework (universal systems) from patches (visual algorithms).
+
+### Three-Layer Design
+
+```mermaid
+graph TB
+    subgraph Framework["SPACEFLOW FRAMEWORK (Universal Systems)"]
+        Camera["Camera System"]
+        Colors["Color Palette System"]
+        Export["Export System"]
+        Storage["Storage System"]
+        Sync["Window Sync"]
+        UI["UI Shell"]
+        Overlay["Overlay System"]
+    end
+    
+    subgraph Interface["PATCH INTERFACE (API Contract)"]
+        Setup["setup(config)"]
+        Update["update(dt, params)"]
+        Draw["draw(p, camera, params)"]
+        Manifest["getManifest()"]
+        Geometry["getGeometry()"]
+    end
+    
+    subgraph Patches["PATCH: ZIGZAG EMITTER"]
+        ZigzagPatch["ZigzagEmitterPatch"]
+        Emitter["Emitter (Line management)"]
+        ZigzagLine["ZigzagLine (Geometry)"]
+    end
+    
+    Framework <--> Interface
+    Interface <--> Patches
+    
+    style Framework fill:#2d3748,stroke:#4299e1,color:#fff
+    style Interface fill:#1a365d,stroke:#63b3ed,color:#fff
+    style Patches fill:#2c5282,stroke:#90cdf4,color:#fff
+```
+
+### Current Implementation
+
+The codebase currently implements:
+
+**✅ Framework Layer (Universal)**
+- 🎥 Camera System (Camera.js, Projection.js)
+- 🎨 Color Palette System (colorUtils.js)
+- 💾 Storage System (StateManager.js, localStorage.js)
+- 📤 Export System (SVGExporter.js, PNGExporter.js, DepthExporter.js, VideoRecorder.js)
+- 🔗 Window Sync (WindowSync.js)
+- 🏛️ UI Shell (UIController.js)
+- 🖼️ Overlay System (overlay parameters)
+
+**✅ Patch Layer (Zigzag Implementation)**
+- Emitter.js (line emission and management)
+- ZigzagLine.js (ribbon geometry and rendering)
+- Zigzag-specific parameters (segmentLength, lineThickness, emitRate, speed)
+
+**🚧 In Progress**
+- Formal patch interface (standardizing API contract)
+- Dynamic parameter system (manifest-driven UI generation)
+- Patch hot-swapping capability
+
+See [SPACEFLOW-ARCHITECTURE.md](SPACEFLOW-ARCHITECTURE.md) for the complete vision and migration strategy.
+
+### Module Dependencies
 
 ```mermaid
 graph TB
@@ -117,35 +196,40 @@ graph TB
         
         Config["Configuration Layer<br/>• constants.js (System constants)<br/>• defaults.js (Default parameters)"]
         
-        Config --> Core
+        Config --> FrameworkCore
+        Config --> PatchCore
         
-        Core["Core Classes<br/>• ZigzagLine (Line geometry)<br/>• Emitter (Line management)<br/>• Camera (Position & projection)<br/>• Projection (Matrix transforms)"]
+        FrameworkCore["Framework Core<br/>• Camera (Framework)<br/>• Projection (Framework)<br/>• colorUtils (Framework)<br/>• utils (Shared)"]
         
-        Core --> Render
+        PatchCore["Patch Core (Zigzag)<br/>• Emitter (Patch)<br/>• ZigzagLine (Patch)"]
         
-        Render["Rendering Layer<br/>• SketchFactory (p5.js instances)"]
+        FrameworkCore --> Render
+        PatchCore --> Render
+        
+        Render["Rendering Layer<br/>• SketchFactory (p5.js integration)"]
         
         Render --> Export
         
-        Export["Export System<br/>• PNGExporter (Composite canvas)<br/>• SVGExporter (Vector export)<br/>• DepthExporter (Depth maps)<br/>• VideoRecorder (CCapture.js)"]
+        Export["Export System (Framework)<br/>• PNGExporter<br/>• SVGExporter<br/>• DepthExporter<br/>• VideoRecorder"]
         
         Export --> Storage
         
-        Storage["Storage & State Layer<br/>• StateManager (Capture/restore)<br/>• localStorage (Persistence)"]
+        Storage["Storage & State Layer (Framework)<br/>• StateManager (Capture/restore)<br/>• localStorage (Persistence)"]
         
         Storage --> Input
         
-        Input["Input Handlers<br/>• KeyboardHandler (Shortcuts)<br/>• MouseHandler (Orbit controls)"]
+        Input["Input Handlers (Framework)<br/>• KeyboardHandler (Shortcuts)<br/>• MouseHandler (Orbit controls)"]
         
         Input --> UI
         
-        UI["UI Layer<br/>• UIController (Control wiring)"]
+        UI["UI Layer (Framework)<br/>• UIController (Control wiring)"]
     end
     
     style HTML fill:#2d3748,stroke:#4299e1,color:#fff
     style JS fill:#1a202c,stroke:#4299e1,color:#fff
     style Main fill:#2c5282,stroke:#90cdf4,color:#fff
-    style Core fill:#2c5282,stroke:#90cdf4,color:#fff
+    style FrameworkCore fill:#1a365d,stroke:#63b3ed,color:#fff
+    style PatchCore fill:#2c5282,stroke:#90cdf4,color:#fff
     style Export fill:#22543d,stroke:#68d391,color:#fff
 ```
 
@@ -2640,6 +2724,10 @@ mouseWheel: camera.distance = 720
 3. **Performance:** Profile frame timing
 4. **Application → Local Storage:** View `zigmap26Settings`
 5. **Elements:** Inspect canvas dimensions and classes
+
+**Console Commands:**
+
+For a complete list of debugging commands and global API functions, see **[Console Commands Reference](Console-Commands.md)**.
 
 ---
 

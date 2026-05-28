@@ -6,7 +6,11 @@ ddelcourt2026 / March 2026
 
 ## Overview
 
-Real-time generative tool producing animated zigzag patterns in 3D space. Features camera controls, stereoscopic viewing, state management, and 2D vector export.
+**SpaceFlow** is a modular framework for real-time 3D generative art with camera controls, stereoscopic viewing, state management, and vector export.
+
+**Current patch:** Zigzag Emitter — animated ribbon patterns in 3D space.
+
+SpaceFlow is designed as a universal framework that can load different visual algorithms (patches) while providing consistent camera, color, export, and state management systems.
 
 ---
 
@@ -483,6 +487,11 @@ Parameters are automatically saved to localStorage on every change. At first lau
 
 ## Technical reference
 
+### Console Commands
+
+For advanced control, debugging, and automation, see:
+- **[Console Commands Reference](docs/English/Console-Commands.md)** — Complete list of browser console commands and global API functions
+
 ### Project structure
 
 ```
@@ -491,11 +500,13 @@ Parameters are automatically saved to localStorage on every change. At first lau
 ├── css/                    Style sheets
 ├── js/                     JavaScript modules
 │   ├── main.js            Entry point
-│   ├── core/              Core classes (Emitter, ZigzagLine, Camera, Projection)
+│   ├── core/              Framework core (Camera, Projection, utils)
+│   │                      + Current patch: Zigzag (Emitter, ZigzagLine)
 │   ├── ui/                UI controllers
 │   ├── storage/           State and localStorage management
 │   ├── input/             Mouse and keyboard handlers
 │   ├── export/            PNG, SVG, depth map, video exporters
+│   ├── rendering/         SketchFactory (p5.js integration)
 │   └── config/            Constants and defaults
 ├── config/                Configuration files
 │   ├── appInfo.json       App metadata
@@ -518,10 +529,15 @@ Vanilla JavaScript (ES6 modules) with p5.js for WebGL rendering.
 - CCapture.js v1.1.0 (video capture)
 
 **Architecture:**
-- Modular ES6 classes in separate files
-- State management via localStorage
-- Event-driven UI updates
-- CPU-based projection for SVG and depth map exports
+- **Framework-first design**: Universal systems (camera, colors, export, storage) independent of visual algorithm
+- **Patch system**: Current implementation is the Zigzag Emitter patch
+- **Modular ES6**: Separate files for each component
+- **State management**: Complete snapshots via localStorage
+- **CPU-based projection**: Enables SVG and depth map exports
+
+**See also:**
+- **[SpaceFlow Architecture](docs/English/SPACEFLOW-ARCHITECTURE.md)** — Complete framework design and decoupling strategy
+- **[Patch System](docs/English/PATCH-SYSTEM.md)** — How patches integrate with the framework
 
 ### Troubleshooting
 

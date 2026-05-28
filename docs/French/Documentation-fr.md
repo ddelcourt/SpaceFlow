@@ -1,9 +1,13 @@
-# Émetteur Zigzag - Documentation Technique
+# SpaceFlow Framework — Documentation Technique
 ddelcourt2026
 
 **Version 26** - Architecture du Code & Guide d'Implémentation
 
-Ce document fournit une vue d'ensemble complète de la structure du code, des modèles d'architecture et des détails d'implémentation pour les développeurs qui souhaitent comprendre, modifier ou étendre l'Émetteur Zigzag.
+**SpaceFlow** est un framework modulaire pour l'art génératif 3D en temps réel. Ce document couvre l'architecture du framework et l'implémentation du patch actuel.
+
+🎭 **Patch Actuel :** Émetteur Zigzag (motifs de rubans animés 3D)
+
+🔗 **Architecture Framework :** Voir [SPACEFLOW-ARCHITECTURE.md](../English/SPACEFLOW-ARCHITECTURE.md) pour la conception complète du framework
 
 ---
 
@@ -2305,6 +2309,10 @@ mouseWheel: camera.distance = 720
 3. **Performance :** Profiler timing d'images
 4. **Application → Local Storage :** Voir `zigmap26Settings`
 5. **Éléments :** Inspecter dimensions et classes canevas
+
+**Commandes Console :**
+
+Pour une liste complète des commandes de débogage et des fonctions API globales, voir **[Référence des Commandes Console](Console-Commands-fr.md)**.
 
 ---
 

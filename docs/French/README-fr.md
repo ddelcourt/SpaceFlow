@@ -6,7 +6,11 @@ ddelcourt2026 / mars 2026
 
 ## Vue d'ensemble
 
-Outil génératif en temps réel produisant des motifs zigzag animés dans un espace 3D. Contrôles de caméra, visualisation stéréoscopique, gestion d'états et exportation vectorielle 2D.
+**SpaceFlow** est un framework modulaire pour l'art génératif 3D en temps réel avec contrôles de caméra, visualisation stéréoscopique, gestion d'états et exportation vectorielle.
+
+**Patch actuel :** Émetteur Zigzag — motifs de rubans animés dans un espace 3D.
+
+SpaceFlow est conçu comme un framework universel capable de charger différents algorithmes visuels (patches) tout en fournissant des systèmes cohérents de caméra, couleurs, export et gestion d'états.
 
 ---
 
@@ -478,6 +482,11 @@ Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque
 
 ## Référence technique
 
+### Commandes Console
+
+Pour le contrôle avancé, le débogage et l'automatisation, voir :
+- **[Référence des Commandes Console](Console-Commands-fr.md)** — Liste complète des commandes console du navigateur et des fonctions API globales
+
 ### Structure du projet
 
 ```
@@ -486,11 +495,13 @@ Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque
 ├── css/                    Feuilles de style
 ├── js/                     Modules JavaScript
 │   ├── main.js            Point d'entrée
-│   ├── core/              Classes principales (Emitter, ZigzagLine, Camera, Projection)
+│   ├── core/              Framework core (Camera, Projection, utils)
+│   │                      + Patch actuel : Zigzag (Emitter, ZigzagLine)
 │   ├── ui/                Contrôleurs UI
-│   ├── storage/           Gestion état et localStorage
+│   ├── storage/           Gestion états et localStorage
 │   ├── input/             Gestionnaires souris et clavier
-│   ├── export/            Exportateurs PNG, SVG, carte de profondeur, vidéo
+│   ├── export/            Exporteurs PNG, SVG, carte profondeur, vidéo
+│   ├── rendering/         SketchFactory (intégration p5.js)
 │   └── config/            Constantes et valeurs par défaut
 ├── config/                Fichiers de configuration
 │   ├── appInfo.json       Métadonnées de l'application
@@ -513,10 +524,15 @@ JavaScript vanilla (modules ES6) avec p5.js pour le rendu WebGL.
 - CCapture.js v1.1.0 (capture vidéo)
 
 **Architecture :**
-- Classes modulaires ES6 dans des fichiers séparés
-- Gestion d'état via localStorage
-- Mises à jour UI pilotées par événements
-- Projection CPU pour exports SVG et carte de profondeur
+- **Conception framework-first** : Systèmes universels (caméra, couleurs, export, stockage) indépendants de l'algorithme visuel
+- **Système de patches** : L'implémentation actuelle est le patch Émetteur Zigzag
+- **ES6 modulaire** : Fichiers séparés pour chaque composant
+- **Gestion d'état** : Snapshots complets via localStorage
+- **Projection CPU** : Permet les exports SVG et carte de profondeur
+
+**Voir aussi :**
+- **[Architecture SpaceFlow](../English/SPACEFLOW-ARCHITECTURE.md)** — Conception complète du framework et stratégie de découplage
+- **[Système de Patches](../English/PATCH-SYSTEM.md)** — Comment les patches s'intègrent au framework
 
 ### Dépannage
 
