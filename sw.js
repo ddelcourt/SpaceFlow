@@ -1,9 +1,9 @@
 /**
- * Mapping26 — Service Worker
+ * SpaceFlow — Service Worker
  * Cache-first for shell assets; network-first for JSON presets.
  */
 
-const CACHE_NAME = 'mapping26-v1';
+const CACHE_NAME = 'spaceflow-v3';
 
 // Core shell assets to pre-cache on install
 const PRECACHE_ASSETS = [
