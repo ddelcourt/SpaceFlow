@@ -24,6 +24,11 @@
   <meta name="twitter:description" content="Generative zigzag space visualizer">
   <meta name="twitter:image" content="https://labs.delcourt.ch/mapping26/assets/appPreview/social-preview.jpg">
 
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+
   <!-- External CSS -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/canvas.css">
@@ -199,6 +204,95 @@
             <div class="slider-row">
               <input type="range" id="overlay-y" min="0" max="100" step="1" value="50"/>
               <span class="value-display" id="overlay-y-val">50</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Text Broadcast Overlay -->
+    <div class="section">
+      <div class="section-header" data-section="text-overlay">
+        <span class="section-title">Text Broadcast</span>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-content">
+        <div class="section-body">
+          <!-- Text Input -->
+          <div class="control-group">
+            <label>Message</label>
+            <input type="text" id="text-overlay-message" placeholder="Type message here..." maxlength="200" style="width:100%;padding:8px;background:#1a1a1a;border:1px solid #333;color:#ccc;font-size:0.85rem;border-radius:4px;">
+          </div>
+          
+          <!-- Send/Hide Toggle Button -->
+          <div class="control-group" style="margin-top:12px;">
+            <button id="text-overlay-toggle" class="text-overlay-btn" style="width:100%;padding:12px;background:#1a3a1a;border:1px solid #2d5f2d;color:#aaffaa;font-size:0.75rem;letter-spacing:0.12em;text-transform:uppercase;border-radius:4px;cursor:pointer;transition:all 0.2s;">
+              Send to Monitors
+            </button>
+          </div>
+          
+          <!-- Font Size Slider -->
+          <div class="control-group">
+            <label>Font Size <span style="color:#444">(px)</span></label>
+            <div class="slider-row">
+              <input type="range" id="text-overlay-size" min="40" max="200" step="1" value="48"/>
+              <span class="value-display" id="text-overlay-size-val">48</span>
+            </div>
+          </div>
+          
+          <!-- Fade Transition Duration Slider -->
+          <div class="control-group">
+            <label>Fade Transition <span style="color:#444">(seconds)</span></label>
+            <div class="slider-row">
+              <input type="range" id="text-fade-duration" min="0.1" max="3.0" step="0.1" value="0.5"/>
+              <span class="value-display" id="text-fade-duration-val">0.5</span>
+            </div>
+          </div>
+          
+          <!-- Opacity Slider -->
+          <div class="control-group">
+            <label>Opacity <span style="color:#444">(%)</span></label>
+            <div class="slider-row">
+              <input type="range" id="text-overlay-fade" min="0" max="100" step="1" value="100"/>
+              <span class="value-display" id="text-overlay-fade-val">100</span>
+            </div>
+          </div>
+          
+          <!-- Position Buttons -->
+          <div class="control-group">
+            <label>Position</label>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+              <button class="text-position-btn" data-position="top" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Top</button>
+              <button class="text-position-btn active" data-position="center" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Center</button>
+              <button class="text-position-btn" data-position="bottom" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Bottom</button>
+            </div>
+          </div>
+          
+          <!-- Text Alignment Buttons -->
+          <div class="control-group">
+            <label>Alignment</label>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+              <button class="text-align-btn" data-align="left" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Left</button>
+              <button class="text-align-btn active" data-align="center" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Center</button>
+              <button class="text-align-btn" data-align="right" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Right</button>
+            </div>
+          </div>
+          
+          <!-- Font Weight Buttons -->
+          <div class="control-group">
+            <label>Font Weight</label>
+            <div style="display:flex;gap:8px;margin-top:6px;">
+              <button class="text-weight-btn active" data-weight="300" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Light</button>
+              <button class="text-weight-btn" data-weight="400" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Normal</button>
+              <button class="text-weight-btn" data-weight="700" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Bold</button>
+            </div>
+          </div>
+          
+          <!-- Text Color Picker -->
+          <div class="control-group">
+            <label>Text Color</label>
+            <div style="margin-top:8px;">
+              <input type="color" id="text-overlay-color" class="color-picker" value="#ffffff"/>
             </div>
           </div>
         </div>
@@ -656,6 +750,9 @@
     <img id="overlay-image" class="overlay-image overlay-mono" style="position:absolute;pointer-events:none;display:none;z-index:1000;transform-origin:center center;" />
     <img id="overlay-image-left" class="overlay-image overlay-stereo" style="position:absolute;pointer-events:none;display:none;z-index:1000;transform-origin:center center;" />
     <img id="overlay-image-right" class="overlay-image overlay-stereo" style="position:absolute;pointer-events:none;display:none;z-index:1000;transform-origin:center center;" />
+    
+    <!-- Text Broadcast Overlay -->
+    <div id="text-overlay-display" style="position:absolute;pointer-events:none;display:none;z-index:1001;top:50%;left:50%;transform:translate(-50%, -50%);font-family:'Inter', sans-serif;font-size:48px;font-weight:300;color:#ffffff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.5);max-width:80%;word-wrap:break-word;line-height:1;"></div>
   </div>
 
   <!-- Main Application Module -->

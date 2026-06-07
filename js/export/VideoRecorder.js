@@ -3,6 +3,7 @@
  */
 
 import { createCompositeCanvas } from './PNGExporter.js';
+import { canExport } from './exportUtils.js';
 
 let capturer = null;
 let isRecording = false;
@@ -16,10 +17,7 @@ export function isRecording_() {
 
 export function startVideoRecording(ZM) {
   // Only allow recording from main window, not display windows
-  if (ZM.isDisplayMode) {
-    console.log('🎥 startVideoRecording() blocked: display windows cannot record');
-    return;
-  }
+  if (!canExport(ZM, '🎥 Video Recording')) return;
   
   if (isRecording) {
     stopVideoRecording(ZM);
@@ -101,10 +99,7 @@ function renderVideoFrame(ZM) {
 
 export function stopVideoRecording(ZM) {
   // Only allow stopping from main window
-  if (ZM.isDisplayMode) {
-    console.log('🎥 stopVideoRecording() blocked: display windows cannot record');
-    return;
-  }
+  if (!canExport(ZM, '🎥 Stop Video Recording')) return;
   
   if (!isRecording) return;
   

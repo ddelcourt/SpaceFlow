@@ -3,6 +3,10 @@
  * Uses exact same projection math as SVG export for pixel-perfect alignment
  */
 
+import { DEPTH_EXPORT, EXPORT_TIMING } from '../config/constants.js';
+import { debugLog } from '../core/debugLogger.js';
+import { canExport } from './exportUtils.js';
+
 /**
  * Project point using same math as SVG export
  * Thinking of pan/zoom as camera position offsets:
@@ -112,10 +116,10 @@ function scanDepthRange(lines, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
     }
   }
   
-  console.log(`  On-screen ribbons: ${ribbonCount}, total depth samples: ${allDepths.length}`);
+  debugLog('EXPORTS', `  On-screen ribbons: ${ribbonCount}, total depth samples: ${allDepths.length}`);
   
-  if (allDepths.length < 10) {
-    console.log('  Warning: Too few depth samples, using fallback range');
+  if (allDepths.length < DEPTH_EXPORT.MIN_DEPTH_SAMPLES) {
+    debugLog('EXPORTS', '  Warning: Too few depth samples, using fallback range');
     return { minDepth: 1, maxDepth: 1000 };
   }
   
@@ -123,25 +127,25 @@ function scanDepthRange(lines, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
   allDepths.sort((a, b) => a - b);
   
   // Use 1st to 99th percentile for maximum contrast on visible content
-  const idx1 = Math.max(0, Math.floor(allDepths.length * 0.01));
-  const idx99 = Math.min(allDepths.length - 1, Math.floor(allDepths.length * 0.99));
+  const idx1 = Math.max(0, Math.floor(allDepths.length * DEPTH_EXPORT.PERCENTILE_MIN));
+  const idx99 = Math.min(allDepths.length - 1, Math.floor(allDepths.length * DEPTH_EXPORT.PERCENTILE_MAX));
   
   const minD = allDepths[idx1];
   const maxD = allDepths[idx99];
   
-  console.log(`  Full depth span: ${allDepths[0].toFixed(2)} - ${allDepths[allDepths.length-1].toFixed(2)}`);
-  console.log(`  Using range (1st-99th percentile): ${minD.toFixed(2)} - ${maxD.toFixed(2)}`);
+  debugLog('EXPORTS', `  Full depth span: ${allDepths[0].toFixed(2)} - ${allDepths[allDepths.length-1].toFixed(2)}`);
+  debugLog('EXPORTS', `  Using range (1st-99th percentile): ${minD.toFixed(2)} - ${maxD.toFixed(2)}`);
   
   if (!isFinite(minD) || !isFinite(maxD) || maxD <= minD) {
     return { minDepth: 1, maxDepth: 1000 };
   }
   
   // Small expansion for full white/black on extremes
-  const expand = (maxD - minD) * 0.03;
+  const expand = (maxD - minD) * DEPTH_EXPORT.DEPTH_EXPANSION_PERCENT;
   const finalMinDepth = Math.max(0.01, minD - expand);
   const finalMaxDepth = maxD + expand;
   
-  console.log(`  Final range: minDepth=${finalMinDepth.toFixed(2)}, maxDepth=${finalMaxDepth.toFixed(2)}`);
+  debugLog('EXPORTS', `  Final range: minDepth=${finalMinDepth.toFixed(2)}, maxDepth=${finalMaxDepth.toFixed(2)}`);
   
   return { minDepth: finalMinDepth, maxDepth: finalMaxDepth };
 }
@@ -160,7 +164,7 @@ function rasterizeDepthPolygon(ctx, pts, minDepth, maxDepth, invert, alpha) {
   function depthToGrey(depth) {
     let t = (depth - minDepth) / (maxDepth - minDepth);
     t = Math.max(0, Math.min(1, t));
-    t = Math.pow(t, 0.85);
+    t = Math.pow(t, DEPTH_EXPORT.GAMMA_CORRECTION);
     return Math.round((invert ? t : 1 - t) * 255);
   }
 
@@ -186,7 +190,7 @@ function rasterizeDepthPolygon(ctx, pts, minDepth, maxDepth, invert, alpha) {
 
   // Avoid zero-length gradient (degenerate quad)
   const dx = x1 - x0, dy = y1 - y0;
-  if (Math.abs(dx) < 0.01 && Math.abs(dy) < 0.01) return;
+  if (Math.abs(dx) < DEPTH_EXPORT.EPSILON && Math.abs(dy) < DEPTH_EXPORT.EPSILON) return;
 
   const grad = ctx.createLinearGradient(x0, y0, x1, y1);
   grad.addColorStop(0, `rgba(${grey0},${grey0},${grey0},${alpha.toFixed(4)})`);
@@ -207,20 +211,17 @@ function rasterizeDepthPolygon(ctx, pts, minDepth, maxDepth, invert, alpha) {
  */
 export function exportDepthMap(ZM) {
   // Only allow exports from main window, not display windows
-  if (ZM.isDisplayMode) {
-    console.log('🗺️ exportDepthMap() blocked: display windows cannot export');
-    return;
-  }
+  if (!canExport(ZM, '🗺️ Depth Export')) return;
   
   // Allow exports as long as we have valid geometry, even during sketch reinitialization
   if (!ZM.emitterInstance || !ZM.emitterInstance.lines || ZM.emitterInstance.lines.length === 0) {
-    console.log('Depth Export: No geometry available');
+    debugLog('EXPORTS', 'Depth Export: No geometry available');
     if (ZM.showToast) ZM.showToast('No geometry to export. Wait for lines to appear...', 'info');
     return;
   }
   
   if (!ZM.camera) {
-    console.log('Depth Export: Camera not initialized');
+    debugLog('EXPORTS', 'Depth Export: Camera not initialized');
     if (ZM.showToast) ZM.showToast('Camera not ready', 'error');
     return;
   }
@@ -245,7 +246,7 @@ export function exportDepthMap(ZM) {
       btn.disabled = false;
       btn.textContent = 'Export Depth Map';
     }
-  }, 30);
+  }, EXPORT_TIMING.DEPTH_MAP_RENDER_DELAY_MS);
 }
 
 function renderDepthMap(ZM) {
@@ -260,16 +261,16 @@ function renderDepthMap(ZM) {
   const cameraY = -ZM.camera.offsetY;
   const cameraZ = defaultCameraZ + ZM.camera.distance;
   
-  console.log('Depth Map Camera Setup:');
-  console.log('  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
+  debugLog('EXPORTS', 'Depth Map Camera Setup:');
+  debugLog('EXPORTS', '  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
   
   // Auto-range from actual geometry
   const { minDepth, maxDepth } = scanDepthRange(lines, ZM, defaultCameraZ, cameraX, cameraY, cameraZ);
-  console.log(`Depth map export:`);
-  console.log(`  Canvas dimensions: ${ZM.W} × ${ZM.H}`);
-  console.log(`  Stereo mode: ${ZM.params.stereoscopicMode}`);
-  console.log(`  Active lines: ${lines.length}`);
-  console.log(`  Depth range: near=${minDepth.toFixed(1)}, far=${maxDepth.toFixed(1)}`);
+  debugLog('EXPORTS', `Depth map export:`);
+  debugLog('EXPORTS', `  Canvas dimensions: ${ZM.W} × ${ZM.H}`);
+  debugLog('EXPORTS', `  Stereo mode: ${ZM.params.stereoscopicMode}`);
+  debugLog('EXPORTS', `  Active lines: ${lines.length}`);
+  debugLog('EXPORTS', `  Depth range: near=${minDepth.toFixed(1)}, far=${maxDepth.toFixed(1)}`);
   
   // Create offscreen canvas
   const offCanvas = document.createElement('canvas');
@@ -278,7 +279,7 @@ function renderDepthMap(ZM) {
   const ctx = offCanvas.getContext('2d');
   
   // Black background
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = DEPTH_EXPORT.BACKGROUND_COLOR;
   ctx.fillRect(0, 0, ZM.W, ZM.H);
   
   const invert = ZM.params.depthInvert;
@@ -308,7 +309,7 @@ function renderDepthMap(ZM) {
     if (renderedCount === 0) {
       const validDepths = leftProj.filter(Boolean).slice(0, 5).map(p => p.depth.toFixed(2));
       if (validDepths.length > 0) {
-        console.log('  First ribbon sample depths:', validDepths);
+        debugLog('EXPORTS', '  First ribbon sample depths:', validDepths);
       }
     }
     
@@ -331,7 +332,7 @@ function renderDepthMap(ZM) {
     renderedCount++;
   }
   
-  console.log(`  Rendered ${renderedCount} ribbons (${segmentCount} segments)`);
+  debugLog('EXPORTS', `  Rendered ${renderedCount} ribbons (${segmentCount} segments)`);
   
   // Download
   offCanvas.toBlob(blob => {

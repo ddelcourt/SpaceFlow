@@ -5,7 +5,8 @@
 
 // Import configurations
 import { DEFAULT_PARAMS } from './config/defaults.js';
-import { SEGMENTS, STORAGE_KEY } from './config/constants.js';
+import { SEGMENTS, STORAGE_KEY, UI_TIMING } from './config/constants.js';
+import { debugLog } from './core/debugLogger.js';
 
 // Import core classes
 import { ZigzagLine } from './core/ZigzagLine.js';
@@ -88,14 +89,14 @@ window.SpaceFlow = {
   loadJSON: (file) => loadJSON(file, (loadedData) => {
     // Clear localStorage to avoid loading ancient states
     clearLocalStorage();
-    console.log('📂 Loading project file (localStorage cleared)');
-    console.log(`✓ Project loaded: ${loadedData.projectName || file.name}`);
-    console.log('   File activePaletteIndex:', loadedData.params.activePaletteIndex);
-    console.log('   Current ZM.params.activePaletteIndex:', window.SpaceFlow.params.activePaletteIndex);
+    debugLog('PRESETS', '📂 Loading project file (localStorage cleared)');
+    debugLog('PRESETS', `✓ Project loaded: ${loadedData.projectName || file.name}`);
+    debugLog('PRESETS', '   File activePaletteIndex:', loadedData.params.activePaletteIndex);
+    debugLog('PRESETS', '   Current ZM.params.activePaletteIndex:', window.SpaceFlow.params.activePaletteIndex);
     
     // Update params
     Object.assign(window.SpaceFlow.params, loadedData.params);
-    console.log('   After Object.assign, activePaletteIndex:', window.SpaceFlow.params.activePaletteIndex);
+    debugLog('PRESETS', '   After Object.assign, activePaletteIndex:', window.SpaceFlow.params.activePaletteIndex);
     
     // Reset auto-trigger timer to prevent weird values
     if (window.SpaceFlow.autoTriggerTimer) {
@@ -134,7 +135,7 @@ window.SpaceFlow = {
       // Load the first state INSTANTLY (no transitions) to match exact parameters from JSON
       if (loadedData.states.length > 0) {
         const firstState = loadedData.states[0];
-        console.log('🎯 Loading first state instantly:', firstState.name);
+        debugLog('STATES', '🎯 Loading first state instantly:', firstState.name);
         window.SpaceFlow.stateManager.load(firstState.id, true); // instant = true
       }
       
@@ -218,6 +219,23 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init') {
           delete state.params.videoFPS;
           delete state.params.videoFormat;
           delete state.params.depthInvert;
+          // Text overlay settings (project-wide)
+          delete state.params.textOverlayMessage;
+          delete state.params.textOverlayVisible;
+          delete state.params.textOverlayFade;
+          delete state.params.textOverlaySize;
+          delete state.params.textOverlayPosition;
+          delete state.params.textOverlayColor;
+          delete state.params.textOverlayAlign;
+          delete state.params.textOverlayWeight;
+          delete state.params.textOverlayFadeDuration;
+          // Image overlay settings (project-wide)
+          delete state.params.overlayImageSrc;
+          delete state.params.overlayVisible;
+          delete state.params.overlayScale;
+          delete state.params.overlayOpacity;
+          delete state.params.overlayX;
+          delete state.params.overlayY;
         }
       });
     }
@@ -256,7 +274,7 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init') {
     // Save to localStorage so this only happens once
     ZM.saveToLocalStorage();
     
-    console.log(`✓ Preset loaded: ${presetName}`);
+    debugLog('PRESETS', `✓ Preset loaded: ${presetName}`);
     return true;
   } catch (err) {
     console.warn(`Could not load preset "${presetName}":`, err);
@@ -290,7 +308,7 @@ async function init() {
   
   if (presetParam) {
     // Load preset from URL parameter (overrides localStorage)
-    console.log(`Loading preset from URL: ${presetParam}`);
+    debugLog('PRESETS', `Loading preset from URL: ${presetParam}`);
     ZM._projectName = `${presetParam}.json`;
     await loadPresetFile(ZM, presetParam);
     
@@ -304,7 +322,7 @@ async function init() {
       if (ZM.updateProjectNameDisplay) {
         ZM.updateProjectNameDisplay(ZM._projectName);
       } else {
-        setTimeout(updateProjectName, 50);
+        setTimeout(updateProjectName, UI_TIMING.PROJECT_NAME_UPDATE_POLL_MS);
       }
     };
     updateProjectName();
@@ -325,7 +343,7 @@ async function init() {
         if (ZM.updateProjectNameDisplay) {
           ZM.updateProjectNameDisplay(ZM._projectName);
         } else {
-          setTimeout(updateProjectName, 50);
+          setTimeout(updateProjectName, UI_TIMING.PROJECT_NAME_UPDATE_POLL_MS);
         }
       };
       updateProjectName();
@@ -336,7 +354,7 @@ async function init() {
           if (ZM.updateProjectNameDisplay) {
             ZM.updateProjectNameDisplay(ZM._projectName);
           } else {
-            setTimeout(updateProjectName, 50);
+            setTimeout(updateProjectName, UI_TIMING.PROJECT_NAME_UPDATE_POLL_MS);
           }
         };
         updateProjectName();
@@ -345,7 +363,7 @@ async function init() {
       if (ZM.stateManager.activeStateId) {
         // If we loaded from localStorage and there's an active state,
         // ensure params match the active state (not stale localStorage params)
-        console.log('🔄 Syncing params with active state:', ZM.stateManager.activeStateId);
+        debugLog('STATES', '🔄 Syncing params with active state:', ZM.stateManager.activeStateId);
         const activeState = ZM.stateManager.getStateById(ZM.stateManager.activeStateId);
         if (activeState) {
           // Preserve camera params (they're not stored in state.params, but in state.camera)
@@ -398,10 +416,10 @@ async function init() {
   }
   
   // Initialize sketches
-  console.log('✓ Initializing sketches...');
+  debugLog('PRESETS', '✓ Initializing sketches...');
   ZM.initializeSketches();
-  console.log('✓ SpaceFlow initialized - patch ready');
-  console.log('💡 Type showPerformanceStats() in console to see performance metrics');
+  debugLog('PRESETS', '✓ SpaceFlow initialized - patch ready');
+  debugLog('PRESETS', '💡 Type showPerformanceStats() in console to see performance metrics');
   
   // Update overlay positioning after sketches are initialized (important for stereo mode)
   if (ZM.updateOverlay) {
@@ -428,7 +446,7 @@ async function init() {
         ZM.updateStatePanel();
       }
       // Load the active state INSTANTLY to trigger all visual updates
-      console.log('🎯 Triggering active state on load:', ZM.stateManager.activeStateId);
+      debugLog('STATES', '🎯 Triggering active state on load:', ZM.stateManager.activeStateId);
       ZM.stateManager.load(ZM.stateManager.activeStateId, true); // instant = true
     } else if (ZM.syncUIFromParams) {
       // Fallback: sync UI if there's no active state
@@ -475,7 +493,7 @@ async function init() {
     document.querySelectorAll('.controls-topbar-item').forEach(item => {
       item.classList.remove('active');
     });
-  }, 10000);
+  }, UI_TIMING.PANEL_AUTO_COLLAPSE_DELAY_MS);
   
   // Setup top bar toggle functionality
   document.querySelectorAll('.controls-topbar-item').forEach(item => {
@@ -493,7 +511,7 @@ async function init() {
           targetPanel.classList.add('topbar-hovered');
           setTimeout(() => {
             targetPanel.classList.remove('topbar-hovered');
-          }, 1500); // Keep full opacity for 1.5 seconds after opening
+          }, UI_TIMING.PANEL_FULL_OPACITY_DURATION_MS);
         }
       }
     });
@@ -537,7 +555,7 @@ async function init() {
       clearTimeout(cursorTimeout);
     }
     if (document.fullscreenElement) {
-      cursorTimeout = setTimeout(hideCursor, 1000);
+      cursorTimeout = setTimeout(hideCursor, UI_TIMING.CURSOR_HIDE_DELAY_MS);
     }
   };
   
@@ -552,7 +570,7 @@ async function init() {
       if (cursorTimeout) {
         clearTimeout(cursorTimeout);
       }
-      cursorTimeout = setTimeout(hideCursor, 1000);
+      cursorTimeout = setTimeout(hideCursor, UI_TIMING.CURSOR_HIDE_DELAY_MS);
     } else {
       // Exited fullscreen - clear timer and show cursor
       if (cursorTimeout) {
@@ -569,10 +587,10 @@ async function init() {
     if (ZM.updateCanvasSize) ZM.updateCanvasSize();
   });
   
-  console.log('SpaceFlow initialized ✓');
+  debugLog('PRESETS', 'SpaceFlow initialized ✓');
 
   // Show keyboard shortcuts toast on startup
-  console.log('ℹ️  Keyboard shortcuts panel visible - press "I" or click OK to dismiss');
+  debugLog('KEYBOARD', 'ℹ️  Keyboard shortcuts panel visible - press "I" or click OK to dismiss');
   showShortcutsToast(true);
 
   // Shortcut Keys button in Documentation panel
@@ -613,7 +631,7 @@ function showShortcutsToast(withCountdown = true) {
       timerBar.offsetWidth; // reflow
       timerBar.style.animation = '';
     }
-    timer = setTimeout(dismiss, 25000);
+    timer = setTimeout(dismiss, UI_TIMING.SHORTCUTS_TOAST_DURATION_MS);
   } else {
     if (timerBar) timerBar.style.display = 'none';
   }
@@ -639,7 +657,7 @@ window.SpaceFlow.toggleShortcutsToast = toggleShortcutsToast;
  * @param {number} [duration=4400]
  * @param {Node|null} [node=null] Optional DOM node appended after the message text
  */
-function showMiniToast(message, type = '', duration = 4400, node = null) {
+function showMiniToast(message, type = '', duration = UI_TIMING.MINI_TOAST_DEFAULT_DURATION_MS, node = null) {
   let container = document.getElementById('mini-toast-container');
   if (!container) {
     container = document.createElement('div');

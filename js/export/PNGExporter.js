@@ -3,7 +3,11 @@
  * VERSION: 2026-03-20 — Side-by-Side Stereoscopic Export
  */
 
-console.log('PNGExporter.js — SBS Stereo Export');
+import { OVERLAY } from '../config/constants.js';
+import { debugLog } from '../core/debugLogger.js';
+import { canExport } from './exportUtils.js';
+
+debugLog('EXPORTS', 'PNGExporter.js — SBS Stereo Export');
 
 /**
  * Composite a single canvas with its overlay
@@ -48,11 +52,11 @@ function compositeSingleEye(canvas, overlayImg, ZM, offsetX = 0) {
   const imgHeight = onScreenHeight * scaleY;
   
   // Position as percentage of canvas
-  const x = (ZM.params.overlayX / 100) * composite.width;
-  const y = (ZM.params.overlayY / 100) * composite.height;
+  const x = (ZM.params.overlayX / OVERLAY.PERCENT_TO_DECIMAL) * composite.width;
+  const y = (ZM.params.overlayY / OVERLAY.PERCENT_TO_DECIMAL) * composite.height;
   
   // Draw overlay with opacity
-  const opacity = ZM.params.overlayOpacity / 100;
+  const opacity = ZM.params.overlayOpacity / OVERLAY.OPACITY_PERCENT_TO_DECIMAL;
   ctx.globalAlpha = opacity;
   ctx.drawImage(
     overlayImg,
@@ -76,16 +80,16 @@ function compositeSingleEye(canvas, overlayImg, ZM, offsetX = 0) {
 function createCompositeCanvas(ZM, leftCanvas, rightCanvas = null) {
   const isStereo = ZM.params.stereoscopicMode && rightCanvas && ZM.p5InstanceRight;
   
-  console.log('╔═══════════════════════════════════════════════════════════════════╗');
-  console.log('║                    PNG EXPORT - COMPOSITE CANVAS                   ║');
-  console.log('╠═══════════════════════════════════════════════════════════════════╣');
-  console.log('│ Mode:', isStereo ? 'STEREOSCOPIC (Side-by-Side)' : 'MONO');
-  console.log('│ Left canvas:', leftCanvas.width, 'x', leftCanvas.height);
+  debugLog('EXPORTS', '╔═══════════════════════════════════════════════════════════════════╗');
+  debugLog('EXPORTS', '║                    PNG EXPORT - COMPOSITE CANVAS                   ║');
+  debugLog('EXPORTS', '╠═══════════════════════════════════════════════════════════════════╣');
+  debugLog('EXPORTS', '│ Mode:', isStereo ? 'STEREOSCOPIC (Side-by-Side)' : 'MONO');
+  debugLog('EXPORTS', '│ Left canvas:', leftCanvas.width, 'x', leftCanvas.height);
   if (isStereo) {
-    console.log('│ Right canvas:', rightCanvas.width, 'x', rightCanvas.height);
+    debugLog('EXPORTS', '│ Right canvas:', rightCanvas.width, 'x', rightCanvas.height);
   }
-  console.log('│ Overlay visible:', ZM.params.overlayVisible);
-  console.log('╚═══════════════════════════════════════════════════════════════════╝');
+  debugLog('EXPORTS', '│ Overlay visible:', ZM.params.overlayVisible);
+  debugLog('EXPORTS', '╚═══════════════════════════════════════════════════════════════════╝');
   
   if (isStereo) {
     // Side-by-Side Stereoscopic Export
@@ -106,7 +110,7 @@ function createCompositeCanvas(ZM, leftCanvas, rightCanvas = null) {
     const rightComposite = compositeSingleEye(rightCanvas, overlayImgRight, ZM);
     ctx.drawImage(rightComposite, leftCanvas.width, 0);
     
-    console.log('✓ Side-by-Side stereo composite created:', finalCanvas.width, 'x', finalCanvas.height);
+    debugLog('EXPORTS', '✓ Side-by-Side stereo composite created:', finalCanvas.width, 'x', finalCanvas.height);
     
     return finalCanvas;
   } else {
@@ -114,7 +118,7 @@ function createCompositeCanvas(ZM, leftCanvas, rightCanvas = null) {
     const overlayImgMono = document.getElementById('overlay-image');
     const composite = compositeSingleEye(leftCanvas, overlayImgMono, ZM);
     
-    console.log('✓ Mono composite created:', composite.width, 'x', composite.height);
+    debugLog('EXPORTS', '✓ Mono composite created:', composite.width, 'x', composite.height);
     
     return composite;
   }
@@ -122,18 +126,15 @@ function createCompositeCanvas(ZM, leftCanvas, rightCanvas = null) {
 
 export function exportPNG(ZM) {
   // Only allow exports from main window, not display windows
-  if (ZM.isDisplayMode) {
-    console.log('📸 exportPNG() blocked: display windows cannot export');
-    return;
-  }
+  if (!canExport(ZM, '📸 PNG Export')) return;
   
-  console.log('📸 exportPNG() called');
-  console.log('  Stereoscopic mode:', ZM.params.stereoscopicMode);
-  console.log('  ZM.p5Instance exists:', !!ZM.p5Instance);
-  console.log('  ZM.p5InstanceRight exists:', !!ZM.p5InstanceRight);
+  debugLog('EXPORTS', '📸 exportPNG() called');
+  debugLog('EXPORTS', '  Stereoscopic mode:', ZM.params.stereoscopicMode);
+  debugLog('EXPORTS', '  ZM.p5Instance exists:', !!ZM.p5Instance);
+  debugLog('EXPORTS', '  ZM.p5InstanceRight exists:', !!ZM.p5InstanceRight);
   
   if (!ZM.p5Instance) {
-    console.log('⚠️  No p5Instance - aborting export');
+    debugLog('EXPORTS', '⚠️  No p5Instance - aborting export');
     return;
   }
   
@@ -143,10 +144,10 @@ export function exportPNG(ZM) {
   
   const composite = createCompositeCanvas(ZM, leftCanvas, rightCanvas);
   
-  console.log('  Final composite created:', composite.width, 'x', composite.height);
+  debugLog('EXPORTS', '  Final composite created:', composite.width, 'x', composite.height);
   
   composite.toBlob(blob => {
-    console.log('  Blob created, size:', blob.size, 'bytes');
+    debugLog('EXPORTS', '  Blob created, size:', blob.size, 'bytes');
     const url = URL.createObjectURL(blob);
     const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const suffix = ZM.params.stereoscopicMode ? '-SBS' : '';
@@ -154,7 +155,7 @@ export function exportPNG(ZM) {
     a.href = url;
     a.download = `spaceflow-${ts}${suffix}.png`;
     a.click();
-    console.log('✅ PNG download triggered:', a.download);
+    debugLog('EXPORTS', '✅ PNG download triggered:', a.download);
     URL.revokeObjectURL(url);
     if (ZM && ZM.showToast) ZM.showToast('✓ PNG exported', 'success');
   }, 'image/png');

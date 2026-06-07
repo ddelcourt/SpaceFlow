@@ -4,9 +4,9 @@
  */
 
 import { initColorRNG } from '../core/colorUtils.js';
+import { SYNC } from '../config/constants.js';
 
 const CHANNEL_NAME = 'zigmap26-sync';
-const SYNC_THROTTLE_MS = 16; // ~60fps max
 
 // Display window counter for sequential IDs
 let displayWindowCounter = 0;
@@ -31,11 +31,10 @@ export function initializePrimarySync(ZM) {
 
   // Throttle mouse command broadcasts for real-time sync (60fps)
   let lastMouseBroadcast = 0;
-  const MOUSE_BROADCAST_THROTTLE = 17; // ~60fps
   
   function broadcastCameraFromMouse(state) {
     const now = Date.now();
-    if (now - lastMouseBroadcast < MOUSE_BROADCAST_THROTTLE) return;
+    if (now - lastMouseBroadcast < SYNC.MOUSE_BROADCAST_THROTTLE_MS) return;
     
     if (ZM.windowSync && ZM.windowSync.broadcastCameraImmediate) {
       ZM.windowSync.broadcastCameraImmediate(state);
@@ -337,7 +336,7 @@ export function initializePrimarySync(ZM) {
       
       const now = Date.now();
       const timeSinceLastSync = now - lastSyncTime;
-      const delay = Math.max(0, SYNC_THROTTLE_MS - timeSinceLastSync);
+      const delay = Math.max(0, SYNC.THROTTLE_MS - timeSinceLastSync);
 
       setTimeout(() => {
         const updates = {

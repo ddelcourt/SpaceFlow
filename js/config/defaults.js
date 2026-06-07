@@ -101,5 +101,16 @@ export const DEFAULT_PARAMS = {
   overlayScale: 100,
   overlayOpacity: 100,
   overlayX: 50,
-  overlayY: 50
+  overlayY: 50,
+  
+  // Text Message Overlay
+  textOverlayMessage: '',
+  textOverlayVisible: false,
+  textOverlayFade: 100,
+  textOverlaySize: 48,  // Font size in pixels (40-200)
+  textOverlayPosition: 'center',  // Position: 'top', 'center', or 'bottom'
+  textOverlayColor: '#ffffff',  // Text color (hex)
+  textOverlayAlign: 'center',  // Alignment: 'left', 'center', or 'right'
+  textOverlayWeight: '300',  // Font weight: '300' (light), '400' (normal), '700' (bold)
+  textOverlayFadeDuration: 0.5  // Fade transition duration in seconds (0.1-3.0)
 };

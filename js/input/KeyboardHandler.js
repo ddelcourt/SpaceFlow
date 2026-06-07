@@ -2,6 +2,8 @@
  * KeyboardHandler — Centralized keyboard shortcuts
  */
 
+import { debugLog } from '../core/debugLogger.js';
+
 // No direct imports from colorUtils - uses ZM.triggerPaletteChange() wrapper
 
 export function setupKeyboardHandlers(ZM) {
@@ -254,16 +256,16 @@ function executeAction(action, ZM) {
         if (checkbox) checkbox.checked = true;
         ZM.autoTriggerTimer.paused = false;
         ZM.saveToLocalStorage();
-        console.log('[Auto-Trigger] Enabled and started (via spacebar)');
+        debugLog('STATES', '[Auto-Trigger] Enabled and started (via spacebar)');
       } else {
         // Toggle pause state
         if (ZM.autoTriggerTimer.paused) {
           ZM.autoTriggerTimer.paused = false;
-          console.log('[Auto-Trigger] Resumed (via spacebar)');
+          debugLog('STATES', '[Auto-Trigger] Resumed (via spacebar)');
         } else {
           ZM.autoTriggerTimer.paused = true;
           ZM.autoTriggerTimer.pausedAt = ZM.autoTriggerTimer.elapsed;
-          console.log('[Auto-Trigger] Paused (via spacebar)');
+          debugLog('STATES', '[Auto-Trigger] Paused (via spacebar)');
         }
       }
       
@@ -279,7 +281,7 @@ function executeAction(action, ZM) {
       // Navigate to previous state in history
       const success = ZM.stateManager.navigateHistory(-1);
       if (!success) {
-        console.log('[History] No previous state in history');
+        debugLog('STATES', '[History] No previous state in history');
       }
     },
     
@@ -288,7 +290,7 @@ function executeAction(action, ZM) {
       
       ZM.autoTriggerTimer.elapsed = 0;
       ZM.autoTriggerTimer.pausedAt = 0;
-      console.log('[Auto-Trigger] Timer reset (via left arrow)');
+      debugLog('STATES', '[Auto-Trigger] Timer reset (via left arrow)');
       
       if (ZM.stateManager && ZM.stateManager.updateAutoTriggerStatus) {
         ZM.stateManager.updateAutoTriggerStatus();
@@ -301,7 +303,7 @@ function executeAction(action, ZM) {
       ZM.autoTriggerTimer.elapsed = 0;
       ZM.autoTriggerTimer.pausedAt = 0;
       ZM.stateManager.loadRandomState();
-      console.log('[Auto-Trigger] Skipped to next state (via right arrow)');
+      debugLog('STATES', '[Auto-Trigger] Skipped to next state (via right arrow)');
       
       if (ZM.stateManager && ZM.stateManager.updateAutoTriggerStatus) {
         ZM.stateManager.updateAutoTriggerStatus();

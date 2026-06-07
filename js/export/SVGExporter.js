@@ -4,37 +4,36 @@
  */
 
 import { getBackgroundColor } from '../core/colorUtils.js';
+import { debugLog } from '../core/debugLogger.js';
+import { canExport } from './exportUtils.js';
 
 export function exportSVG(ZM) {
   // Only allow exports from main window, not display windows
-  if (ZM.isDisplayMode) {
-    console.log('📄 exportSVG() blocked: display windows cannot export');
-    return;
-  }
+  if (!canExport(ZM, '📄 SVG Export')) return;
   
-  console.log('╔═══════════════════════════════════════════════════════════════════╗');
-  console.log('║                         SVG EXPORT START                           ║');
-  console.log('╠═══════════════════════════════════════════════════════════════════╣');
-  console.log('│ Canvas dimensions (ZM.W × ZM.H):', ZM.W, '×', ZM.H);
-  console.log('│ Framebuffer mode:', ZM.params.framebufferMode);
-  console.log('│ Stereoscopic mode:', ZM.params.stereoscopicMode);
+  debugLog('EXPORTS', '╔═══════════════════════════════════════════════════════════════════╗');
+  debugLog('EXPORTS', '║                         SVG EXPORT START                           ║');
+  debugLog('EXPORTS', '╠═══════════════════════════════════════════════════════════════════╣');
+  debugLog('EXPORTS', '│ Canvas dimensions (ZM.W × ZM.H):', ZM.W, '×', ZM.H);
+  debugLog('EXPORTS', '│ Framebuffer mode:', ZM.params.framebufferMode);
+  debugLog('EXPORTS', '│ Stereoscopic mode:', ZM.params.stereoscopicMode);
   if (ZM.params.framebufferMode) {
-    console.log('│ Framebuffer size:', ZM.params.framebufferWidth, '×', ZM.params.framebufferHeight);
+    debugLog('EXPORTS', '│ Framebuffer size:', ZM.params.framebufferWidth, '×', ZM.params.framebufferHeight);
   }
-  console.log('│ ZM.sketchReady:', !!ZM.sketchReady);
-  console.log('│ ZM.p5Instance:', !!ZM.p5Instance);
-  console.log('│ ZM.emitterInstance:', !!ZM.emitterInstance);
+  debugLog('EXPORTS', '│ ZM.sketchReady:', !!ZM.sketchReady);
+  debugLog('EXPORTS', '│ ZM.p5Instance:', !!ZM.p5Instance);
+  debugLog('EXPORTS', '│ ZM.emitterInstance:', !!ZM.emitterInstance);
   if (ZM.emitterInstance) {
-    console.log('│ Lines count:', ZM.emitterInstance.lines ? ZM.emitterInstance.lines.length : 0);
+    debugLog('EXPORTS', '│ Lines count:', ZM.emitterInstance.lines ? ZM.emitterInstance.lines.length : 0);
   }
-  console.log('│ ZM.camera:', !!ZM.camera);
-  console.log('│ ZM.buildRibbonSides:', !!ZM.buildRibbonSides);
+  debugLog('EXPORTS', '│ ZM.camera:', !!ZM.camera);
+  debugLog('EXPORTS', '│ ZM.buildRibbonSides:', !!ZM.buildRibbonSides);
   
   // Allow exports as long as we have valid geometry, even if sketch is being reinitialized
   // This allows exports during transitions between states or mode changes
   if (!ZM.emitterInstance || !ZM.emitterInstance.lines || ZM.emitterInstance.lines.length === 0) {
     console.error('│ ERROR: No geometry available to export');
-    console.log('╚═══════════════════════════════════════════════════════════════════╝');
+    debugLog('EXPORTS', '╚═══════════════════════════════════════════════════════════════════╝');
     if (ZM.showToast) ZM.showToast('No geometry to export. Wait for lines to appear...', 'info');
     return;
   }
@@ -42,21 +41,21 @@ export function exportSVG(ZM) {
   // Check for other required components
   if (!ZM.camera) {
     console.error('│ ERROR: Camera not initialized');
-    console.log('╚═══════════════════════════════════════════════════════════════════╝');
+    debugLog('EXPORTS', '╚═══════════════════════════════════════════════════════════════════╝');
     if (ZM.showToast) ZM.showToast('Camera not ready', 'error');
     return;
   }
   
   if (!ZM.buildRibbonSides) {
     console.error('│ ERROR: buildRibbonSides function not found');
-    console.log('╚═══════════════════════════════════════════════════════════════════╝');
+    debugLog('EXPORTS', '╚═══════════════════════════════════════════════════════════════════╝');
     if (ZM.showToast) ZM.showToast('Export failed: missing helper function', 'error');
     return;
   }
   
-  console.log('│ Lines to export:', ZM.emitterInstance.lines.length);
-  console.log('│ Canvas dimensions:', ZM.W, 'x', ZM.H);
-  console.log('╚═══════════════════════════════════════════════════════════════════╝');
+  debugLog('EXPORTS', '│ Lines to export:', ZM.emitterInstance.lines.length);
+  debugLog('EXPORTS', '│ Canvas dimensions:', ZM.W, 'x', ZM.H);
+  debugLog('EXPORTS', '╚═══════════════════════════════════════════════════════════════════╝');
   
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
@@ -110,13 +109,13 @@ export function exportSVG(ZM) {
   const cameraY = -ZM.camera.offsetY;
   const cameraZ = defaultCameraZ + ZM.camera.distance;
   
-  console.log('SVG Export Camera Setup:');
-  console.log('  - FOV:', ZM.fovTransition.current);
-  console.log('  - Default cameraZ:', defaultCameraZ.toFixed(2));
-  console.log('  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
-  console.log('  - Emitter rotation:', (emitterRotation * 180 / Math.PI).toFixed(2));
-  console.log('  - Camera rotation:', ZM.camera.rotationX.toFixed(3), ZM.camera.rotationY.toFixed(3));
-  console.log('  - Geometry scale:', ZM.geometryScaleTransition.current);
+  debugLog('EXPORTS', 'SVG Export Camera Setup:');
+  debugLog('EXPORTS', '  - FOV:', ZM.fovTransition.current);
+  debugLog('EXPORTS', '  - Default cameraZ:', defaultCameraZ.toFixed(2));
+  debugLog('EXPORTS', '  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
+  debugLog('EXPORTS', '  - Emitter rotation:', (emitterRotation * 180 / Math.PI).toFixed(2));
+  debugLog('EXPORTS', '  - Camera rotation:', ZM.camera.rotationX.toFixed(3), ZM.camera.rotationY.toFixed(3));
+  debugLog('EXPORTS', '  - Geometry scale:', ZM.geometryScaleTransition.current);
   
   function projectPoint(x, y, z) {
     // Transformation pipeline:
@@ -135,10 +134,10 @@ export function exportSVG(ZM) {
     const viewY = pt.y - cameraY;
     const viewZ = pt.z - cameraZ;
     
-    // Step 3: Frustum culling
-    if (viewZ >= -ZM.params.near || viewZ <= -ZM.params.far) return null;
-    
-    // Step 4: Perspective projection
+    // Step 3: Perspective projection
+    // NOTE: No frustum culling here to match p5.js/WebGL behavior
+    // p5.js passes all vertices to WebGL which handles clipping at polygon level
+    // SVG export should do the same - project all vertices and let SVG viewer clip
     const s = defaultCameraZ / -viewZ;
     const projX = viewX * s;
     const projY = viewY * s;
@@ -153,53 +152,67 @@ export function exportSVG(ZM) {
   
   // Process each line
   let exportedCount = 0;
+  let skippedInvisible = 0;
+  
   ZM.emitterInstance.lines.forEach(line => {
     try {
+      // Skip invisible lines (alpha <= 0)
+      const alpha = line._alpha();
+      if (alpha <= 0) {
+        skippedInvisible++;
+        return;
+      }
+      
       const localVerts = line._buildVertices();
       const { leftSide: leftLocal, rightSide: rightLocal } = 
         ZM.buildRibbonSides(localVerts, line.lineThickness / 2);
     
-    // Project to screen space
-    function toScreen(localPts) {
-      return localPts
-        .map(pt => ({
-          x: ((line.x - ZM.W / 2) + pt.x) * scaleVal,
-          y: ((line.y - ZM.H / 2) + pt.y) * scaleVal,
-          z: line.zOffset * scaleVal
-        }))
-        .map(pt => projectPoint(pt.x, pt.y, pt.z))
-        .filter(Boolean);
-    }
-    
-    const leftScreen = toScreen(leftLocal);
-    const rightScreen = toScreen(rightLocal);
-    
-    if (leftScreen.length < 2 || rightScreen.length < 2) return;
-    
-    // Create polygon
-    const alpha = line._alpha();
-    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    const pts = [...leftScreen, ...rightScreen.reverse()]
-      .map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
-    
-    polygon.setAttribute('points', pts);
-    polygon.setAttribute('fill', `rgb(${line.currentColor.join(',')})`);
-    polygon.setAttribute('fill-opacity', alpha.toString());
-    polygon.setAttribute('stroke', 'none');
-    svg.appendChild(polygon);
-    exportedCount++;
+      // Project to screen space - ALL vertices are projected
+      function toScreen(localPts) {
+        return localPts
+          .map(pt => ({
+            x: ((line.x - ZM.W / 2) + pt.x) * scaleVal,
+            y: ((line.y - ZM.H / 2) + pt.y) * scaleVal,
+            z: line.zOffset * scaleVal
+          }))
+          .map(pt => projectPoint(pt.x, pt.y, pt.z));
+      }
+      
+      const leftScreen = toScreen(leftLocal);
+      const rightScreen = toScreen(rightLocal);
+      
+      // Create single polygon for entire ribbon (left side + reversed right side)
+      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+      const pts = [...leftScreen, ...rightScreen.reverse()]
+        .map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
+      
+      polygon.setAttribute('points', pts);
+      polygon.setAttribute('fill', `rgb(${line.currentColor.join(',')})`);
+      polygon.setAttribute('fill-opacity', alpha.toString());
+      polygon.setAttribute('stroke', 'none');
+      svg.appendChild(polygon);
+      
+      exportedCount++;
+      
     } catch (err) {
       console.error('SVG Export: Failed to export line:', err);
     }
   });
   
+  // Report export statistics
+  debugLog('EXPORTS', '');
+  debugLog('EXPORTS', 'SVG Export Statistics:');
+  debugLog('EXPORTS', `  ✓ Exported: ${exportedCount} ribbons`);
+  debugLog('EXPORTS', `  ⊘ Skipped (invisible/alpha=0): ${skippedInvisible}`);
+  debugLog('EXPORTS', `  Total lines processed: ${ZM.emitterInstance.lines.length}`);
+  
   if (exportedCount === 0) {
-    console.warn('SVG Export: No ribbons were exported (all outside frustum or invalid)');
-    if (ZM.showToast) ZM.showToast('No visible geometry in current view', 'info');
+    console.warn('SVG Export: No ribbons were exported (all invisible)');
+    if (ZM.showToast) ZM.showToast('No visible geometry to export', 'info');
     return;
   }
   
-  console.log(`✓ SVG Export: Successfully exported ${exportedCount} ribbons`);
+  debugLog('EXPORTS', `✓ SVG Export: Successfully exported ${exportedCount} ribbons`);
   
   // Download
   const blob = new Blob(

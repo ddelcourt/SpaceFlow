@@ -126,6 +126,17 @@ export function loadFromLocalStorage(defaultParams) {
     if (loaded.overlayY === undefined) loaded.overlayY = 50;
     if (loaded.overlayAutoFit === undefined) loaded.overlayAutoFit = false;
     
+    // Ensure text overlay settings exist (for backward compatibility)
+    if (loaded.textOverlayMessage === undefined) loaded.textOverlayMessage = '';
+    if (loaded.textOverlayVisible === undefined) loaded.textOverlayVisible = false;
+    if (loaded.textOverlayFade === undefined) loaded.textOverlayFade = 100;
+    if (loaded.textOverlaySize === undefined) loaded.textOverlaySize = 48;
+    if (loaded.textOverlayPosition === undefined) loaded.textOverlayPosition = 'center';
+    if (loaded.textOverlayColor === undefined) loaded.textOverlayColor = '#ffffff';
+    if (loaded.textOverlayAlign === undefined) loaded.textOverlayAlign = 'center';
+    if (loaded.textOverlayWeight === undefined) loaded.textOverlayWeight = '300';
+    if (loaded.textOverlayFadeDuration === undefined) loaded.textOverlayFadeDuration = 0.5;
+    
     // Ensure project-level settings exist (for backward compatibility)
     if (loaded.ambientSpeedMaster === undefined) loaded.ambientSpeedMaster = 100;
     
@@ -374,6 +385,23 @@ export function loadJSON(file, callback) {
             delete state.params.videoFPS;
             delete state.params.videoFormat;
             delete state.params.depthInvert;
+            // Text overlay settings (project-wide)
+            delete state.params.textOverlayMessage;
+            delete state.params.textOverlayVisible;
+            delete state.params.textOverlayFade;
+            delete state.params.textOverlaySize;
+            delete state.params.textOverlayPosition;
+            delete state.params.textOverlayColor;
+            delete state.params.textOverlayAlign;
+            delete state.params.textOverlayWeight;
+            delete state.params.textOverlayFadeDuration;
+            // Image overlay settings (project-wide)
+            delete state.params.overlayImageSrc;
+            delete state.params.overlayVisible;
+            delete state.params.overlayScale;
+            delete state.params.overlayOpacity;
+            delete state.params.overlayX;
+            delete state.params.overlayY;
           }
         });
       }

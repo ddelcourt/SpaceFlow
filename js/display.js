@@ -154,6 +154,99 @@ function initializeOverlay(ZM) {
 }
 
 /**
+ * Initialize text message overlay handling
+ */
+function initializeTextOverlay(ZM) {
+  const displayElement = document.getElementById('text-overlay-display');
+  
+  // Update text overlay function
+  ZM.updateTextOverlay = () => {
+    if (!displayElement) return;
+    
+    if (ZM.params.textOverlayVisible && ZM.params.textOverlayMessage) {
+      displayElement.textContent = ZM.params.textOverlayMessage;
+      displayElement.style.fontSize = ZM.params.textOverlaySize + 'px';
+      displayElement.style.color = ZM.params.textOverlayColor;
+      displayElement.style.textAlign = ZM.params.textOverlayAlign;
+      displayElement.style.fontWeight = ZM.params.textOverlayWeight;
+      displayElement.style.lineHeight = '1';
+      
+      // Apply position
+      displayElement.style.top = '';
+      displayElement.style.bottom = '';
+      if (ZM.params.textOverlayPosition === 'top') {
+        displayElement.style.top = '10%';
+        displayElement.style.transform = 'translate(-50%, 0)';
+      } else if (ZM.params.textOverlayPosition === 'bottom') {
+        displayElement.style.bottom = '10%';
+        displayElement.style.top = 'auto';
+        displayElement.style.transform = 'translate(-50%, 0)';
+      } else {
+        displayElement.style.top = '50%';
+        displayElement.style.transform = 'translate(-50%, -50%)';
+      }
+      
+      // Show with fade-in: first make visible at opacity 0, then transition to target
+      displayElement.style.display = 'block';
+      // Force reflow to ensure display:block is applied before opacity change
+      displayElement.offsetHeight;
+      // Now transition to target opacity
+      displayElement.style.opacity = ZM.params.textOverlayFade / 100;
+    } else {
+      // Fade out: transition opacity to 0, then hide after transition completes
+      displayElement.style.opacity = '0';
+      
+      // Wait for transition to complete before setting display:none
+      const fadeDuration = ZM.params.textOverlayFadeDuration || 0.5;
+      setTimeout(() => {
+        // Double-check visibility hasn't changed during transition
+        if (!ZM.params.textOverlayVisible) {
+          displayElement.style.display = 'none';
+        }
+      }, fadeDuration * 1000 + 50); // Add 50ms buffer
+    }
+  };
+  
+  // Set initial transition duration
+  if (displayElement) {
+    const initialDuration = ZM.params.textOverlayFadeDuration || 0.5;
+    displayElement.style.transition = `all ${initialDuration}s ease`;
+  }
+  
+  // Initial render
+  if (ZM.updateTextOverlay) {
+    ZM.updateTextOverlay();
+  }
+  
+  // Watch for text overlay param changes
+  const originalAssign = Object.assign;
+  Object.assign = function(target, ...sources) {
+    const result = originalAssign.call(this, target, ...sources);
+    
+    if (target === ZM.params && sources.some(s => 
+      s && ('textOverlayVisible' in s || 'textOverlayMessage' in s || 
+            'textOverlayFade' in s || 'textOverlaySize' in s || 
+            'textOverlayPosition' in s || 'textOverlayColor' in s || 
+            'textOverlayAlign' in s || 'textOverlayWeight' in s ||
+            'textOverlayFadeDuration' in s)
+    )) {
+      // Handle visibility changes with fade duration
+      const visibilitySource = sources.find(s => s && 'textOverlayVisible' in s);
+      if (visibilitySource && displayElement) {
+        const duration = ZM.params.textOverlayFadeDuration || 0.5;
+        displayElement.style.transition = `all ${duration}s ease`;
+      }
+      
+      if (ZM.updateTextOverlay) {
+        ZM.updateTextOverlay();
+      }
+    }
+    
+    return result;
+  };
+}
+
+/**
  * Initialize display window
  */
 async function init() {
@@ -169,6 +262,9 @@ async function init() {
   
   // Initialize overlay handling
   initializeOverlay(ZM);
+  
+  // Initialize text overlay handling
+  initializeTextOverlay(ZM);
   
   // Initialize window sync (wait for initial state from primary)
   // Note: Don't await yet, we'll handle it after sketches are ready
@@ -197,6 +293,11 @@ async function init() {
   // Update overlay after sketches are initialized
   if (ZM.updateOverlay) {
     ZM.updateOverlay();
+  }
+  
+  // Update text overlay after sketches are initialized
+  if (ZM.updateTextOverlay) {
+    ZM.updateTextOverlay();
   }
   
   // Now wait for sync to complete and trigger palette change

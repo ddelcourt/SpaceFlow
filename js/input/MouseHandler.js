@@ -2,6 +2,8 @@
  * MouseHandler — Camera controls via mouse interaction
  */
 
+import { CAMERA } from '../config/constants.js';
+
 export function setupMouseHandlers(ZM) {
   const container = document.getElementById('canvas-container');
   
@@ -197,7 +199,7 @@ export function setupMouseHandlers(ZM) {
     const zoomSpeed = 2;
     
     ZM.camera.distance += delta * zoomSpeed;
-    ZM.camera.distance = Math.max(50, Math.min(10000, ZM.camera.distance));
+    ZM.camera.distance = Math.max(CAMERA.DISTANCE_MIN, Math.min(CAMERA.DISTANCE_MAX, ZM.camera.distance));
     
     ZM.params.cameraDistance = ZM.camera.distance;
     ZM.saveToLocalStorage();

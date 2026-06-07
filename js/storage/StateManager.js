@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { getBackgroundColor } from '../core/colorUtils.js';
+import { debugLog } from '../core/debugLogger.js';
 
 const STATES_STORAGE_KEY = 'ZigMap26_states';
 const ACTIVE_STATE_KEY = 'ZigMap26_activeState';
@@ -62,6 +63,19 @@ export function initializeStateManager(ZM) {
     currentIndex: -1
   };
   
+  // Initialize cached DOM references for auto-trigger UI (performance optimization)
+  ZM.autoTriggerUI = {
+    statusDiv: null,
+    currentStateNameDisplay: null,
+    countdownDisplay: null,
+    progressBarFill: null,
+    progressBarThumb: null,
+    nextStateNameDisplay: null,
+    playPauseBtn: null,
+    previousBtn: null,
+    progressBarContainer: null
+  };
+  
   // Initialize auto-trigger controls (skip in display/player mode - no UI controls)
   if (!ZM.isDisplayMode && !ZM.isPlayerMode) {
     initializeAutoTriggerControls(ZM);
@@ -100,6 +114,17 @@ function captureCurrentState(ZM, name) {
   delete params.overlayOpacity;
   delete params.overlayX;
   delete params.overlayY;
+  
+  // Exclude text overlay settings (project-wide, not state-specific)
+  delete params.textOverlayMessage;
+  delete params.textOverlayVisible;
+  delete params.textOverlayFade;
+  delete params.textOverlaySize;
+  delete params.textOverlayPosition;
+  delete params.textOverlayColor;
+  delete params.textOverlayAlign;
+  delete params.textOverlayWeight;
+  delete params.textOverlayFadeDuration;
   
   // Exclude rendering/camera settings (only FOV is state-specific)
   delete params.near;
@@ -162,7 +187,7 @@ function captureCurrentState(ZM, name) {
     }
   };
   
-  console.log('State captured:', state.name, 'Active palette:', params.activePaletteIndex);
+  debugLog('STATES', 'State captured:', state.name, 'Active palette:', params.activePaletteIndex);
   
   return state;
 }
@@ -173,7 +198,7 @@ function captureCurrentState(ZM, name) {
  * @param {Object} state - State to restore
  */
 function restoreState(ZM, state, instant = false) {
-  console.log('Restoring state:', state.name, 'Palettes:', state.params.palettes, instant ? '(instant)' : '(with transitions)');
+  debugLog('STATES', 'Restoring state:', state.name, 'Palettes:', state.params.palettes, instant ? '(instant)' : '(with transitions)');
   
   // Cancel any pending auto-update to prevent overwriting the loaded state
   if (ZM.cancelStateAutoUpdate) {
@@ -193,8 +218,8 @@ function restoreState(ZM, state, instant = false) {
   // Deep clone state params to avoid reference issues
   const restoredParams = JSON.parse(JSON.stringify(state.params));
   
-  console.log('Restored params active palette:', restoredParams.activePaletteIndex);
-  console.log('Restored params palettes:', restoredParams.palettes?.length);
+  debugLog('STATES', 'Restored params active palette:', restoredParams.activePaletteIndex);
+  debugLog('STATES', 'Restored params palettes:', restoredParams.palettes?.length);
   
   // Note: We intentionally DO NOT clear the emitter when geometry changes
   // This allows smooth transitions where old lines fade out naturally
@@ -235,15 +260,15 @@ function restoreState(ZM, state, instant = false) {
   };
   
   // Update params with deep cloned values
-  console.log('[StateManager] About to assign state params, restoredParams.activePaletteIndex:', restoredParams.activePaletteIndex);
-  console.log('[StateManager] Current ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
+  debugLog('STATES', '[StateManager] About to assign state params, restoredParams.activePaletteIndex:', restoredParams.activePaletteIndex);
+  debugLog('STATES', '[StateManager] Current ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
   Object.assign(ZM.params, restoredParams);
-  console.log('[StateManager] After Object.assign, ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
+  debugLog('STATES', '[StateManager] After Object.assign, ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
   
   // Restore preserved project-wide settings
-  console.log('[StateManager] About to restore preserved settings, preservedSettings.activePaletteIndex:', preservedSettings.activePaletteIndex);
+  debugLog('STATES', '[StateManager] About to restore preserved settings, preservedSettings.activePaletteIndex:', preservedSettings.activePaletteIndex);
   Object.assign(ZM.params, preservedSettings);
-  console.log('[StateManager] After restoring preserved settings, ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
+  debugLog('STATES', '[StateManager] After restoring preserved settings, ZM.params.activePaletteIndex:', ZM.params.activePaletteIndex);
   
   // Clear emitter in these cases:
   // 1. Instant mode (loading project file / initial preset - want fresh start)
@@ -252,14 +277,14 @@ function restoreState(ZM, state, instant = false) {
     const willEmit = ZM.params.emitRate > 0 && ZM.params.ambientSpeedMaster > 0;
     if (instant || !willEmit) {
       const reason = instant ? 'instant load' : 'emission disabled (emitRate=' + ZM.params.emitRate + ', ambientSpeedMaster=' + ZM.params.ambientSpeedMaster + ')';
-      console.log('🧹 Clearing ' + ZM.emitterInstance.lines.length + ' existing lines (' + reason + ')');
+      debugLog('STATES', '🧹 Clearing ' + ZM.emitterInstance.lines.length + ' existing lines (' + reason + ')');
       ZM.emitterInstance.lines = [];
       ZM.emitterInstance.accumulator = 0;
     }
   }
   
-  console.log('ZM.params after assign, active palette:', ZM.params.activePaletteIndex);
-  console.log('ZM.params.palettes:', ZM.params.palettes?.length);
+  debugLog('STATES', 'ZM.params after assign, active palette:', ZM.params.activePaletteIndex);
+  debugLog('STATES', 'ZM.params.palettes:', ZM.params.palettes?.length);
   
   // Verify activePaletteIndex was restored correctly
   if (ZM.params.activePaletteIndex !== restoredParams.activePaletteIndex) {
@@ -273,7 +298,7 @@ function restoreState(ZM, state, instant = false) {
   if (state.camera && ZM.camera) {
     if (instant) {
       // Instant mode: directly set camera values
-      console.log('📷 Setting camera instantly:', state.camera);
+      debugLog('STATES', '📷 Setting camera instantly:', state.camera);
       ZM.camera.rotationX = state.camera.rotationX;
       ZM.camera.rotationY = state.camera.rotationY;
       ZM.camera.distance = state.camera.distance;
@@ -387,7 +412,7 @@ function restoreState(ZM, state, instant = false) {
   
   // Always apply the state's palette — both to ensure new lines use the correct
   // colors AND to transition existing lines to the restored palette.
-  console.log(`🎨 About to trigger palette change: instant=${instant}, palette=${ZM.params.activePaletteIndex}, duration=${ZM.params.colorTransitionDuration}s`);
+  debugLog('STATES', `🎨 About to trigger palette change: instant=${instant}, palette=${ZM.params.activePaletteIndex}, duration=${ZM.params.colorTransitionDuration}s`);
   
   if (instant) {
     // Instant mode: snap background directly, then trigger palette so lines update
@@ -400,13 +425,13 @@ function restoreState(ZM, state, instant = false) {
       ZM.bgTransition.isTransitioning = false;
     }
     if (ZM.triggerPaletteChange) {
-      console.log('   → Calling triggerPaletteChange (instant mode)');
+      debugLog('STATES', '   → Calling triggerPaletteChange (instant mode)');
       ZM.triggerPaletteChange();
     }
   } else {
     // Normal mode: smooth palette transition
     if (ZM.triggerPaletteChange) {
-      console.log('   → Calling triggerPaletteChange (transition mode)');
+      debugLog('STATES', '   → Calling triggerPaletteChange (transition mode)');
       ZM.triggerPaletteChange();
     }
   }
@@ -417,7 +442,7 @@ function restoreState(ZM, state, instant = false) {
     syncUIWithoutRestart(ZM);
     
     // Save to main localStorage
-    console.log('[StateManager] About to save to localStorage, activePaletteIndex:', ZM.params.activePaletteIndex);
+    debugLog('STATES', '[StateManager] About to save to localStorage, activePaletteIndex:', ZM.params.activePaletteIndex);
     if (ZM.saveToLocalStorage) {
       ZM.saveToLocalStorage();
     }
@@ -428,7 +453,7 @@ function restoreState(ZM, state, instant = false) {
     ZM.autoTriggerTimer.elapsed = 0;
   }
   
-  console.log('State restored with camera transition');
+  debugLog('STATES', 'State restored with camera transition');
 }
 
 /**
@@ -545,7 +570,7 @@ function syncUIWithoutRestart(ZM) {
     const shouldBeActive = paletteIndex === ZM.params.activePaletteIndex;
     btn.classList.toggle('active', shouldBeActive);
     if (shouldBeActive) {
-      console.log(`✓ Palette button ${paletteIndex} set as active`);
+      debugLog('STATES', `✓ Palette button ${paletteIndex} set as active`);
     }
   });
   
@@ -630,8 +655,8 @@ function loadState(ZM, id, instant = false, toastPrefix = 'State: ') {
     return false;
   }
   
-  console.log(`🎬 Loading state: "${state.name}" (instant: ${instant})`);
-  console.log(`   State colorTransitionDuration: ${state.params.colorTransitionDuration}s`);
+  debugLog('STATES', `🎬 Loading state: "${state.name}" (instant: ${instant})`);
+  debugLog('STATES', `   State colorTransitionDuration: ${state.params.colorTransitionDuration}s`);
   
   restoreState(ZM, state, instant);
   ZM.stateManager.activeStateId = id;
@@ -639,7 +664,7 @@ function loadState(ZM, id, instant = false, toastPrefix = 'State: ') {
   
   // Broadcast state load to display windows - they will call restoreState() with same logic
   if (ZM.windowSync && ZM.windowSync.broadcastStateLoad) {
-    console.log(`📤 Broadcasting state-load to display windows: ${state.name}`);
+    debugLog('STATES', `📤 Broadcasting state-load to display windows: ${state.name}`);
     ZM.windowSync.broadcastStateLoad(state, instant);
   }
 
@@ -706,7 +731,7 @@ function updateState(ZM, id) {
   // Capture current state
   const updatedState = captureCurrentState(ZM, existingState.name);
   
-  console.log(`📝 Updating state "${existingState.name}":`, {
+  debugLog('STATES', `📝 Updating state "${existingState.name}":`, {
     activePaletteIndex: updatedState.params.activePaletteIndex,
     palettesCount: updatedState.params.palettes?.length
   });
@@ -723,7 +748,7 @@ function updateState(ZM, id) {
   
   // If this is the active state, also update main localStorage to keep params in sync
   if (id === ZM.stateManager.activeStateId) {
-    console.log('Updated active state - syncing main localStorage');
+    debugLog('STATES', 'Updated active state - syncing main localStorage');
     ZM.saveToLocalStorage();
   }
   
@@ -732,7 +757,7 @@ function updateState(ZM, id) {
     ZM.updateStatePanel();
   }
   
-  console.log('State updated:', updatedState.name);
+  debugLog('STATES', 'State updated:', updatedState.name);
   
   return true;
 }
@@ -951,6 +976,23 @@ function importStateFromData(ZM, jsonData) {
           delete state.params.videoFPS;
           delete state.params.videoFormat;
           delete state.params.depthInvert;
+          // Remove text overlay settings (project-wide)
+          delete state.params.textOverlayMessage;
+          delete state.params.textOverlayVisible;
+          delete state.params.textOverlayFade;
+          delete state.params.textOverlaySize;
+          delete state.params.textOverlayPosition;
+          delete state.params.textOverlayColor;
+          delete state.params.textOverlayAlign;
+          delete state.params.textOverlayWeight;
+          delete state.params.textOverlayFadeDuration;
+          // Remove image overlay settings (project-wide)
+          delete state.params.overlayImageSrc;
+          delete state.params.overlayVisible;
+          delete state.params.overlayScale;
+          delete state.params.overlayOpacity;
+          delete state.params.overlayX;
+          delete state.params.overlayY;
         }
         ZM.stateManager.states.push(state);
       });
@@ -977,6 +1019,23 @@ function importStateFromData(ZM, jsonData) {
       delete jsonData.params.videoFPS;
       delete jsonData.params.videoFormat;
       delete jsonData.params.depthInvert;
+      // Remove text overlay settings (project-wide)
+      delete jsonData.params.textOverlayMessage;
+      delete jsonData.params.textOverlayVisible;
+      delete jsonData.params.textOverlayFade;
+      delete jsonData.params.textOverlaySize;
+      delete jsonData.params.textOverlayPosition;
+      delete jsonData.params.textOverlayColor;
+      delete jsonData.params.textOverlayAlign;
+      delete jsonData.params.textOverlayWeight;
+      delete jsonData.params.textOverlayFadeDuration;
+      // Remove image overlay settings (project-wide)
+      delete jsonData.params.overlayImageSrc;
+      delete jsonData.params.overlayVisible;
+      delete jsonData.params.overlayScale;
+      delete jsonData.params.overlayOpacity;
+      delete jsonData.params.overlayX;
+      delete jsonData.params.overlayY;
       ZM.stateManager.states.push(jsonData);
     } else {
       console.error('Invalid state format');
@@ -1044,6 +1103,23 @@ function loadStates() {
         delete state.params.eyeSeparation;
         delete state.params.canvasBorderVisible;
         delete state.params.canvasBorderColor;
+        // Text overlay settings (project-wide)
+        delete state.params.textOverlayMessage;
+        delete state.params.textOverlayVisible;
+        delete state.params.textOverlayFade;
+        delete state.params.textOverlaySize;
+        delete state.params.textOverlayPosition;
+        delete state.params.textOverlayColor;
+        delete state.params.textOverlayAlign;
+        delete state.params.textOverlayWeight;
+        delete state.params.textOverlayFadeDuration;
+        // Image overlay settings (project-wide)
+        delete state.params.overlayImageSrc;
+        delete state.params.overlayVisible;
+        delete state.params.overlayScale;
+        delete state.params.overlayOpacity;
+        delete state.params.overlayX;
+        delete state.params.overlayY;
       }
     });
     
@@ -1108,7 +1184,7 @@ function navigateHistory(ZM, direction) {
   
   // Check bounds
   if (newIndex < 0 || newIndex >= ZM.stateHistory.stack.length) {
-    console.log('[History] Cannot navigate - at', direction < 0 ? 'beginning' : 'end', 'of history');
+    debugLog('STATES', '[History] Cannot navigate - at', direction < 0 ? 'beginning' : 'end', 'of history');
     return false;
   }
   
@@ -1162,7 +1238,7 @@ function navigateHistory(ZM, direction) {
   // Reset navigation flag
   ZM.stateHistory.isNavigating = false;
   
-  console.log('[History] Navigated to', direction < 0 ? 'previous' : 'next', 'state:', state.name, `(${newIndex + 1}/${ZM.stateHistory.stack.length})`);
+  debugLog('STATES', '[History] Navigated to', direction < 0 ? 'previous' : 'next', 'state:', state.name, `(${newIndex + 1}/${ZM.stateHistory.stack.length})`);
   
   return true;
 }
@@ -1178,7 +1254,7 @@ function navigateStates(ZM, direction) {
   
   // Need at least 2 states to navigate
   if (states.length < 2) {
-    console.log('[Navigate] Need at least 2 states to navigate');
+    debugLog('STATES', '[Navigate] Need at least 2 states to navigate');
     return false;
   }
   
@@ -1202,7 +1278,7 @@ function navigateStates(ZM, direction) {
   // Load the state
   const success = loadState(ZM, nextState.id);
   
-  console.log('[Navigate] Navigated to', direction < 0 ? 'previous' : 'next', 'state:', nextState.name, `(${newIndex + 1}/${states.length})`);
+  debugLog('STATES', '[Navigate] Navigated to', direction < 0 ? 'previous' : 'next', 'state:', nextState.name, `(${newIndex + 1}/${states.length})`);
   
   return success;
 }
@@ -1226,8 +1302,19 @@ function shuffleArray(array) {
  * @param {Object} ZM - Main application object
  */
 function initializeAutoTriggerControls(ZM) {
+  // Cache DOM references for performance (avoid repeated queries in hot path)
+  ZM.autoTriggerUI.statusDiv = document.getElementById('auto-trigger-status');
+  ZM.autoTriggerUI.currentStateNameDisplay = document.getElementById('current-state-name');
+  ZM.autoTriggerUI.countdownDisplay = document.getElementById('countdown-display');
+  ZM.autoTriggerUI.progressBarFill = document.getElementById('progress-bar-fill');
+  ZM.autoTriggerUI.progressBarThumb = document.getElementById('progress-bar-thumb');
+  ZM.autoTriggerUI.nextStateNameDisplay = document.getElementById('next-state-name');
+  ZM.autoTriggerUI.playPauseBtn = document.getElementById('auto-trigger-play-pause');
+  ZM.autoTriggerUI.previousBtn = document.getElementById('auto-trigger-previous');
+  ZM.autoTriggerUI.progressBarContainer = document.getElementById('progress-bar-container');
+  
   // Play/Pause button
-  const playPauseBtn = document.getElementById('auto-trigger-play-pause');
+  const playPauseBtn = ZM.autoTriggerUI.playPauseBtn;
   if (playPauseBtn) {
     playPauseBtn.addEventListener('click', () => {
       // If auto-trigger is disabled, enable it and start playing
@@ -1237,19 +1324,19 @@ function initializeAutoTriggerControls(ZM) {
         if (checkbox) checkbox.checked = true;
         ZM.autoTriggerTimer.paused = false;
         ZM.saveToLocalStorage();
-        console.log('[Auto-Trigger] Enabled and started');
+        debugLog('STATES', '[Auto-Trigger] Enabled and started');
         if (ZM.showToast) ZM.showToast('▶ States Player');
       } else {
         // Toggle pause state
         if (ZM.autoTriggerTimer.paused) {
           // Resume: unpause and continue from where we left off
           ZM.autoTriggerTimer.paused = false;
-          console.log('[Auto-Trigger] Resumed');
+          debugLog('STATES', '[Auto-Trigger] Resumed');
         } else {
           // Pause: save current elapsed time
           ZM.autoTriggerTimer.paused = true;
           ZM.autoTriggerTimer.pausedAt = ZM.autoTriggerTimer.elapsed;
-          console.log('[Auto-Trigger] Paused at', ZM.autoTriggerTimer.pausedAt.toFixed(1), 'seconds');
+          debugLog('STATES', '[Auto-Trigger] Paused at', ZM.autoTriggerTimer.pausedAt.toFixed(1), 'seconds');
         }
       }
       updateAutoTriggerStatus(ZM);
@@ -1258,7 +1345,7 @@ function initializeAutoTriggerControls(ZM) {
   }
   
   // Previous button
-  const previousBtn = document.getElementById('auto-trigger-previous');
+  const previousBtn = ZM.autoTriggerUI.previousBtn;
   if (previousBtn) {
     previousBtn.addEventListener('click', () => {
       navigateHistory(ZM, -1);
@@ -1271,7 +1358,7 @@ function initializeAutoTriggerControls(ZM) {
     resetBtn.addEventListener('click', () => {
       ZM.autoTriggerTimer.elapsed = 0;
       ZM.autoTriggerTimer.pausedAt = 0;
-      console.log('[Auto-Trigger] Timer reset');
+      debugLog('STATES', '[Auto-Trigger] Timer reset');
       updateAutoTriggerStatus(ZM);
       if (ZM.showToast) ZM.showToast('Timer Reset');
     });
@@ -1285,13 +1372,13 @@ function initializeAutoTriggerControls(ZM) {
       ZM.autoTriggerTimer.elapsed = 0;
       ZM.autoTriggerTimer.pausedAt = 0;
       ZM.stateManager.loadRandomState();
-      console.log('[Auto-Trigger] Skipped to next state');
+      debugLog('STATES', '[Auto-Trigger] Skipped to next state');
       updateAutoTriggerStatus(ZM);
     });
   }
   
   // Progress bar scrubbing (click and drag)
-  const progressBarContainer = document.getElementById('progress-bar-container');
+  const progressBarContainer = ZM.autoTriggerUI.progressBarContainer;
   if (progressBarContainer) {
     let isDragging = false;
     
@@ -1306,7 +1393,7 @@ function initializeAutoTriggerControls(ZM) {
         ZM.autoTriggerTimer.pausedAt = newElapsed;
       }
       
-      console.log('[Auto-Trigger] Scrubbed to', newElapsed.toFixed(1), 'seconds');
+      debugLog('STATES', '[Auto-Trigger] Scrubbed to', newElapsed.toFixed(1), 'seconds');
       updateAutoTriggerStatus(ZM);
     };
     
@@ -1372,7 +1459,7 @@ function loadRandomState(ZM) {
     // Shuffle the available states into a random order
     ZM.shufflePool = shuffleArray(availableStates);
     
-    console.log(`[Auto-Trigger] New shuffle cycle created: [${ZM.shufflePool.map(s => `"${s.name}"`).join(', ')}]`);
+    debugLog('STATES', `[Auto-Trigger] New shuffle cycle created: [${ZM.shufflePool.map(s => `"${s.name}"`).join(', ')}]`);
   }
   
   // Pop the next state from the shuffled pool
@@ -1383,7 +1470,7 @@ function loadRandomState(ZM) {
   const currentName = currentState ? currentState.name : 'Unknown';
   
   // Debug logging
-  console.log(`[Auto-Trigger] Shuffle Selection:
+  debugLog('STATES', `[Auto-Trigger] Shuffle Selection:
     Current: "${currentName}"
     Selected: "${nextState.name}"
     Remaining in cycle: [${ZM.shufflePool.map(s => `"${s.name}"`).join(', ')}]
@@ -1406,14 +1493,15 @@ function updateAutoTriggerStatus(ZM) {
   // Skip UI updates in player mode or display mode (no DOM elements to update)
   if (ZM.isPlayerMode || ZM.isDisplayMode) return;
   
-  const statusDiv = document.getElementById('auto-trigger-status');
-  const currentStateNameDisplay = document.getElementById('current-state-name');
-  const countdownDisplay = document.getElementById('countdown-display');
-  const progressBarFill = document.getElementById('progress-bar-fill');
-  const progressBarThumb = document.getElementById('progress-bar-thumb');
-  const nextStateNameDisplay = document.getElementById('next-state-name');
-  const playPauseBtn = document.getElementById('auto-trigger-play-pause');
-  const previousBtn = document.getElementById('auto-trigger-previous');
+  // Use cached DOM references for performance
+  const statusDiv = ZM.autoTriggerUI.statusDiv;
+  const currentStateNameDisplay = ZM.autoTriggerUI.currentStateNameDisplay;
+  const countdownDisplay = ZM.autoTriggerUI.countdownDisplay;
+  const progressBarFill = ZM.autoTriggerUI.progressBarFill;
+  const progressBarThumb = ZM.autoTriggerUI.progressBarThumb;
+  const nextStateNameDisplay = ZM.autoTriggerUI.nextStateNameDisplay;
+  const playPauseBtn = ZM.autoTriggerUI.playPauseBtn;
+  const previousBtn = ZM.autoTriggerUI.previousBtn;
   
   if (!statusDiv || !currentStateNameDisplay || !countdownDisplay || !progressBarFill || !nextStateNameDisplay) return;
   

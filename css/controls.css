@@ -822,3 +822,160 @@ input[type="range"]:disabled::-moz-range-thumb:hover {
   outline: none;
   border-color: #0087ff;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Text Message Overlay Button Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.text-overlay-btn {
+  transition: all 0.2s ease;
+}
+
+.text-overlay-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.text-overlay-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.text-overlay-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #2a2a2a !important;
+  color: #666 !important;
+  border-color: #444 !important;
+}
+
+.text-overlay-btn.hide {
+  background: #3a1a1a;
+  border-color: #5f2d2d;
+  color: #ffaaaa;
+}
+
+.text-overlay-btn.hide:hover:not(:disabled) {
+  background: #4a2020;
+  border-color: #802d2d;
+}
+
+/* Text Size Buttons */
+.text-size-btn {
+  transition: all 0.2s ease;
+}
+
+.text-size-btn:hover {
+  background: #252530 !important;
+  border-color: #555 !important;
+  color: #aaa !important;
+  transform: translateY(-1px);
+}
+
+.text-size-btn.active {
+  background: #2a2a3a !important;
+  border-color: #4a4aff !important;
+  color: #aaf !important;
+}
+
+.text-size-btn:active {
+  transform: translateY(0);
+}
+
+/* Text Position Buttons */
+.text-position-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #888;
+  transition: all 0.2s ease;
+}
+
+.text-position-btn:hover {
+  background: #252530 !important;
+  border-color: #555 !important;
+  color: #aaa !important;
+  transform: translateY(-1px);
+}
+
+.text-position-btn.active {
+  background: #1a3a5f !important;
+  border-color: #26527a !important;
+  color: #88ccff !important;
+}
+
+.text-position-btn:active {
+  transform: translateY(0);
+}
+
+/* Text Color Buttons */
+.text-color-btn {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.text-color-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.text-color-btn.active::after {
+  content: '✓';
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.text-color-btn:active {
+  transform: translateY(0);
+}
+
+/* Text Alignment Buttons */
+.text-align-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #888;
+  transition: all 0.2s ease;
+}
+
+.text-align-btn:hover {
+  background: #252530 !important;
+  border-color: #555 !important;
+  color: #aaa !important;
+  transform: translateY(-1px);
+}
+
+.text-align-btn.active {
+  background: #1a3a5f !important;
+  border-color: #26527a !important;
+  color: #88ccff !important;
+}
+
+.text-align-btn:active {
+  transform: translateY(0);
+}
+
+/* Text Weight Buttons */
+.text-weight-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #888;
+  transition: all 0.2s ease;
+}
+
+.text-weight-btn:hover {
+  background: #252530 !important;
+  border-color: #555 !important;
+  color: #aaa !important;
+  transform: translateY(-1px);
+}
+
+.text-weight-btn.active {
+  background: #1a3a5f !important;
+  border-color: #26527a !important;
+  color: #88ccff !important;
+}
+
+.text-weight-btn:active {
+  transform: translateY(0);
+}

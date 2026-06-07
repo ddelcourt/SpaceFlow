@@ -147,6 +147,9 @@ function initializeAllControls(ZM) {
   // Overlay controls
   setupOverlayControls(ZM);
   
+  // Text message overlay controls
+  setupTextOverlayControls(ZM);
+  
   // File save/load
   setupFileSaveLoad(ZM);
   
@@ -1438,6 +1441,356 @@ function setupOverlayControls(ZM) {
   
   // Store update function for external calls
   ZM.updateOverlay = updateOverlay;
+}
+
+/**
+ * Setup text message overlay controls
+ */
+function setupTextOverlayControls(ZM) {
+  const messageInput = document.getElementById('text-overlay-message');
+  const toggleBtn = document.getElementById('text-overlay-toggle');
+  const sizeSlider = document.getElementById('text-overlay-size');
+  const sizeDisplay = document.getElementById('text-overlay-size-val');
+  const fadeSlider = document.getElementById('text-overlay-fade');
+  const fadeDisplay = document.getElementById('text-overlay-fade-val');
+  const fadeDurationSlider = document.getElementById('text-fade-duration');
+  const fadeDurationDisplay = document.getElementById('text-fade-duration-val');
+  const positionButtons = document.querySelectorAll('.text-position-btn');
+  const colorPicker = document.getElementById('text-overlay-color');
+  const alignButtons = document.querySelectorAll('.text-align-btn');
+  const weightButtons = document.querySelectorAll('.text-weight-btn');
+  const displayElement = document.getElementById('text-overlay-display');
+  
+  // Update display function
+  function updateTextOverlay() {
+    if (!displayElement) return;
+    
+    if (ZM.params.textOverlayVisible && ZM.params.textOverlayMessage) {
+      displayElement.textContent = ZM.params.textOverlayMessage;
+      displayElement.style.fontSize = ZM.params.textOverlaySize + 'px';
+      displayElement.style.color = ZM.params.textOverlayColor;
+      displayElement.style.textAlign = ZM.params.textOverlayAlign;
+      displayElement.style.fontWeight = ZM.params.textOverlayWeight;
+      displayElement.style.lineHeight = '1';
+      
+      // Apply position
+      displayElement.style.top = '';
+      displayElement.style.bottom = '';
+      if (ZM.params.textOverlayPosition === 'top') {
+        displayElement.style.top = '10%';
+        displayElement.style.transform = 'translate(-50%, 0)';
+      } else if (ZM.params.textOverlayPosition === 'bottom') {
+        displayElement.style.bottom = '10%';
+        displayElement.style.top = 'auto';
+        displayElement.style.transform = 'translate(-50%, 0)';
+      } else {
+        displayElement.style.top = '50%';
+        displayElement.style.transform = 'translate(-50%, -50%)';
+      }
+      
+      // Show with fade-in: first make visible at opacity 0, then transition to target
+      displayElement.style.display = 'block';
+      // Force reflow to ensure display:block is applied before opacity change
+      displayElement.offsetHeight;
+      // Now transition to target opacity
+      displayElement.style.opacity = ZM.params.textOverlayFade / 100;
+    } else {
+      // Fade out: transition opacity to 0, then hide after transition completes
+      displayElement.style.opacity = '0';
+      
+      // Wait for transition to complete before setting display:none
+      const fadeDuration = ZM.params.textOverlayFadeDuration || 0.5;
+      setTimeout(() => {
+        // Double-check visibility hasn't changed during transition
+        if (!ZM.params.textOverlayVisible) {
+          displayElement.style.display = 'none';
+        }
+      }, fadeDuration * 1000 + 50); // Add 50ms buffer
+    }
+  }
+  
+  // Message input handler
+  if (messageInput) {
+    messageInput.addEventListener('input', (e) => {
+      ZM.params.textOverlayMessage = e.target.value;
+      
+      // Enable/disable button based on message content
+      if (toggleBtn) {
+        toggleBtn.disabled = !e.target.value.trim();
+      }
+      
+      // Update display if visible
+      if (ZM.params.textOverlayVisible) {
+        updateTextOverlay();
+      }
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayMessage: ZM.params.textOverlayMessage
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+    
+    // Set initial message input value
+    messageInput.value = ZM.params.textOverlayMessage;
+  }
+  
+  // Toggle button handler
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      const wasVisible = ZM.params.textOverlayVisible;
+      ZM.params.textOverlayVisible = !wasVisible;
+      
+      // Apply transition duration BEFORE visibility change
+      if (displayElement) {
+        const duration = ZM.params.textOverlayFadeDuration || 0.5;
+        displayElement.style.transition = `all ${duration}s ease`;
+      }
+      
+      // Update button appearance
+      if (ZM.params.textOverlayVisible) {
+        toggleBtn.textContent = 'Hide from Monitors';
+        toggleBtn.classList.add('hide');
+        showToast('Text sent to monitors', 'success');
+      } else {
+        toggleBtn.textContent = 'Send to Monitors';
+        toggleBtn.classList.remove('hide');
+        showToast('Text hidden from monitors', 'info');
+      }
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayVisible: ZM.params.textOverlayVisible
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+    
+    // Initial button state
+    toggleBtn.disabled = !ZM.params.textOverlayMessage.trim();
+    if (ZM.params.textOverlayVisible) {
+      toggleBtn.textContent = 'Hide from Monitors';
+      toggleBtn.classList.add('hide');
+    }
+  }
+  
+  // Size slider handler
+  if (sizeSlider) {
+    sizeSlider.addEventListener('input', (e) => {
+      ZM.params.textOverlaySize = parseInt(e.target.value);
+      
+      if (sizeDisplay) {
+        sizeDisplay.textContent = ZM.params.textOverlaySize;
+      }
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlaySize: ZM.params.textOverlaySize
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+    
+    // Set initial size slider value
+    sizeSlider.value = ZM.params.textOverlaySize;
+    if (sizeDisplay) {
+      sizeDisplay.textContent = ZM.params.textOverlaySize;
+    }
+  }
+  
+  // Opacity slider handler
+  if (fadeSlider) {
+    fadeSlider.addEventListener('input', (e) => {
+      ZM.params.textOverlayFade = parseInt(e.target.value);
+      
+      if (fadeDisplay) {
+        fadeDisplay.textContent = ZM.params.textOverlayFade;
+      }
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayFade: ZM.params.textOverlayFade
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+    
+    // Set initial opacity slider value
+    fadeSlider.value = ZM.params.textOverlayFade;
+    if (fadeDisplay) {
+      fadeDisplay.textContent = ZM.params.textOverlayFade;
+    }
+  }
+  
+  // Position button handlers
+  positionButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const position = btn.dataset.position;
+      ZM.params.textOverlayPosition = position;
+      
+      // Update button states
+      positionButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayPosition: ZM.params.textOverlayPosition
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+  });
+  
+  // Set initial position button state
+  positionButtons.forEach(btn => {
+    if (btn.dataset.position === ZM.params.textOverlayPosition) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  // Color picker handler
+  if (colorPicker) {
+    colorPicker.addEventListener('input', (e) => {
+      ZM.params.textOverlayColor = e.target.value;
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayColor: ZM.params.textOverlayColor
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+    
+    // Set initial color picker value
+    colorPicker.value = ZM.params.textOverlayColor;
+  }
+  
+  // Alignment button handlers
+  alignButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const align = btn.dataset.align;
+      ZM.params.textOverlayAlign = align;
+      
+      // Update button states
+      alignButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayAlign: ZM.params.textOverlayAlign
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+  });
+  
+  // Set initial alignment button state
+  alignButtons.forEach(btn => {
+    if (btn.dataset.align === ZM.params.textOverlayAlign) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  // Weight button handlers
+  weightButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const weight = btn.dataset.weight;
+      ZM.params.textOverlayWeight = weight;
+      
+      // Update button states
+      weightButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      updateTextOverlay();
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayWeight: ZM.params.textOverlayWeight
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+  });
+  
+  // Set initial weight button state
+  weightButtons.forEach(btn => {
+    if (btn.dataset.weight === ZM.params.textOverlayWeight) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+  
+  // Fade duration slider handler
+  if (fadeDurationSlider) {
+    fadeDurationSlider.addEventListener('input', (e) => {
+      ZM.params.textOverlayFadeDuration = parseFloat(e.target.value);
+      
+      if (fadeDurationDisplay) {
+        fadeDurationDisplay.textContent = ZM.params.textOverlayFadeDuration.toFixed(1);
+      }
+      
+      // Broadcast change
+      if (ZM.windowSync) {
+        ZM.windowSync.broadcastParamChanges({
+          textOverlayFadeDuration: ZM.params.textOverlayFadeDuration
+        });
+      }
+      
+      ZM.saveToLocalStorage();
+    });
+  }
+  
+  // Set initial fade duration slider value from saved params
+  if (fadeDurationSlider && fadeDurationDisplay) {
+    fadeDurationSlider.value = ZM.params.textOverlayFadeDuration;
+    fadeDurationDisplay.textContent = ZM.params.textOverlayFadeDuration.toFixed(1);
+  }
+  
+  // Set initial transition duration based on current visibility state
+  if (displayElement) {
+    const initialDuration = ZM.params.textOverlayFadeDuration || 0.5;
+    displayElement.style.transition = `all ${initialDuration}s ease`;
+  }
+  
+  // Initial render
+  updateTextOverlay();
+  
+  // Store update function for external calls
+  ZM.updateTextOverlay = updateTextOverlay;
 }
 
 /**
