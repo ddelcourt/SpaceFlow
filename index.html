@@ -788,6 +788,29 @@
     </div>
   </div>
 
+  <!-- Preset Loader Modal -->
+  <div id="preset-loader-modal" class="preset-loader-modal hidden">
+    <div class="preset-loader-inner">
+      <h3 class="preset-loader-title">Load Project</h3>
+      
+      <!-- Preset List Container -->
+      <div class="preset-loader-list" id="preset-loader-list">
+        <!-- Presets will be populated dynamically -->
+        <div class="preset-loader-loading">Loading presets...</div>
+      </div>
+      
+      <!-- Load from File Button -->
+      <button id="preset-loader-file-btn" class="preset-loader-file-btn">
+        <span>📁</span>
+        <span>Load from File</span>
+      </button>
+      
+      <div class="preset-loader-footer">
+        <button id="preset-loader-close" class="preset-loader-close">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PWA Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {

@@ -187,7 +187,7 @@ window.SpaceFlow.triggerPaletteChange = function() {
  * Load preset from file
  * @param {string} presetName - Name of preset file (without .json extension)
  */
-async function loadPresetFile(ZM, presetName = 'zigmap_init') {
+async function loadPresetFile(ZM, presetName = 'zigmap_init', applyFirstState = true) {
   try {
     const response = await fetch(`config/presets/${presetName}.json`);
     if (!response.ok) {
@@ -251,8 +251,8 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init') {
         Object.assign(ZM.params, loadedData.params);
       }
       
-      // Then load the first state's params (overrides state-specific settings)
-      if (loadedData.states.length > 0) {
+      // Optionally apply first state's params (for initial load vs runtime transition)
+      if (applyFirstState && loadedData.states.length > 0) {
         const firstState = loadedData.states[0];
         // Apply first state's params immediately
         Object.assign(ZM.params, firstState.params);
@@ -266,15 +266,15 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init') {
       Object.assign(ZM.params, loadedData.params);
     }
     
-    // Sync camera from loaded params
-    if (ZM.camera) {
+    // Sync camera from loaded params (only if we applied first state)
+    if (applyFirstState && ZM.camera) {
       ZM.camera.syncFromParams(ZM.params);
     }
     
     // Save to localStorage so this only happens once
     ZM.saveToLocalStorage();
     
-    debugLog('PRESETS', `✓ Preset loaded: ${presetName}`);
+    debugLog('PRESETS', `✓ Preset loaded: ${presetName} (applyFirstState: ${applyFirstState})`);
     return true;
   } catch (err) {
     console.warn(`Could not load preset "${presetName}":`, err);
@@ -703,6 +703,274 @@ function showMiniToast(message, type = '', duration = UI_TIMING.MINI_TOAST_DEFAU
 
 // Expose showToast on ZM
 window.SpaceFlow.showToast = showMiniToast;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PRESET LOADER MODAL FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fetch and parse presets from welcome.html
+ * @returns {Promise<Array<{name: string, type: string, presetName: string}>>}
+ */
+async function fetchPresetsFromWelcome() {
+  try {
+    const response = await fetch('welcome.html');
+    if (!response.ok) {
+      throw new Error(`Failed to fetch welcome.html: ${response.status}`);
+    }
+    
+    const html = await response.text();
+    
+    // Create a temporary DOM parser
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Find all preset items between PRESETS_START and PRESETS_END markers
+    const presetList = doc.getElementById('preset-list');
+    if (!presetList) {
+      throw new Error('Preset list not found in welcome.html');
+    }
+    
+    const presetItems = presetList.querySelectorAll('.preset-item');
+    const presets = [];
+    
+    presetItems.forEach(item => {
+      const nameEl = item.querySelector('.preset-name');
+      const typeEl = item.querySelector('.preset-type');
+      const editorLink = item.querySelector('a[href*="index.html"]');
+      
+      if (nameEl && typeEl && editorLink) {
+        const fullName = nameEl.textContent.trim();
+        const type = typeEl.textContent.trim();
+        
+        // Extract preset name from URL parameter
+        const url = new URL(editorLink.getAttribute('href'), window.location.origin);
+        const presetName = url.searchParams.get('preset');
+        
+        if (presetName) {
+          presets.push({
+            name: fullName,
+            type: type,
+            presetName: presetName
+          });
+        }
+      }
+    });
+    
+    debugLog('PRESETS', `✓ Fetched ${presets.length} presets from welcome.html`);
+    return presets;
+    
+  } catch (error) {
+    console.error('Error fetching presets from welcome.html:', error);
+    return [];
+  }
+}
+
+// Expose preset fetching function on ZM
+window.SpaceFlow.fetchPresetsFromWelcome = fetchPresetsFromWelcome;
+
+/**
+ * Show the preset loader modal
+ */
+async function showPresetLoaderModal() {
+  const modal = document.getElementById('preset-loader-modal');
+  const listContainer = document.getElementById('preset-loader-list');
+  const closeBtn = document.getElementById('preset-loader-close');
+  const fileBtn = document.getElementById('preset-loader-file-btn');
+  
+  if (!modal || !listContainer) return;
+  
+  // Show loading state
+  listContainer.innerHTML = '<div class="preset-loader-loading">Loading presets...</div>';
+  
+  // Show modal
+  modal.classList.remove('hidden');
+  
+  // Fetch and populate presets
+  const presets = await fetchPresetsFromWelcome();
+  
+  if (presets.length === 0) {
+    listContainer.innerHTML = '<div class="preset-loader-loading">No presets found</div>';
+    return;
+  }
+  
+  // Build preset list HTML
+  listContainer.innerHTML = presets.map(preset => `
+    <div class="preset-loader-item">
+      <div class="preset-loader-item-info">
+        <div class="preset-loader-item-name">${preset.name}</div>
+        <div class="preset-loader-item-type">${preset.type}</div>
+      </div>
+      <button class="preset-loader-item-load" data-preset="${preset.presetName}">Load</button>
+    </div>
+  `).join('');
+  
+  // Add click handlers to Load buttons (will be implemented in next slice)
+  const loadButtons = listContainer.querySelectorAll('.preset-loader-item-load');
+  loadButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const presetName = btn.dataset.preset;
+      if (window.SpaceFlow.loadPresetFromModal) {
+        window.SpaceFlow.loadPresetFromModal(presetName);
+      }
+    });
+  });
+  
+  // Setup close button handler
+  if (closeBtn) {
+    closeBtn.onclick = hidePresetLoaderModal;
+  }
+  
+  // Setup "Load from File" button handler
+  if (fileBtn) {
+    fileBtn.onclick = () => {
+      hidePresetLoaderModal();
+      // Trigger the file input click
+      const fileInput = document.getElementById('load-json-input');
+      if (fileInput) {
+        fileInput.click();
+      }
+    };
+  }
+  
+  // Setup ESC key handler
+  const escHandler = (e) => {
+    if (e.key === 'Escape') {
+      hidePresetLoaderModal();
+      document.removeEventListener('keydown', escHandler);
+    }
+  };
+  document.addEventListener('keydown', escHandler);
+  
+  // Setup click outside to close
+  const clickOutsideHandler = (e) => {
+    if (e.target === modal) {
+      hidePresetLoaderModal();
+    }
+  };
+  modal.addEventListener('click', clickOutsideHandler);
+  
+  // Prevent clicks inside modal content from closing
+  const modalInner = modal.querySelector('.preset-loader-inner');
+  if (modalInner) {
+    modalInner.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+}
+
+/**
+ * Hide the preset loader modal
+ */
+function hidePresetLoaderModal() {
+  const modal = document.getElementById('preset-loader-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+/**
+ * Load a preset from the modal
+ * @param {string} presetName - The preset name (without .json extension)
+ */
+async function loadPresetFromModal(presetName) {
+  const ZM = window.SpaceFlow;
+  
+  if (!presetName) {
+    console.error('No preset name provided');
+    return;
+  }
+  
+  // Close the modal immediately
+  hidePresetLoaderModal();
+  
+  // Show loading toast
+  if (ZM.showToast) {
+    ZM.showToast(`Loading ${presetName}...`, 'info', 2000);
+  }
+  
+  try {
+    // Load the preset file WITHOUT applying first state (we'll transition to it)
+    const success = await loadPresetFile(ZM, presetName, false);
+    
+    if (success) {
+      // Update project name
+      ZM._projectName = `${presetName}.json`;
+      if (ZM.updateProjectNameDisplay) {
+        ZM.updateProjectNameDisplay(ZM._projectName);
+      }
+      
+      // Reset auto-trigger timer to prevent weird values
+      if (ZM.autoTriggerTimer) {
+        ZM.autoTriggerTimer.elapsed = 0;
+        ZM.autoTriggerTimer.pausedAt = 0;
+        ZM.autoTriggerTimer.paused = false;
+      }
+      
+      // Reset state history so previous/next navigation starts fresh
+      if (ZM.stateHistory) {
+        ZM.stateHistory.stack = [];
+        ZM.stateHistory.currentIndex = -1;
+      }
+      
+      // Cancel any active camera transition
+      if (ZM.camera && ZM.camera.transition) {
+        ZM.camera.transition.isActive = false;
+      }
+      
+      // Clear shuffle pool so it regenerates with new state IDs
+      if (ZM.shufflePool) {
+        ZM.shufflePool = [];
+      }
+      
+      // Update state panel UI
+      if (ZM.updateStatePanel) {
+        ZM.updateStatePanel();
+      }
+      
+      // Load the first state with smooth transition using loaded transition values
+      if (ZM.stateManager && ZM.stateManager.states.length > 0) {
+        const firstState = ZM.stateManager.states[0];
+        debugLog('STATES', '🎯 Transitioning to first state with loaded transition values:', firstState.name);
+        debugLog('STATES', `   stateTransitionDuration: ${ZM.params.stateTransitionDuration}s`);
+        debugLog('STATES', `   colorTransitionDuration: ${ZM.params.colorTransitionDuration}s`);
+        ZM.stateManager.load(firstState.id, false); // instant = false, use transition
+      }
+      
+      // Sync UI controls with loaded params (includes all UI elements)
+      if (ZM.syncUIFromParams) {
+        ZM.syncUIFromParams();
+      }
+      
+      // Broadcast full state to display window
+      if (ZM.windowSync && ZM.windowSync.broadcastFullState) {
+        ZM.windowSync.broadcastFullState();
+      }
+      
+      // Show success toast
+      if (ZM.showToast) {
+        ZM.showToast(`✓ Loaded ${presetName}`, 'success');
+      }
+      
+      debugLog('PRESETS', `✓ Successfully loaded preset from modal: ${presetName}`);
+    } else {
+      // Show error toast
+      if (ZM.showToast) {
+        ZM.showToast(`❌ Failed to load ${presetName}`, 'error');
+      }
+    }
+  } catch (error) {
+    console.error('Error loading preset from modal:', error);
+    if (ZM.showToast) {
+      ZM.showToast(`❌ Error loading ${presetName}`, 'error');
+    }
+  }
+}
+
+// Expose modal functions on ZM
+window.SpaceFlow.showPresetLoaderModal = showPresetLoaderModal;
+window.SpaceFlow.hidePresetLoaderModal = hidePresetLoaderModal;
+window.SpaceFlow.loadPresetFromModal = loadPresetFromModal;
 
 // Start application when DOM is ready
 if (document.readyState === 'loading') {

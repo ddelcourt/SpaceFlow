@@ -998,7 +998,17 @@ function setupFileSaveLoad(ZM) {
   }
   
   if (loadBtn && loadInput) {
-    loadBtn.addEventListener('click', () => loadInput.click());
+    // Load button now opens preset loader modal
+    loadBtn.addEventListener('click', () => {
+      if (ZM.showPresetLoaderModal) {
+        ZM.showPresetLoaderModal();
+      } else {
+        // Fallback to file picker if modal not available
+        loadInput.click();
+      }
+    });
+    
+    // File input change handler (used by "Load from File" button in modal)
     loadInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -2039,8 +2049,11 @@ function syncUIFromParams(ZM) {
     ZM.bgTransition.isTransitioning = false;
   }
   
-  // Sync camera from params
-  ZM.camera.syncFromParams(ZM.params);
+  // Sync camera from params ONLY if not transitioning
+  // (If transitioning, the transition handles camera movement)
+  if (!ZM.camera.transition.isActive) {
+    ZM.camera.syncFromParams(ZM.params);
+  }
   
   // Reinitialize sketches if needed
   if (ZM.initializeSketches) {
