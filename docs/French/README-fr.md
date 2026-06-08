@@ -432,7 +432,7 @@ Capture image par image pour un rendu fluide et déterministe. Démarrage/arrêt
 2. Sélectionner le fichier JSON sauvegardé
 3. Le projet se restaure immédiatement
 
-Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque modification. Au premier lancement, un projet de démarrage avec des états d'exemple se charge depuis `config/presets/zigmap_init.json`.
+Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque modification. Au premier lancement, un projet de démarrage avec des états d'exemple se charge depuis `config/presets/Init.json`.
 
 **Comportement du localStorage :**
 - Les paramètres sont automatiquement sauvegardés à chaque modification
@@ -510,7 +510,7 @@ Pour le contrôle avancé, le débogage et l'automatisation, voir :
 │   ├── overlayPresets.js  Liste des fichiers d'incrustation
 │   └── presets/           Configurations préréglées
 │       ├── manifest.json  Registre des préréglages
-│       └── zigmap_init.json  Projet de démarrage par défaut
+│       └── Init.json         Projet de démarrage par défaut
 ├── assets/overlays/       Préréglages d'incrustation encodés en Base64
 └── utilities/             Outil de conversion d'incrustation
 ```

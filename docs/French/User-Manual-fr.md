@@ -1,4 +1,4 @@
-# ZigMap Emitter — Manuel utilisateur
+# SpaceFlow — Manuel utilisateur
 
 ```mermaid
 graph TB

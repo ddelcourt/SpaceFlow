@@ -272,7 +272,7 @@ Each state contains:
 {
   "presets": [
     {
-      "filename": "zigmap_init.json",
+      "filename": "Init.json",
       "name": "zigmap_init",
       "type": "Init"
     },
@@ -319,7 +319,7 @@ Each state contains:
 
 Presets can be loaded:
 
-1. **At startup** — `zigmap_init.json` loads on first run
+1. **At startup** — `Init.json` loads on first run
 2. **Via URL** — `index.html?preset=filename` (without .json extension)
 3. **Via welcome page** — Click preset buttons
 4. **Via file upload** — Drag and drop or use file picker

@@ -2,11 +2,11 @@
   "name": "SpaceFlow",
   "version": "27.0.1",
   "title": "SpaceFlow - Generative Space Mapping",
-  "description": "Interactive 3D zigzag pattern generator with real-time camera controls and multiple export formats",
+  "description": "Interactive 3D generative art framework with real-time camera controls, state management, and multiple export formats",
   "author": "ddelcourt",
   "year": 2026,
   "license": "MIT",
-  "repository": "https://github.com/ddelcourt/ZigMap",
+  "repository": "https://github.com/ddelcourt/SpaceFlow",
   "documentation": {
     "readme": {
       "en": "docs/markdown-viewer.html?doc=../README.md"
@@ -25,9 +25,6 @@
     },
     "spaceflowArchitecture": {
       "en": "docs/markdown-viewer.html?doc=SPACEFLOW-ARCHITECTURE.md"
-    },
-    "migrationStrategy": {
-      "en": "docs/markdown-viewer.html?doc=MIGRATION-STRATEGY.md"
     },
     "patchSystem": {
       "en": "docs/markdown-viewer.html?doc=PATCH-SYSTEM.md",

@@ -261,7 +261,7 @@ Chaque état contient :
 {
   "presets": [
     {
-      "filename": "zigmap_init.json",
+      "filename": "Init.json",
       "name": "zigmap_init",
       "type": "Init"
     },
@@ -308,7 +308,7 @@ Chaque état contient :
 
 Les presets peuvent être chargés :
 
-1. **Au démarrage** — `zigmap_init.json` se charge au premier lancement
+1. **Au démarrage** — `Init.json` se charge au premier lancement
 2. **Via URL** — `index.html?preset=filename` (sans l'extension .json)
 3. **Via la page d'accueil** — Cliquez sur les boutons de preset
 4. **Via upload de fichier** — Glisser-déposer ou utiliser le sélecteur de fichiers

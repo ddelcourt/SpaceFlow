@@ -211,7 +211,7 @@ index.html                          (Point d'entrée HTML principal)
 │   ├── overlayPresets.js          (Liste des fichiers overlay)
 │   └── presets/
 │       ├── manifest.json          (Registre des presets)
-│       └── zigmap_init.json       (Preset premier lancement)
+│       └── Init.json              (Preset premier lancement)
 ├── css/
 │   ├── main.css                   (Styles de base)
 │   ├── controls.css               (Style du panneau de contrôle)

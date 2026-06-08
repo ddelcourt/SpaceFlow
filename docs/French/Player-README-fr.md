@@ -54,7 +54,7 @@ flowchart TD
 
 ## Créer des Presets pour le Mode Lecteur
 
-1. Ouvrez `index.html` (l'Éditeur principal ZigMap26)
+1. Ouvrez `index.html` (l'Éditeur principal SpaceFlow)
 2. Créez votre visualisation avec des états, couleurs et transitions
 3. Activez **Auto-Trigger States** si vous souhaitez une lecture automatique
 4. Cliquez sur **Enregistrer** dans la section Projet pour exporter un fichier `.json`

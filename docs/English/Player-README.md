@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **Player Mode** is a minimal, distribution-friendly version of ZigMap26 designed for audiences to enjoy your creations without the complexity of the editor interface.
+The **Player Mode** is a minimal, distribution-friendly version of SpaceFlow designed for audiences to enjoy your creations without the complexity of the editor interface.
 
 ## Features
 

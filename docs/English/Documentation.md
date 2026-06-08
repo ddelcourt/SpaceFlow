@@ -293,7 +293,7 @@ index.html                          (Main HTML entry point)
 │   ├── overlayPresets.js          (Overlay file list)
 │   └── presets/
 │       ├── manifest.json          (Preset registry)
-│       └── zigmap_init.json       (First-time user preset)
+│       └── Init.json              (First-time user preset)
 ├── css/
 │   ├── main.css                   (Base styles)
 │   ├── controls.css               (Control panel styling)
@@ -989,7 +989,7 @@ Automatically loads a curated starter project for first-time users.
 ```javascript
 async function loadInitialPreset(ZM) {
   try {
-    const response = await fetch('config/presets/zigmap_init.json');
+    const response = await fetch('config/presets/Init.json');
     if (!response.ok) {
       console.warn('Initial preset not found');
       return false;
