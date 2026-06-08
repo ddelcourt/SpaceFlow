@@ -222,31 +222,37 @@ body.hide-cursor * {
 }
 
 .preset-loader-list {
-  overflow-y: auto;
+  overflow-y: scroll; /* Changed from auto to scroll - always show scrollbar */
   overflow-x: hidden;
   max-height: 400px;
   margin-bottom: 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.3);
+  
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #555 #000;
 }
 
+/* Webkit browsers (Chrome, Safari, Edge) */
 .preset-loader-list::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 .preset-loader-list::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  background: #000;
+  border-radius: 2px;
 }
 
 .preset-loader-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background: #555;
+  border-radius: 2px;
+  transition: background 0.2s ease;
 }
 
 .preset-loader-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #777;
 }
 
 .preset-loader-loading {

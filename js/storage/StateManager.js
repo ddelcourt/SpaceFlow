@@ -221,6 +221,17 @@ function restoreState(ZM, state, instant = false) {
   debugLog('STATES', 'Restored params active palette:', restoredParams.activePaletteIndex);
   debugLog('STATES', 'Restored params palettes:', restoredParams.palettes?.length);
   
+  // When transitioning (not instant), exclude params that have dedicated transition systems
+  // This prevents them from being applied immediately, letting the transition system handle them smoothly
+  if (!instant) {
+    delete restoredParams.speed;
+    delete restoredParams.fov;
+    delete restoredParams.emitterRotation;
+    delete restoredParams.geometryScale;
+    // Camera params are handled separately by camera transition system
+    console.log('🎬 Excluding transitionable params from immediate apply (will transition smoothly)');
+  }
+  
   // Note: We intentionally DO NOT clear the emitter when geometry changes
   // This allows smooth transitions where old lines fade out naturally
   // while new lines are created with the updated geometry parameters
@@ -408,6 +419,35 @@ function restoreState(ZM, state, instant = false) {
   } else if (!ZM.geometryScaleTransition && state.params.geometryScale !== undefined) {
     // Sketches not initialized yet - directly set scale
     ZM.params.geometryScale = state.params.geometryScale;
+  }
+  
+  // Trigger speed transition (only if sketch has been initialized)
+  if (ZM.speedTransition && state.params.speed !== undefined) {
+    console.log('🏎️ SPEED TRANSITION DEBUG:', {
+      instant,
+      currentSpeed: ZM.speedTransition.current,
+      targetSpeed: state.params.speed,
+      paramsSpeed: ZM.params.speed
+    });
+    if (instant) {
+      // Instant mode: directly set speed
+      ZM.speedTransition.current = state.params.speed;
+      ZM.speedTransition.start = state.params.speed;
+      ZM.speedTransition.target = state.params.speed;
+      ZM.speedTransition.progress = 1.0;
+      ZM.speedTransition.isTransitioning = false;
+    } else {
+      // Normal mode: use transitions
+      ZM.speedTransition.start = ZM.speedTransition.current;
+      ZM.speedTransition.target = state.params.speed;
+      ZM.speedTransition.progress = 0.0;
+      ZM.speedTransition.duration = ZM.params.stateTransitionDuration;
+      ZM.speedTransition.isTransitioning = true;
+      console.log('✅ Speed transition started:', ZM.speedTransition.start, '→', ZM.speedTransition.target);
+    }
+  } else if (!ZM.speedTransition && state.params.speed !== undefined) {
+    // Sketches not initialized yet - directly set speed
+    ZM.params.speed = state.params.speed;
   }
   
   // Always apply the state's palette — both to ensure new lines use the correct

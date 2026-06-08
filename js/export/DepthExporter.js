@@ -13,7 +13,8 @@ import { canExport } from './exportUtils.js';
  * Camera effective position = (-offsetX, -offsetY, defaultCameraZ + distance)
  */
 function projectPoint(x, y, z, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
-  const eRad = ZM.emitterRotationTransition.current * Math.PI / 180;
+  const emitterRotation = ZM.emitterRotationTransition?.current ?? ZM.params.emitterRotation;
+  const eRad = emitterRotation * Math.PI / 180;
   const rX = ZM.camera.rotationX;
   const rY = ZM.camera.rotationY;
   
@@ -65,7 +66,8 @@ function projectPoint(x, y, z, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
  * Project vertex from local line space to screen space
  */
 function projectVertex(line, localX, localY, localZ, ZM, defaultCameraZ, cameraX, cameraY, cameraZ) {
-  const scale = ZM.geometryScaleTransition.current / 100;
+  const geometryScale = ZM.geometryScaleTransition?.current ?? ZM.params.geometryScale;
+  const scale = geometryScale / 100;
   const wx = ((line.x - ZM.W / 2) + localX) * scale;
   const wy = ((line.y - ZM.H / 2) + localY) * scale;
   const wz = (localZ || 0) * scale;
@@ -253,7 +255,9 @@ function renderDepthMap(ZM) {
   const lines = ZM.emitterInstance.lines.filter(l => l._alpha() > 0);
   
   // Calculate projection constants - use transition values to match what's rendered
-  const fovRad = ZM.fovTransition.current * Math.PI / 180;
+  // Fall back to params if transition objects not initialized yet
+  const fov = ZM.fovTransition?.current ?? ZM.params.fov;
+  const fovRad = fov * Math.PI / 180;
   const defaultCameraZ = (ZM.H / 2) / Math.tan(fovRad / 2);
   
   // Camera effective position (thinking of pan/zoom as camera position offsets)

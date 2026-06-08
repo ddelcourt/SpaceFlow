@@ -61,6 +61,18 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
     };
   }
   
+  // Speed transition state (shared across stereo pair via ZM)
+  if (!ZM.speedTransition) {
+    ZM.speedTransition = {
+      current: ZM.params.speed,
+      start: ZM.params.speed,
+      target: ZM.params.speed,
+      progress: 1.0,
+      isTransitioning: false,
+      duration: ZM.params.stateTransitionDuration // Use parameter instead of hardcoded value
+    };
+  }
+  
   return (p) => {
     let emitter = null;
     const isPrimary = canvasId === 'left-canvas' || canvasId === 'mono-canvas';
@@ -244,6 +256,28 @@ export function createSketch(ZM, eyeOffset = 0, canvasId = 'left-canvas') {
             ? 4 * ZM.geometryScaleTransition.progress * ZM.geometryScaleTransition.progress * ZM.geometryScaleTransition.progress
             : 1 - Math.pow(-2 * ZM.geometryScaleTransition.progress + 2, 3) / 2;
           ZM.geometryScaleTransition.current = ZM.geometryScaleTransition.start + (ZM.geometryScaleTransition.target - ZM.geometryScaleTransition.start) * t;
+        }
+      }
+      
+      // Update speed transition
+      if (ZM.speedTransition.isTransitioning) {
+        ZM.speedTransition.progress += dt / ZM.speedTransition.duration;
+        if (ZM.speedTransition.progress >= 1.0) {
+          ZM.speedTransition.progress = 1.0;
+          ZM.speedTransition.current = ZM.speedTransition.target;
+          ZM.params.speed = ZM.speedTransition.target;
+          ZM.speedTransition.isTransitioning = false;
+          console.log('✓ Speed transition complete:', ZM.params.speed);
+        } else {
+          // Ease-in-out cubic
+          const t = ZM.speedTransition.progress < 0.5
+            ? 4 * ZM.speedTransition.progress * ZM.speedTransition.progress * ZM.speedTransition.progress
+            : 1 - Math.pow(-2 * ZM.speedTransition.progress + 2, 3) / 2;
+          ZM.speedTransition.current = ZM.speedTransition.start + (ZM.speedTransition.target - ZM.speedTransition.start) * t;
+          ZM.params.speed = ZM.speedTransition.current;
+          if (Math.floor(ZM.speedTransition.progress * 10) !== Math.floor((ZM.speedTransition.progress - dt / ZM.speedTransition.duration) * 10)) {
+            console.log('🏃 Speed transitioning:', ZM.params.speed.toFixed(1), `(${(ZM.speedTransition.progress * 100).toFixed(0)}%)`);
+          }
         }
       }
       

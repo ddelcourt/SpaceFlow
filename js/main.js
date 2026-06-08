@@ -248,7 +248,17 @@ async function loadPresetFile(ZM, presetName = 'zigmap_init', applyFirstState = 
       
       // Load top-level params first (contains project-wide settings)
       if (loadedData.params) {
-        Object.assign(ZM.params, loadedData.params);
+        if (applyFirstState) {
+          // Initial load: apply ALL params
+          Object.assign(ZM.params, loadedData.params);
+        } else {
+          // Runtime transition: exclude transitionable params (let state manager handle them)
+          const { speed, fov, emitterRotation, geometryScale, 
+                  cameraRotationX, cameraRotationY, cameraDistance, cameraOffsetX, cameraOffsetY,
+                  ...projectSettings } = loadedData.params;
+          Object.assign(ZM.params, projectSettings);
+          console.log('🎬 Loading project settings (excluding transitionable params for smooth transition)');
+        }
       }
       
       // Optionally apply first state's params (for initial load vs runtime transition)

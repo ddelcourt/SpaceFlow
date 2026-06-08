@@ -98,9 +98,11 @@ export function exportSVG(ZM) {
   
   // Camera projection setup
   // Use transition values to match exactly what's rendered
-  const fovRad = ZM.fovTransition.current * Math.PI / 180;
+  // Fall back to params if transition objects not initialized yet
+  const fov = ZM.fovTransition?.current ?? ZM.params.fov;
+  const fovRad = fov * Math.PI / 180;
   const defaultCameraZ = (ZM.H / 2) / Math.tan(fovRad / 2);
-  const emitterRotation = ZM.emitterRotationTransition.current * Math.PI / 180;
+  const emitterRotation = (ZM.emitterRotationTransition?.current ?? ZM.params.emitterRotation) * Math.PI / 180;
   
   // Camera effective position (thinking of pan/zoom as camera position offsets)
   // In p5.js: camera is at (0, 0, defaultCameraZ), then translate(offsetX, offsetY, -distance) moves the world
@@ -110,12 +112,12 @@ export function exportSVG(ZM) {
   const cameraZ = defaultCameraZ + ZM.camera.distance;
   
   debugLog('EXPORTS', 'SVG Export Camera Setup:');
-  debugLog('EXPORTS', '  - FOV:', ZM.fovTransition.current);
+  debugLog('EXPORTS', '  - FOV:', fov);
   debugLog('EXPORTS', '  - Default cameraZ:', defaultCameraZ.toFixed(2));
   debugLog('EXPORTS', '  - Camera position:', cameraX.toFixed(2), cameraY.toFixed(2), cameraZ.toFixed(2));
   debugLog('EXPORTS', '  - Emitter rotation:', (emitterRotation * 180 / Math.PI).toFixed(2));
   debugLog('EXPORTS', '  - Camera rotation:', ZM.camera.rotationX.toFixed(3), ZM.camera.rotationY.toFixed(3));
-  debugLog('EXPORTS', '  - Geometry scale:', ZM.geometryScaleTransition.current);
+  debugLog('EXPORTS', '  - Geometry scale:', ZM.geometryScaleTransition?.current ?? ZM.params.geometryScale);
   
   function projectPoint(x, y, z) {
     // Transformation pipeline:
@@ -148,7 +150,8 @@ export function exportSVG(ZM) {
     };
   }
   
-  const scaleVal = ZM.geometryScaleTransition.current / 100;
+  const geometryScale = ZM.geometryScaleTransition?.current ?? ZM.params.geometryScale;
+  const scaleVal = geometryScale / 100;
   
   // Process each line
   let exportedCount = 0;
