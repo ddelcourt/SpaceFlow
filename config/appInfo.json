@@ -1,6 +1,6 @@
 {
   "name": "SpaceFlow",
-  "version": "26.3",
+  "version": "27.0.1",
   "title": "SpaceFlow - Generative Space Mapping",
   "description": "Interactive 3D zigzag pattern generator with real-time camera controls and multiple export formats",
   "author": "ddelcourt",
