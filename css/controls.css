@@ -47,8 +47,12 @@ body.global-ui-hidden .controls-topbar {
   right: 0;
 }
 
-.controls-topbar-item[data-target="controls-middle"] {
+.controls-topbar-item[data-target="controls-text-broadcast"] {
   right: 300px;
+}
+
+.controls-topbar-item[data-target="controls-middle"] {
+  right: 600px;
 }
 
 .controls-topbar-item[data-target="controls-state-params"] {
@@ -80,6 +84,7 @@ body.global-ui-hidden .controls-topbar {
 /* Adjust control panels height */
 .controls,
 .controls-middle,
+.controls-text-broadcast,
 .controls-state-params,
 .controls-states,
 .controls-right {
@@ -89,6 +94,7 @@ body.global-ui-hidden .controls-topbar {
 /* Shared styles for all control panels */
 .controls,
 .controls-middle,
+.controls-text-broadcast,
 .controls-state-params,
 .controls-states,
 .controls-right {
@@ -114,6 +120,7 @@ body.global-ui-hidden .controls-topbar {
 /* Reduced opacity after startup when not hovered */
 .controls:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
 .controls-middle:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
+.controls-text-broadcast:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
 .controls-state-params:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
 .controls-states:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered),
 .controls-right:not(.startup-visible):not(:hover):not(.hidden):not(.topbar-hovered) {
@@ -122,6 +129,7 @@ body.global-ui-hidden .controls-topbar {
 
 .controls::-webkit-scrollbar,
 .controls-middle::-webkit-scrollbar,
+.controls-text-broadcast::-webkit-scrollbar,
 .controls-state-params::-webkit-scrollbar,
 .controls-states::-webkit-scrollbar,
 .controls-right::-webkit-scrollbar {
@@ -149,7 +157,7 @@ body.global-ui-hidden .controls {
 
 /* Right-middle panel positioning - Documentation */
 .controls-middle {
-  right: 300px;
+  right: 600px;
   border-left: 1px solid rgba(34, 34, 34, 0.3);
 }
 
@@ -160,6 +168,24 @@ body.global-ui-hidden .controls {
 }
 
 body.global-ui-hidden .controls-middle {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Text Broadcast panel positioning */
+.controls-text-broadcast {
+  right: 300px;
+  border-left: 1px solid rgba(34, 34, 34, 0.3);
+}
+
+.controls-text-broadcast.hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.global-ui-hidden .controls-text-broadcast {
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;

@@ -1,0 +1,1367 @@
+{
+  "version": "2.0",
+  "params": {
+    "segmentLength": 120,
+    "lineThickness": 11.7,
+    "emitterRotation": 211,
+    "geometryScale": 158,
+    "fadeDuration": 1,
+    "palettes": [
+      [
+        { "rgb": [255, 255, 255], "role": "line" },
+        { "rgb": [0, 0, 0], "role": "background" },
+        { "rgb": [180, 180, 180], "role": "line" },
+        { "rgb": [60, 60, 60], "role": "none" }
+      ],
+      [
+        { "rgb": [254, 255, 255], "role": "line" },
+        { "rgb": [169, 169, 169], "role": "line" },
+        { "rgb": [121, 121, 121], "role": "line" },
+        { "rgb": [0, 0, 0], "role": "background" }
+      ],
+      [
+        { "rgb": [0, 249, 0], "role": "line" },
+        { "rgb": [5, 10, 20], "role": "background" },
+        { "rgb": [148, 17, 0], "role": "line" },
+        { "rgb": [138, 103, 220], "role": "line" }
+      ],
+      [
+        { "rgb": [255, 60, 200], "role": "line" },
+        { "rgb": [10, 20, 10], "role": "background" },
+        { "rgb": [60, 255, 100], "role": "line" },
+        { "rgb": [255, 220, 60], "role": "line" }
+      ]
+    ],
+    "activePaletteIndex": 2,
+    "colorTransitionDuration": 30,
+    "stateTransitionDuration": 200,
+    "colorSlotZOffset": 160,
+    "colorRandomSeed": 1,
+    "autoTriggerStates": true,
+    "autoTriggerFrequency": 240,
+    "emitRate": 5.3,
+    "speed": 80,
+    "ambientSpeedMaster": 5,
+    "randomThickness": false,
+    "randomSpeed": false,
+    "thicknessRangeMin": 10,
+    "thicknessRangeMax": 200,
+    "speedRangeMin": 50,
+    "speedRangeMax": 150,
+    "fov": 112.01,
+    "near": 0.01,
+    "far": 5000,
+    "cameraRotationX": 8.2339383226971,
+    "cameraRotationY": 0.5805899558240124,
+    "cameraDistance": 478.9961263557384,
+    "cameraOffsetX": 334.5508370589854,
+    "cameraOffsetY": 3.8040848644311893,
+    "stereoscopicMode": false,
+    "eyeSeparation": 30,
+    "framebufferMode": false,
+    "framebufferPreset": "custom",
+    "framebufferWidth": 3500,
+    "framebufferHeight": 1080,
+    "canvasBorderVisible": false,
+    "canvasBorderColor": "#adff2f",
+    "videoDuration": 10,
+    "videoFPS": 30,
+    "videoFormat": "webm",
+    "depthInvert": false,
+    "overlayPresetFile": null,
+    "overlayCustomFilename": null,
+    "overlayCustomImageSrc": null,
+    "overlayVisible": false,
+    "overlayAutoFit": false,
+    "overlayScale": 130,
+    "overlayOpacity": 100,
+    "overlayX": 50,
+    "overlayY": 50,
+    "textOverlayMessage": "",
+    "textOverlayVisible": false,
+    "textOverlayFade": 100,
+    "textOverlaySize": 48,
+    "textOverlayPosition": "center",
+    "textOverlayColor": "#ffffff",
+    "textOverlayAlign": "center",
+    "textOverlayWeight": "500",
+    "textOverlayFadeDuration": 0.5,
+    "overlayTransitionDuration": 2,
+    "overlayTintEnabled": true,
+    "overlayTintColor": [
+      254,
+      255,
+      255
+    ],
+    "overlayShadowEnabled": true,
+    "overlayShadowColor": [
+      0,
+      0,
+      0
+    ],
+    "overlayShadowOpacity": 100,
+    "overlayShadowBlur": 100
+  },
+  "states": [
+    {
+      "id": "state_1773334605756_4m4hmidf7",
+      "name": "InitiCity",
+      "timestamp": 1778908332743,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 10.2,
+        "emitterRotation": 0,
+        "geometryScale": 355,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [39, 0, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 0,
+        "colorSlotZOffset": 10,
+        "emitRate": 3.9,
+        "speed": 129,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 60,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 6.283185307179586,
+        "rotationY": 0,
+        "distance": 1258,
+        "offsetX": -81,
+        "offsetY": 638
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773334696171_9ek15jejs",
+      "name": "Floating",
+      "createdAt": 1778905754414,
+      "timestamp": 1781215547429,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 11.7,
+        "emitterRotation": 211,
+        "geometryScale": 158,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [60, 60, 60], "role": "none" }
+          ],
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [169, 169, 169], "role": "line" },
+            { "rgb": [121, 121, 121], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [148, 17, 0], "role": "line" },
+            { "rgb": [138, 103, 220], "role": "line" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 160,
+        "colorRandomSeed": 1,
+        "emitRate": 5.3,
+        "speed": 80,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 112.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 8.2339383226971,
+        "rotationY": 0.5805899558240124,
+        "distance": 478.9961263557384,
+        "offsetX": 334.5508370589854,
+        "offsetY": 3.8040848644311893
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773339795772_hoybbzdjj",
+      "name": "MyWave",
+      "timestamp": 1778906464404,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 6.5,
+        "emitterRotation": 45,
+        "geometryScale": 368,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [39, 0, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 0,
+        "colorSlotZOffset": 10,
+        "emitRate": 5.3,
+        "speed": 80,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 60,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -0.364999999999994,
+        "rotationY": 0.12999999999999992,
+        "distance": 530,
+        "offsetX": -538,
+        "offsetY": 114
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773340319052_1jppz7sbg",
+      "name": "Sari",
+      "timestamp": 1778906312683,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 26.8,
+        "emitterRotation": 180,
+        "geometryScale": 158,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 61, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 0,
+        "colorSlotZOffset": 90,
+        "emitRate": 1.1,
+        "speed": 69,
+        "randomThickness": true,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 99.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 0,
+        "rotationY": 0,
+        "distance": 248,
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773334788644_bjor32bf1",
+      "name": "Segatronic",
+      "timestamp": 1778905296138,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 10,
+        "emitterRotation": 147,
+        "geometryScale": 219,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [60, 60, 60], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [39, 0, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ]
+        ],
+        "activePaletteIndex": 3,
+        "colorSlotZOffset": 120,
+        "emitRate": 3.9,
+        "speed": 80,
+        "randomThickness": true,
+        "randomSpeed": true,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 400,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 60,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 4.103703417608456,
+        "rotationY": 6.293158565996171,
+        "distance": 50,
+        "offsetX": 338,
+        "offsetY": 275
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773349459849_fylhqlyku",
+      "name": "Everbeen",
+      "timestamp": 1778908593910,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 21.7,
+        "emitterRotation": 319,
+        "geometryScale": 176,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [169, 169, 169], "role": "line" },
+            { "rgb": [121, 121, 121], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 113, 164], "role": "line" },
+            { "rgb": [0, 130, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 1,
+        "colorSlotZOffset": 100,
+        "emitRate": 6.3,
+        "speed": 243,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 88.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 10.706234510367311,
+        "rotationY": -0.010822432882720001,
+        "distance": 1083.3161937695759,
+        "offsetX": -16.408190354440897,
+        "offsetY": -185.76221923053487
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773349180305_srvvfv7fc",
+      "name": "Dehlicious",
+      "timestamp": 1778906690866,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 9.5,
+        "emitterRotation": 109,
+        "geometryScale": 185,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "line" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 70,
+        "emitRate": 5.3,
+        "speed": 243,
+        "randomThickness": true,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 400,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 60,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -2.1768410090661376,
+        "rotationY": 0.5604755840926392,
+        "distance": 641.1886376940292,
+        "offsetX": -18.49618262581474,
+        "offsetY": -186.15006282009088
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773360864122_nhxyul1tr",
+      "name": "Galagaga",
+      "timestamp": 1778906747233,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 10.7,
+        "emitterRotation": 180,
+        "geometryScale": 158,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [255, 63, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [39, 0, 255], "role": "line" },
+            { "rgb": [0, 249, 0], "role": "line" }
+          ],
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [169, 169, 169], "role": "line" },
+            { "rgb": [121, 121, 121], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 120,
+        "emitRate": 5.4,
+        "speed": 352,
+        "randomThickness": true,
+        "randomSpeed": true,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 400,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 144.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -1.9995820003380302,
+        "rotationY": -0.01048639928658357,
+        "distance": 89.5447681939834,
+        "offsetX": 133.8550872951584,
+        "offsetY": 144.25483202368488
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773446511184_v897qm358",
+      "name": "Flying",
+      "timestamp": 1778906837249,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 6.5,
+        "emitterRotation": 0,
+        "geometryScale": 368,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [141, 249, 0], "role": "none" },
+            { "rgb": [4, 50, 255], "role": "line" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 0,
+        "colorSlotZOffset": 10,
+        "emitRate": 5.3,
+        "speed": 80,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 60,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -2.0388442573516503,
+        "rotationY": 0.02319155412438001,
+        "distance": 683.6233731444833,
+        "offsetX": 64.92451060243572,
+        "offsetY": -53.163423935378475
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773357137692_npsdvgadd",
+      "name": "Classy",
+      "timestamp": 1778908159503,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 26.8,
+        "emitterRotation": 156,
+        "geometryScale": 158,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [125, 249, 125], "role": "line" },
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 61, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 0,
+        "colorSlotZOffset": 90,
+        "emitRate": 1.1,
+        "speed": 69,
+        "randomThickness": true,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 99.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 3.508483623055114,
+        "rotationY": 2.719050504246139,
+        "distance": 105.8607347978242,
+        "offsetX": 708.7468515450308,
+        "offsetY": -134.018061752578
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773473770324_2xdg71xms",
+      "name": "LakeSide",
+      "timestamp": 1778904093271,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 11.7,
+        "emitterRotation": 80,
+        "geometryScale": 290,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [255, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "line" },
+            { "rgb": [60, 60, 60], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" }
+          ],
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [51, 0, 255], "role": "line" },
+            { "rgb": [148, 17, 0], "role": "line" }
+          ],
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [169, 169, 169], "role": "line" },
+            { "rgb": [121, 121, 121], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 160,
+        "emitRate": 5.3,
+        "speed": 80,
+        "randomThickness": true,
+        "randomSpeed": true,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 149.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 21.210647810027904,
+        "rotationY": -0.006400945558756301,
+        "distance": 1016.9898798038471,
+        "offsetX": -101.29714199153172,
+        "offsetY": 42.58559680891504
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773485259514_8rcnptey6",
+      "name": "TronPasta",
+      "timestamp": 1778891186981,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 21.7,
+        "emitterRotation": 319,
+        "geometryScale": 176,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 100,
+        "emitRate": 7.9,
+        "speed": 136,
+        "randomThickness": true,
+        "randomSpeed": true,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 88.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -0.43149095568659757,
+        "rotationY": 0.5249343065500949,
+        "distance": 50.57378943314063,
+        "offsetX": 631.9080291703043,
+        "offsetY": 430.14395434213236
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1773489989495_64pjzkd5l",
+      "name": "Swissted",
+      "timestamp": 1778908082832,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 21.7,
+        "emitterRotation": 222,
+        "geometryScale": 282,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [126, 14, 0], "role": "line" },
+            { "rgb": [179, 181, 175], "role": "line" },
+            { "rgb": [255, 38, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [146, 146, 146], "role": "line" },
+            { "rgb": [148, 17, 0], "role": "line" },
+            { "rgb": [148, 17, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [33, 33, 33], "role": "line" },
+            { "rgb": [121, 121, 121], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 280,
+        "emitRate": 7.9,
+        "speed": 136,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 88.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 1.5586850186916266,
+        "rotationY": -0.42359531295648056,
+        "distance": 1186.4720192068849,
+        "offsetX": 563.1221731812609,
+        "offsetY": -982.7975773793372
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1778891454902_psytd4jv9",
+      "name": "Coder1",
+      "timestamp": 1778907388494,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 21.7,
+        "emitterRotation": 319,
+        "geometryScale": 176,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 100,
+        "emitRate": 7.9,
+        "speed": 136,
+        "randomThickness": true,
+        "randomSpeed": true,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 88.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -5.819676262866184,
+        "rotationY": 0.5149343065500936,
+        "distance": 50,
+        "offsetX": 303.9080291703043,
+        "offsetY": -394.85604565786764
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1778907356831_yeum3djhd",
+      "name": "Coder2",
+      "timestamp": 1778908046682,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 21.7,
+        "emitterRotation": 319,
+        "geometryScale": 176,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [212, 251, 120], "role": "line" },
+            { "rgb": [41, 75, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [0, 249, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 2,
+        "colorSlotZOffset": 100,
+        "emitRate": 7.9,
+        "speed": 136,
+        "randomThickness": true,
+        "randomSpeed": true,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 88.01,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": 0.44350904431340055,
+        "rotationY": -0.03506569344990644,
+        "distance": 50,
+        "offsetX": 259.9080291703043,
+        "offsetY": -686.8560456578676
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "state_1778907819213_105g99of7",
+      "name": "InitiCity BW",
+      "timestamp": 1778907990647,
+      "params": {
+        "segmentLength": 120,
+        "lineThickness": 10.2,
+        "emitterRotation": 0,
+        "geometryScale": 355,
+        "fadeDuration": 1,
+        "palettes": [
+          [
+            { "rgb": [254, 255, 255], "role": "line" },
+            { "rgb": [0, 0, 0], "role": "background" },
+            { "rgb": [180, 180, 180], "role": "none" },
+            { "rgb": [60, 60, 60], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 140, 60], "role": "line" },
+            { "rgb": [20, 10, 5], "role": "background" },
+            { "rgb": [255, 90, 120], "role": "line" },
+            { "rgb": [200, 180, 50], "role": "line" }
+          ],
+          [
+            { "rgb": [120, 200, 255], "role": "line" },
+            { "rgb": [5, 10, 20], "role": "background" },
+            { "rgb": [80, 255, 180], "role": "line" },
+            { "rgb": [160, 120, 255], "role": "none" }
+          ],
+          [
+            { "rgb": [255, 60, 200], "role": "line" },
+            { "rgb": [10, 20, 10], "role": "background" },
+            { "rgb": [60, 255, 100], "role": "line" },
+            { "rgb": [255, 220, 60], "role": "line" }
+          ]
+        ],
+        "activePaletteIndex": 0,
+        "colorSlotZOffset": 10,
+        "emitRate": 3.9,
+        "speed": 129,
+        "randomThickness": false,
+        "randomSpeed": false,
+        "thicknessRangeMin": 10,
+        "thicknessRangeMax": 200,
+        "speedRangeMin": 50,
+        "speedRangeMax": 150,
+        "fov": 60,
+        "overlayPresetFile": null,
+        "overlayCustomFilename": null,
+        "overlayCustomImageSrc": null,
+        "overlayAutoFit": false,
+        "overlayTransitionDuration": 2,
+        "overlayTintEnabled": true,
+        "overlayTintColor": [
+          254,
+          255,
+          255
+        ],
+        "overlayShadowEnabled": true,
+        "overlayShadowColor": [
+          0,
+          0,
+          0
+        ],
+        "overlayShadowOpacity": 100,
+        "overlayShadowBlur": 100
+      },
+      "camera": {
+        "rotationX": -1.7763568394002505e-15,
+        "rotationY": 0,
+        "distance": 1258,
+        "offsetX": -81,
+        "offsetY": 638
+      },
+      "metadata": {
+        "version": "1.0"
+      }
+    }
+  ],
+  "activeStateId": "state_1773334696171_9ek15jejs",
+  "overlayPresetFiles": [
+    "Mapping2026_Horizontal-White.json",
+    "Mapping2026_Horizontal-White_O.json",
+    "Mapping2026_Horizontal-White_O_Shadow.json",
+    "Mapping2026_Square-White.json",
+    "Mapping2026_Vertical-White.json",
+    "Mapping2026_Vertical-White_Shadow.json"
+  ],
+  "saveDate": "2026-06-11T22:05:47.430Z"
+}

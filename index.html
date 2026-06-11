@@ -56,6 +56,9 @@
     <div class="controls-topbar-item" data-target="controls-middle">
       <span>About</span>
     </div>
+    <div class="controls-topbar-item" data-target="controls-text-broadcast">
+      <span>Text Broadcast</span>
+    </div>
     <div class="controls-topbar-item" data-target="controls">
       <span>Image Output</span>
     </div>
@@ -210,7 +213,60 @@
       </div>
     </div>
 
-    <!-- Text Broadcast Overlay -->
+  </div><!-- /.controls -->
+
+  <div class="controls-middle startup-visible">
+
+    <!-- About / Help -->
+    <div class="section">
+      <div class="section-header" data-section="about">
+        <span class="section-title">About / Help</span>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-content">
+        <div class="section-body">
+          <div class="lang-filter">
+            <button class="lang-filter-btn active" data-lang-filter="en">English</button>
+            <button class="lang-filter-btn" data-lang-filter="fr">Français</button>
+          </div>
+          <button id="doc-shortcuts-btn" class="about-btn">Shortcut Keys</button>
+          <button id="doc-readme" class="about-btn">README</button>
+          <button id="doc-manual-en" class="about-btn" data-lang="en">User Manual</button>
+          <button id="doc-manual-fr" class="about-btn hidden" data-lang="fr">Manuel Utilisateur</button>
+          <button id="doc-player" class="about-btn">Player README</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Developer Documentation -->
+    <div class="section">
+      <div class="section-header" data-section="dev-docs">
+        <span class="section-title">Developer Documentation</span>
+        <span class="section-toggle">▼</span>
+      </div>
+      <div class="section-content">
+        <div class="section-body">
+          <button id="doc-tech-en" class="about-btn" data-lang="en">Technical Documentation</button>
+          <button id="doc-tech-fr" class="about-btn hidden" data-lang="fr">Documentation Technique</button>
+          <button id="doc-projection-en" class="about-btn" data-lang="en">Projection Matrix Guide</button>
+          <button id="doc-projection-fr" class="about-btn hidden" data-lang="fr">Guide Matrices de Projection</button>
+          <button id="doc-transitions-en" class="about-btn" data-lang="en">Transition System</button>
+          <button id="doc-transitions-fr" class="about-btn hidden" data-lang="fr">Système de Transitions</button>
+          <button id="doc-spaceflow" class="about-btn">SpaceFlow Architecture</button>
+          <button id="doc-migration" class="about-btn">Migration Strategy</button>
+          <button id="doc-patch-system-en" class="about-btn" data-lang="en">Patch System Architecture</button>
+          <button id="doc-patch-system-fr" class="about-btn hidden" data-lang="fr">Architecture Système de Patches</button>
+          <button id="doc-preset-format" class="about-btn">Preset JSON Format</button>
+          <button id="doc-update-presets" class="about-btn">Update Presets Guide</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.controls-middle -->
+
+  <div class="controls-text-broadcast startup-visible">
+
+    <!-- Text Broadcast -->
     <div class="section">
       <div class="section-header" data-section="text-overlay">
         <span class="section-title">Text Broadcast</span>
@@ -298,56 +354,7 @@
       </div>
     </div>
 
-  </div><!-- /.controls -->
-
-  <div class="controls-middle startup-visible">
-
-    <!-- About / Help -->
-    <div class="section">
-      <div class="section-header" data-section="about">
-        <span class="section-title">About / Help</span>
-        <span class="section-toggle">▼</span>
-      </div>
-      <div class="section-content">
-        <div class="section-body">
-          <div class="lang-filter">
-            <button class="lang-filter-btn active" data-lang-filter="en">English</button>
-            <button class="lang-filter-btn" data-lang-filter="fr">Français</button>
-          </div>
-          <button id="doc-shortcuts-btn" class="about-btn">Shortcut Keys</button>
-          <button id="doc-readme" class="about-btn">README</button>
-          <button id="doc-manual-en" class="about-btn" data-lang="en">User Manual</button>
-          <button id="doc-manual-fr" class="about-btn hidden" data-lang="fr">Manuel Utilisateur</button>
-          <button id="doc-player" class="about-btn">Player README</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Developer Documentation -->
-    <div class="section">
-      <div class="section-header" data-section="dev-docs">
-        <span class="section-title">Developer Documentation</span>
-        <span class="section-toggle">▼</span>
-      </div>
-      <div class="section-content">
-        <div class="section-body">
-          <button id="doc-tech-en" class="about-btn" data-lang="en">Technical Documentation</button>
-          <button id="doc-tech-fr" class="about-btn hidden" data-lang="fr">Documentation Technique</button>
-          <button id="doc-projection-en" class="about-btn" data-lang="en">Projection Matrix Guide</button>
-          <button id="doc-projection-fr" class="about-btn hidden" data-lang="fr">Guide Matrices de Projection</button>
-          <button id="doc-transitions-en" class="about-btn" data-lang="en">Transition System</button>
-          <button id="doc-transitions-fr" class="about-btn hidden" data-lang="fr">Système de Transitions</button>
-          <button id="doc-spaceflow" class="about-btn">SpaceFlow Architecture</button>
-          <button id="doc-migration" class="about-btn">Migration Strategy</button>
-          <button id="doc-patch-system-en" class="about-btn" data-lang="en">Patch System Architecture</button>
-          <button id="doc-patch-system-fr" class="about-btn hidden" data-lang="fr">Architecture Système de Patches</button>
-          <button id="doc-preset-format" class="about-btn">Preset JSON Format</button>
-          <button id="doc-update-presets" class="about-btn">Update Presets Guide</button>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /.controls-middle -->
+  </div><!-- /.controls-text-broadcast -->
 
   <div class="controls-state-params startup-visible">
 

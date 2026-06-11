@@ -6,6 +6,11 @@
       "type": "Init"
     },
     {
+      "filename": "BZ Paris GeekSpaceOne.json",
+      "name": "BZ Paris GeekSpaceOne",
+      "type": "Preset"
+    },
+    {
       "filename": "DowntownAmbient.json",
       "name": "DowntownAmbient",
       "type": "Preset"
