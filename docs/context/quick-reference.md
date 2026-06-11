@@ -50,8 +50,8 @@ Exporters:
   js/export/DepthExporter.js  — Depth map export
 
 Presets & Config:
-  config/presets/*.json       — Project presets
-  config/presets/manifest.json — Auto-generated preset list
+  presets/*.json              — Project presets
+  presets/manifest.json       — Auto-generated preset list
   config/overlayPresets.js    — Overlay definitions
   config/uiPresets.json       — UI panel configurations
 
@@ -131,7 +131,7 @@ Canvas Only (not on UI):
 
 ```bash
 # 1. Create JSON file
-config/presets/MyNewPreset.json
+presets/MyNewPreset.json
 
 # 2. Copy structure from existing preset (e.g., Init.json)
 

@@ -111,6 +111,6 @@ export const DEFAULT_PARAMS = {
   textOverlayPosition: 'center',  // Position: 'top', 'center', or 'bottom'
   textOverlayColor: '#ffffff',  // Text color (hex)
   textOverlayAlign: 'center',  // Alignment: 'left', 'center', or 'right'
-  textOverlayWeight: '300',  // Font weight: '300' (light), '400' (normal), '700' (bold)
+  textOverlayWeight: '500',  // Font weight: variable 100-900 (default 500 medium)
   textOverlayFadeDuration: 0.5  // Fade transition duration in seconds (0.1-3.0)
 };

@@ -35,7 +35,7 @@ Run from VS Code using the default build task:
 
 ## welcome-updater
 
-Updates `welcome.html` preset list from `config/presets/` directory.
+Updates `welcome.html` preset list from `presets/` directory.
 
 Self-contained bash script with embedded Python implementation.
 
@@ -46,8 +46,8 @@ Self-contained bash script with embedded Python implementation.
 ```
 
 **Function:**
-- Scans `config/presets/` for all `.json` files
-- Generates `config/presets/manifest.json`
+- Scans `presets/` for all `.json` files
+- Generates `presets/manifest.json`
 - Updates `welcome.html` between marker comments
 - Sorts presets: init files first, then alphabetically
 - Generates Editor and Player links for each preset

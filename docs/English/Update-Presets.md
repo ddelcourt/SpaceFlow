@@ -2,9 +2,9 @@
 
 ```mermaid
 flowchart TD
-    Start["Run ./scripts/welcome-updater"] --> Scan["Scan config/presets/ for .json files"]
+    Start["Run ./scripts/welcome-updater"] --> Scan["Scan presets/ for .json files"]
     
-    Scan --> Generate["Generate config/presets/manifest.json"]
+    Scan --> Generate["Generate presets/manifest.json"]
     
     Generate --> Update["Update welcome.html<br/>(between marker comments)"]
     
@@ -21,7 +21,7 @@ flowchart TD
 
 ## Usage
 
-Run the script to automatically update the welcome page with all presets found in `config/presets/`:
+Run the script to automatically update the welcome page with all presets found in `presets/`:
 
 ```bash
 ./scripts/welcome-updater
@@ -30,15 +30,15 @@ Run the script to automatically update the welcome page with all presets found i
 ## Function
 
 The script:
-- Scans `config/presets/` directory for `.json` files
-- Generates `config/presets/manifest.json` with preset metadata
+- Scans `presets/` directory for `.json` files
+- Generates `presets/manifest.json` with preset metadata
 - Updates `welcome.html` between marker comments
 - Sorts presets with init files first, then alphabetically
 - Generates both Editor and Player links for each preset
 
 ## Adding New Presets
 
-1. Save your preset file to `config/presets/filename.json`
+1. Save your preset file to `presets/filename.json`
 2. Run `./scripts/welcome-updater`
 3. Click "Refresh" button on welcome page (or reload page)
 
@@ -47,7 +47,7 @@ The script:
 The welcome page includes a **Refresh** button that reloads the preset list from `manifest.json` without requiring a page reload.
 
 **Workflow:**
-1. Add preset file to `config/presets/`
+1. Add preset file to `presets/`
 2. Run `./scripts/welcome-updater` (generates manifest)
 3. Click "Refresh" button on welcome page
 

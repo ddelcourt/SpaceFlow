@@ -27,7 +27,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+  <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
 
   <!-- External CSS -->
   <link rel="stylesheet" href="css/main.css">
@@ -221,7 +221,7 @@
           <!-- Text Input -->
           <div class="control-group">
             <label>Message</label>
-            <input type="text" id="text-overlay-message" placeholder="Type message here..." maxlength="200" style="width:100%;padding:8px;background:#1a1a1a;border:1px solid #333;color:#ccc;font-size:0.85rem;border-radius:4px;">
+            <textarea id="text-overlay-message" placeholder="Type message here..." rows="3" style="width:100%;padding:8px;background:#1a1a1a;border:1px solid #333;color:#ccc;font-size:0.85rem;border-radius:4px;resize:vertical;font-family:inherit;line-height:1.4;"></textarea>
           </div>
           
           <!-- Send/Hide Toggle Button -->
@@ -278,13 +278,12 @@
             </div>
           </div>
           
-          <!-- Font Weight Buttons -->
+          <!-- Font Weight Slider -->
           <div class="control-group">
             <label>Font Weight</label>
-            <div style="display:flex;gap:8px;margin-top:6px;">
-              <button class="text-weight-btn active" data-weight="300" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Light</button>
-              <button class="text-weight-btn" data-weight="400" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Normal</button>
-              <button class="text-weight-btn" data-weight="700" style="flex:1;padding:8px;font-size:0.75rem;text-transform:uppercase;border-radius:4px;cursor:pointer;">Bold</button>
+            <div class="slider-row">
+              <input type="range" id="text-overlay-weight" min="100" max="900" step="1" value="500"/>
+              <span class="value-display" id="text-overlay-weight-val">500</span>
             </div>
           </div>
           
@@ -752,7 +751,7 @@
     <img id="overlay-image-right" class="overlay-image overlay-stereo" style="position:absolute;pointer-events:none;display:none;z-index:1000;transform-origin:center center;" />
     
     <!-- Text Broadcast Overlay -->
-    <div id="text-overlay-display" style="position:absolute;pointer-events:none;display:none;z-index:1001;top:50%;left:50%;transform:translate(-50%, -50%);font-family:'Inter', sans-serif;font-size:48px;font-weight:300;color:#ffffff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.5);max-width:80%;word-wrap:break-word;line-height:1;"></div>
+    <div id="text-overlay-display" style="position:absolute;pointer-events:none;display:none;z-index:1001;top:50%;left:50%;transform:translate(-50%, -50%);font-family:'Inter var', Inter, sans-serif;font-size:48px;font-weight:500;color:#ffffff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,0.5);max-width:80%;white-space:pre-wrap;word-wrap:break-word;line-height:1.2;font-feature-settings:'cv08','ss01';font-variation-settings:'wght' 500;"></div>
   </div>
 
   <!-- Main Application Module -->

@@ -56,7 +56,7 @@ const PRECACHE_ASSETS = [
   './config/keyboardShortcuts.json',
   './config/overlayPresets.js',
   './config/uiPresets.json',
-  './config/presets/manifest.json',
+  './presets/manifest.json',
 ];
 
 // ─── Install: pre-cache shell ────────────────────────────────────────────────
@@ -93,7 +93,7 @@ self.addEventListener('fetch', event => {
   if (!request.url.startsWith(self.location.origin)) return;
 
   // Network-first for JSON preset files (user content, must stay fresh)
-  if (request.url.includes('/config/presets/') && request.url.endsWith('.json')) {
+  if (request.url.includes('/presets/') && request.url.endsWith('.json')) {
     event.respondWith(
       fetch(request)
         .then(response => {

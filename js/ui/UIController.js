@@ -1468,7 +1468,8 @@ function setupTextOverlayControls(ZM) {
   const positionButtons = document.querySelectorAll('.text-position-btn');
   const colorPicker = document.getElementById('text-overlay-color');
   const alignButtons = document.querySelectorAll('.text-align-btn');
-  const weightButtons = document.querySelectorAll('.text-weight-btn');
+  const weightSlider = document.getElementById('text-overlay-weight');
+  const weightDisplay = document.getElementById('text-overlay-weight-val');
   const displayElement = document.getElementById('text-overlay-display');
   
   // Update display function
@@ -1481,21 +1482,54 @@ function setupTextOverlayControls(ZM) {
       displayElement.style.color = ZM.params.textOverlayColor;
       displayElement.style.textAlign = ZM.params.textOverlayAlign;
       displayElement.style.fontWeight = ZM.params.textOverlayWeight;
-      displayElement.style.lineHeight = '1';
+      displayElement.style.fontVariationSettings = `'wght' ${ZM.params.textOverlayWeight}`;
+      displayElement.style.lineHeight = '1.2';
       
-      // Apply position
+      // Apply horizontal alignment
+      displayElement.style.left = '';
+      displayElement.style.right = '';
+      if (ZM.params.textOverlayAlign === 'left') {
+        displayElement.style.left = '10%';
+        displayElement.style.right = 'auto';
+      } else if (ZM.params.textOverlayAlign === 'right') {
+        displayElement.style.left = 'auto';
+        displayElement.style.right = '10%';
+      } else {
+        displayElement.style.left = '50%';
+        displayElement.style.right = 'auto';
+      }
+      
+      // Apply vertical position and transform
       displayElement.style.top = '';
       displayElement.style.bottom = '';
       if (ZM.params.textOverlayPosition === 'top') {
         displayElement.style.top = '10%';
-        displayElement.style.transform = 'translate(-50%, 0)';
+        if (ZM.params.textOverlayAlign === 'left') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else if (ZM.params.textOverlayAlign === 'right') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else {
+          displayElement.style.transform = 'translate(-50%, 0)';
+        }
       } else if (ZM.params.textOverlayPosition === 'bottom') {
         displayElement.style.bottom = '10%';
         displayElement.style.top = 'auto';
-        displayElement.style.transform = 'translate(-50%, 0)';
+        if (ZM.params.textOverlayAlign === 'left') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else if (ZM.params.textOverlayAlign === 'right') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else {
+          displayElement.style.transform = 'translate(-50%, 0)';
+        }
       } else {
         displayElement.style.top = '50%';
-        displayElement.style.transform = 'translate(-50%, -50%)';
+        if (ZM.params.textOverlayAlign === 'left') {
+          displayElement.style.transform = 'translate(0, -50%)';
+        } else if (ZM.params.textOverlayAlign === 'right') {
+          displayElement.style.transform = 'translate(0, -50%)';
+        } else {
+          displayElement.style.transform = 'translate(-50%, -50%)';
+        }
       }
       
       // Show with fade-in: first make visible at opacity 0, then transition to target
@@ -1732,15 +1766,14 @@ function setupTextOverlayControls(ZM) {
     }
   });
   
-  // Weight button handlers
-  weightButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const weight = btn.dataset.weight;
-      ZM.params.textOverlayWeight = weight;
+  // Weight slider handler
+  if (weightSlider) {
+    weightSlider.addEventListener('input', (e) => {
+      ZM.params.textOverlayWeight = parseInt(e.target.value);
       
-      // Update button states
-      weightButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (weightDisplay) {
+        weightDisplay.textContent = ZM.params.textOverlayWeight;
+      }
       
       updateTextOverlay();
       
@@ -1753,16 +1786,13 @@ function setupTextOverlayControls(ZM) {
       
       ZM.saveToLocalStorage();
     });
-  });
-  
-  // Set initial weight button state
-  weightButtons.forEach(btn => {
-    if (btn.dataset.weight === ZM.params.textOverlayWeight) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
+    
+    // Set initial weight slider value
+    weightSlider.value = ZM.params.textOverlayWeight;
+    if (weightDisplay) {
+      weightDisplay.textContent = ZM.params.textOverlayWeight;
     }
-  });
+  }
   
   // Fade duration slider handler
   if (fadeDurationSlider) {

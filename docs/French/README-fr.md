@@ -432,7 +432,7 @@ Capture image par image pour un rendu fluide et déterministe. Démarrage/arrêt
 2. Sélectionner le fichier JSON sauvegardé
 3. Le projet se restaure immédiatement
 
-Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque modification. Au premier lancement, un projet de démarrage avec des états d'exemple se charge depuis `config/presets/Init.json`.
+Les paramètres sont automatiquement sauvegardés dans le localStorage à chaque modification. Au premier lancement, un projet de démarrage avec des états d'exemple se charge depuis `presets/Init.json`.
 
 **Comportement du localStorage :**
 - Les paramètres sont automatiquement sauvegardés à chaque modification

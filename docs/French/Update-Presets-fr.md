@@ -2,9 +2,9 @@
 
 ```mermaid
 flowchart TD
-    Start["Exécuter ./scripts/welcome-updater"] --> Scan["Scanner config/presets/ pour fichiers .json"]
+    Start["Exécuter ./scripts/welcome-updater"] --> Scan["Scanner presets/ pour fichiers .json"]
     
-    Scan --> Generate["Générer config/presets/manifest.json"]
+    Scan --> Generate["Générer presets/manifest.json"]
     
     Generate --> Update["Mettre à jour welcome.html<br/>(entre commentaires marqueurs)"]
     
@@ -21,7 +21,7 @@ flowchart TD
 
 ## Utilisation
 
-Exécutez le script pour mettre à jour automatiquement la page d'accueil avec tous les presets trouvés dans `config/presets/` :
+Exécutez le script pour mettre à jour automatiquement la page d'accueil avec tous les presets trouvés dans `presets/` :
 
 ```bash
 ./scripts/welcome-updater
@@ -30,15 +30,15 @@ Exécutez le script pour mettre à jour automatiquement la page d'accueil avec t
 ## Fonction
 
 Le script :
-- Scanne le répertoire `config/presets/` pour les fichiers `.json`
-- Génère `config/presets/manifest.json` avec les métadonnées des presets
+- Scanne le répertoire `presets/` pour les fichiers `.json`
+- Génère `presets/manifest.json` avec les métadonnées des presets
 - Met à jour `welcome.html` entre les commentaires marqueurs
 - Trie les presets avec les fichiers init en premier, puis alphabétiquement
 - Génère des liens Éditeur et Lecteur pour chaque preset
 
 ## Ajouter de Nouveaux Presets
 
-1. Sauvegardez votre fichier preset dans `config/presets/filename.json`
+1. Sauvegardez votre fichier preset dans `presets/filename.json`
 2. Exécutez `./scripts/welcome-updater`
 3. Cliquez sur le bouton "Refresh" sur la page d'accueil (ou rechargez la page)
 
@@ -47,7 +47,7 @@ Le script :
 La page d'accueil inclut un bouton **Refresh** qui recharge la liste des presets depuis `manifest.json` sans nécessiter un rechargement de page.
 
 **Flux de travail :**
-1. Ajoutez le fichier preset dans `config/presets/`
+1. Ajoutez le fichier preset dans `presets/`
 2. Exécutez `./scripts/welcome-updater` (génère le manifest)
 3. Cliquez sur le bouton "Refresh" sur la page d'accueil
 

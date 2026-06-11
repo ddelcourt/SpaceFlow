@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Update welcome.html preset list from config/presets/ directory
+# Update welcome.html preset list from presets/ directory
 #
 
 set -e
@@ -16,9 +16,9 @@ import json
 from pathlib import Path
 
 # Configuration
-PRESETS_DIR = Path('config/presets')
+PRESETS_DIR = Path('presets')
 WELCOME_FILE = Path('welcome.html')
-MANIFEST_FILE = Path('config/presets/manifest.json')
+MANIFEST_FILE = Path('presets/manifest.json')
 START_MARKER = '<!-- PRESETS_START -->'
 END_MARKER = '<!-- PRESETS_END -->'
 

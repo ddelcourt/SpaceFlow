@@ -105,7 +105,7 @@ async function loadPresetFromURL(presetName) {
     if (loadingIndicator) loadingIndicator.style.display = 'flex';
     if (dropzoneOverlay) dropzoneOverlay.classList.add('hidden');
     
-    const response = await fetch(`config/presets/${presetName}.json`);
+    const response = await fetch(`presets/${presetName}.json`);
     if (!response.ok) {
       throw new Error(`Preset "${presetName}" not found`);
     }

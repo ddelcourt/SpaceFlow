@@ -4534,7 +4534,7 @@ const thickness = params.patch.lineThickness;     // Scoped access (new style)
 **Version compatibility guarantee:**
 ```javascript
 // This MUST work forever:
-fetch('config/presets/Init.json')  // Any version from 1.0+
+fetch('presets/Init.json')  // Any version from 1.0+
   .then(r => r.json())
   .then(preset => SpaceFlow.loadPreset(preset))  // Auto-detects and migrates
   .then(() => console.log('Preset loaded successfully'));

@@ -179,7 +179,7 @@
 
 **Structure:**
 ```
-config/presets/
+presets/
   Init.json               — Default starter
   Horizon26.json          — Example presets
   FashionLedShow.json

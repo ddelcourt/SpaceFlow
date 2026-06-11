@@ -6,7 +6,7 @@ Documentation for SpaceFlow preset file structure.
 
 ## File Location
 
-Preset files are stored in `config/presets/` and registered in `config/presets/manifest.json`.
+Preset files are stored in `presets/` and registered in `presets/manifest.json`.
 
 ---
 
@@ -266,7 +266,7 @@ Each state contains:
 
 ## Manifest File
 
-`config/presets/manifest.json` registers available presets:
+`presets/manifest.json` registers available presets:
 
 ```json
 {

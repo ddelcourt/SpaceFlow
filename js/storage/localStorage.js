@@ -134,7 +134,7 @@ export function loadFromLocalStorage(defaultParams) {
     if (loaded.textOverlayPosition === undefined) loaded.textOverlayPosition = 'center';
     if (loaded.textOverlayColor === undefined) loaded.textOverlayColor = '#ffffff';
     if (loaded.textOverlayAlign === undefined) loaded.textOverlayAlign = 'center';
-    if (loaded.textOverlayWeight === undefined) loaded.textOverlayWeight = '300';
+    if (loaded.textOverlayWeight === undefined) loaded.textOverlayWeight = '500';
     if (loaded.textOverlayFadeDuration === undefined) loaded.textOverlayFadeDuration = 0.5;
     
     // Ensure project-level settings exist (for backward compatibility)

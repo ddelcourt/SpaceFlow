@@ -9,7 +9,7 @@ The project includes automated tasks that can be run from VS Code.
 **Default Build Task** - Run with `⇧⌘B` (Mac) / `Ctrl+Shift+B` (Windows/Linux)
 
 Master update script that runs all updaters in sequence:
-- Updates preset lists from `config/presets/`
+- Updates preset lists from `presets/`
 - Updates overlay lists from `assets/overlays/`
 
 **How to run:**
@@ -29,7 +29,7 @@ Master update script that runs all updaters in sequence:
 
 ### Update Welcome Page Presets
 
-Scans `config/presets/` directory and updates `welcome.html` and `manifest.json`.
+Scans `presets/` directory and updates `welcome.html` and `manifest.json`.
 
 **How to run:**
 

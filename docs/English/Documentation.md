@@ -989,7 +989,7 @@ Automatically loads a curated starter project for first-time users.
 ```javascript
 async function loadInitialPreset(ZM) {
   try {
-    const response = await fetch('config/presets/Init.json');
+    const response = await fetch('presets/Init.json');
     if (!response.ok) {
       console.warn('Initial preset not found');
       return false;

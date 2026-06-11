@@ -189,7 +189,7 @@ window.SpaceFlow.triggerPaletteChange = function() {
  */
 async function loadPresetFile(ZM, presetName = 'zigmap_init', applyFirstState = true) {
   try {
-    const response = await fetch(`config/presets/${presetName}.json`);
+    const response = await fetch(`presets/${presetName}.json`);
     if (!response.ok) {
       console.warn(`Preset "${presetName}" not found, using defaults`);
       return false;

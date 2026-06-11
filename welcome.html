@@ -339,6 +339,16 @@
         </li>
         <li class="preset-item">
           <div class="preset-info">
+            <span class="preset-name">SyllepseScopeProto.json</span>
+            <span class="preset-type">Preset</span>
+          </div>
+          <div class="preset-actions">
+            <a href="index.html?preset=SyllepseScopeProto" class="preset-button">Editor</a>
+            <a href="player.html?preset=SyllepseScopeProto" class="preset-button">Player</a>
+          </div>
+        </li>
+        <li class="preset-item">
+          <div class="preset-info">
             <span class="preset-name">TransitionUniverse.json</span>
             <span class="preset-type">Preset</span>
           </div>
@@ -359,7 +369,7 @@
   <script>
     async function loadPresets() {
       try {
-        const response = await fetch('config/presets/manifest.json');
+        const response = await fetch('presets/manifest.json');
         if (!response.ok) {
           console.error('Failed to load manifest');
           return;

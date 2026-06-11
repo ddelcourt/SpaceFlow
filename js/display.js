@@ -169,21 +169,54 @@ function initializeTextOverlay(ZM) {
       displayElement.style.color = ZM.params.textOverlayColor;
       displayElement.style.textAlign = ZM.params.textOverlayAlign;
       displayElement.style.fontWeight = ZM.params.textOverlayWeight;
-      displayElement.style.lineHeight = '1';
+      displayElement.style.fontVariationSettings = `'wght' ${ZM.params.textOverlayWeight}`;
+      displayElement.style.lineHeight = '1.2';
       
-      // Apply position
+      // Apply horizontal alignment
+      displayElement.style.left = '';
+      displayElement.style.right = '';
+      if (ZM.params.textOverlayAlign === 'left') {
+        displayElement.style.left = '10%';
+        displayElement.style.right = 'auto';
+      } else if (ZM.params.textOverlayAlign === 'right') {
+        displayElement.style.left = 'auto';
+        displayElement.style.right = '10%';
+      } else {
+        displayElement.style.left = '50%';
+        displayElement.style.right = 'auto';
+      }
+      
+      // Apply vertical position and transform
       displayElement.style.top = '';
       displayElement.style.bottom = '';
       if (ZM.params.textOverlayPosition === 'top') {
         displayElement.style.top = '10%';
-        displayElement.style.transform = 'translate(-50%, 0)';
+        if (ZM.params.textOverlayAlign === 'left') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else if (ZM.params.textOverlayAlign === 'right') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else {
+          displayElement.style.transform = 'translate(-50%, 0)';
+        }
       } else if (ZM.params.textOverlayPosition === 'bottom') {
         displayElement.style.bottom = '10%';
         displayElement.style.top = 'auto';
-        displayElement.style.transform = 'translate(-50%, 0)';
+        if (ZM.params.textOverlayAlign === 'left') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else if (ZM.params.textOverlayAlign === 'right') {
+          displayElement.style.transform = 'translate(0, 0)';
+        } else {
+          displayElement.style.transform = 'translate(-50%, 0)';
+        }
       } else {
         displayElement.style.top = '50%';
-        displayElement.style.transform = 'translate(-50%, -50%)';
+        if (ZM.params.textOverlayAlign === 'left') {
+          displayElement.style.transform = 'translate(0, -50%)';
+        } else if (ZM.params.textOverlayAlign === 'right') {
+          displayElement.style.transform = 'translate(0, -50%)';
+        } else {
+          displayElement.style.transform = 'translate(-50%, -50%)';
+        }
       }
       
       // Show with fade-in: first make visible at opacity 0, then transition to target
