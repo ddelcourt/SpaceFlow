@@ -1969,7 +1969,10 @@ function setupDocumentationButtons() {
     'doc-patch-system-fr': 'PATCH-SYSTEM-fr.md',
     'doc-player': 'Player-README.md',
     'doc-preset-format': 'Preset-JSON-Format.md',
-    'doc-update-presets': 'Update-Presets.md'
+    'doc-update-presets': 'Update-Presets.md',
+    'doc-360-strategy': 'Equirectangular-360-Strategy.md',
+    'doc-360-implementation': '360-Implementation-Guide.md',
+    'doc-360-gui-integration': '360-GUI-Integration-Strategy.md'
   };
   
   for (const [id, doc] of Object.entries(docButtons)) {
